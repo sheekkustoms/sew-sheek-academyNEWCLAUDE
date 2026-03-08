@@ -356,7 +356,7 @@ export default function CourseManager() {
 
       {/* Inline editor */}
       <AnimatePresence>
-        {editingId && (
+        {editingId && courses.find(c => c.id === editingId) && (
           <motion.div key={editingId} initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
             <CourseEditor course={courses.find(c => c.id === editingId)} onClose={() => setEditingId(null)} />
           </motion.div>
