@@ -4,55 +4,27 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
-  Brain, Zap, CheckCircle2, XCircle, Trophy, RotateCcw,
-  Flame, ChevronRight, Lock, Star, Sparkles
+  Brain, Zap, CheckCircle2, XCircle, Trophy, Star,
+  Flame, ChevronRight, Sparkles, Lock
 } from "lucide-react";
 import { getOrCreateUserPoints, awardXP } from "../components/shared/useUserPoints";
 import BadgeIcon from "../components/shared/BadgeIcon";
 
-const TODAY = new Date().toISOString().split("T")[0];
+// Use ISO week number to gate one attempt per week
+function getWeekKey(date = new Date()) {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+  const yearStart = new Date(d.getFullYear(), 0, 1);
+  const week = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+  return `${d.getFullYear()}-W${String(week).padStart(2, "0")}`;
+}
+
+const THIS_WEEK = getWeekKey();
 const PERFECT_XP = 250;
 const PARTIAL_XP_PER_CORRECT = 30;
 
-function QuizQuestion({ question, index, selected, onSelect, revealed }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.08 }}
-      className="space-y-3"
-    >
-      <p className="text-white font-semibold text-base leading-snug">
-        <span className="text-indigo-400 mr-2">Q{index + 1}.</span>{question.question}
-      </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        {question.options.map((opt, i) => {
-          let style = "bg-slate-800/60 border-slate-700/50 text-slate-300 hover:border-indigo-500/40 hover:text-white";
-          if (revealed) {
-            if (opt === question.correct_answer) style = "bg-emerald-500/15 border-emerald-500/50 text-emerald-300";
-            else if (opt === selected && opt !== question.correct_answer) style = "bg-red-500/15 border-red-500/50 text-red-300";
-            else style = "bg-slate-800/30 border-slate-700/30 text-slate-500";
-          } else if (selected === opt) {
-            style = "bg-indigo-500/20 border-indigo-500/60 text-indigo-200";
-          }
-          return (
-            <button
-              key={i}
-              disabled={revealed}
-              onClick={() => onSelect(opt)}
-              className={`px-4 py-3 rounded-xl border text-sm text-left transition-all font-medium ${style} ${!revealed ? "cursor-pointer" : "cursor-default"}`}
-            >
-              <span className="text-xs opacity-60 mr-2 font-mono">{String.fromCharCode(65 + i)})</span>
-              {opt}
-            </button>
-          );
-        })}
-      </div>
-    </motion.div>
-  );
-}
-
-function ResultScreen({ score, total, isPerfect, xpEarned, earnedBadge, onReset }) {
+function ResultScreen({ score, total, isPerfect, xpEarned, earnedBadge }) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -62,19 +34,19 @@ function ResultScreen({ score, total, isPerfect, xpEarned, earnedBadge, onReset 
       <div className={`w-24 h-24 rounded-full mx-auto flex items-center justify-center text-5xl ${
         isPerfect ? "bg-gradient-to-br from-fuchsia-500 to-violet-600 shadow-lg shadow-fuchsia-500/30" : "bg-gradient-to-br from-indigo-500 to-purple-600"
       }`}>
-        {isPerfect ? "🏆" : score >= 3 ? "🎉" : "📚"}
+        {isPerfect ? "🏆" : score / total >= 0.6 ? "🎉" : "📚"}
       </div>
 
       <div>
-        <h2 className="text-2xl font-bold text-white">
-          {isPerfect ? "Perfect Score!" : score >= 3 ? "Great Job!" : "Keep Practicing!"}
+        <h2 className="text-2xl font-bold text-gray-900">
+          {isPerfect ? "Perfect Score!" : score / total >= 0.6 ? "Great Job!" : "Keep Practicing!"}
         </h2>
-        <p className="text-slate-400 mt-1">
-          You answered <span className="text-white font-semibold">{score}/{total}</span> questions correctly
+        <p className="text-gray-500 mt-1">
+          You answered <span className="text-gray-900 font-semibold">{score}/{total}</span> questions correctly
         </p>
       </div>
 
-      <div className="flex items-center justify-center gap-2 text-2xl font-bold text-emerald-400">
+      <div className="flex items-center justify-center gap-2 text-2xl font-bold text-emerald-500">
         <Zap className="w-6 h-6" />
         +{xpEarned} XP earned
       </div>
@@ -84,24 +56,24 @@ function ResultScreen({ score, total, isPerfect, xpEarned, earnedBadge, onReset 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-fuchsia-500/10 border border-fuchsia-500/30 rounded-2xl p-5 flex flex-col items-center gap-3"
+          className="bg-fuchsia-50 border border-fuchsia-200 rounded-2xl p-5 flex flex-col items-center gap-3"
         >
-          <div className="flex items-center gap-2 text-fuchsia-300 font-semibold">
+          <div className="flex items-center gap-2 text-fuchsia-600 font-semibold">
             <Sparkles className="w-5 h-5" /> New Badge Unlocked!
           </div>
           <BadgeIcon name="Quiz Master" size="lg" />
-          <p className="text-sm text-slate-400">You scored 5/5 on a Daily Challenge</p>
+          <p className="text-sm text-gray-500">You scored perfectly on a Weekly Challenge</p>
         </motion.div>
       )}
 
       {isPerfect && !earnedBadge && (
-        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3 text-sm text-emerald-300">
+        <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 text-sm text-emerald-700">
           🏅 You already have the Quiz Master badge — impressive!
         </div>
       )}
 
-      <div className="text-sm text-slate-500 bg-slate-800/40 rounded-xl px-4 py-3">
-        Come back tomorrow for a new challenge!
+      <div className="text-sm text-gray-500 bg-gray-50 rounded-xl px-4 py-3">
+        Come back next week for a new challenge!
       </div>
     </motion.div>
   );
@@ -109,13 +81,11 @@ function ResultScreen({ score, total, isPerfect, xpEarned, earnedBadge, onReset 
 
 export default function DailyChallenges() {
   const queryClient = useQueryClient();
-  const [phase, setPhase] = useState("intro"); // intro | loading | quiz | result
-  const [questions, setQuestions] = useState([]);
+  const [phase, setPhase] = useState("intro"); // intro | quiz | result
   const [answers, setAnswers] = useState({});
   const [currentQ, setCurrentQ] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const [quizResult, setQuizResult] = useState(null);
-  const [selectedCourse, setSelectedCourse] = useState(null);
 
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
 
@@ -125,104 +95,56 @@ export default function DailyChallenges() {
     enabled: !!user?.email,
   });
 
-  const { data: enrollments = [] } = useQuery({
-    queryKey: ["myEnrollments", user?.email],
-    queryFn: () => base44.entities.Enrollment.filter({ user_email: user.email }),
-    enabled: !!user?.email,
+  const { data: settingsList = [] } = useQuery({
+    queryKey: ["weeklyChallengeSettings"],
+    queryFn: () => base44.entities.WeeklyChallengeSettings.list(),
   });
 
-  const { data: courses = [] } = useQuery({
-    queryKey: ["allCourses"],
-    queryFn: () => base44.entities.Course.filter({ is_published: true }),
+  const { data: questions = [], isLoading: loadingQ } = useQuery({
+    queryKey: ["weeklyChallengeQuestions"],
+    queryFn: () => base44.entities.WeeklyChallengeQuestion.list("order", 50),
   });
 
-  const { data: todayChallenge } = useQuery({
-    queryKey: ["todayChallenge", user?.email],
-    queryFn: () => base44.entities.DailyChallenge.filter({ user_email: user.email, challenge_date: TODAY }),
-    enabled: !!user?.email,
-  });
-
+  // Past challenge records for this user
   const { data: allChallenges = [] } = useQuery({
     queryKey: ["allChallenges", user?.email],
     queryFn: () => base44.entities.DailyChallenge.filter({ user_email: user.email }),
     enabled: !!user?.email,
   });
 
-  const enrolledCourses = courses.filter((c) => enrollments.some((e) => e.course_id === c.id));
-  const availableCourses = enrolledCourses.length > 0 ? enrolledCourses : courses;
-  const alreadyDoneToday = todayChallenge && todayChallenge.length > 0;
-
-  const generateMutation = useMutation({
-    mutationFn: async (course) => {
-      const prompt = `Generate exactly 5 multiple-choice quiz questions about the topic: "${course.title}". 
-Category: ${course.category}. 
-Each question must have exactly 4 answer options and one correct answer.
-Make the questions educational, clear, and varied in difficulty.
-Return ONLY valid JSON, no extra text.`;
-
-      const result = await base44.integrations.Core.InvokeLLM({
-        prompt,
-        response_json_schema: {
-          type: "object",
-          properties: {
-            questions: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  question: { type: "string" },
-                  options: { type: "array", items: { type: "string" } },
-                  correct_answer: { type: "string" },
-                  explanation: { type: "string" }
-                }
-              }
-            }
-          }
-        }
-      });
-      return { questions: result.questions, course };
-    },
-    onSuccess: ({ questions, course }) => {
-      setQuestions(questions);
-      setSelectedCourse(course);
-      setAnswers({});
-      setCurrentQ(0);
-      setRevealed(false);
-      setPhase("quiz");
-    },
-  });
+  const settings = settingsList[0];
+  const isEnabled = settings?.is_enabled !== false;
+  const sortedQ = [...questions].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  const alreadyDoneThisWeek = allChallenges.some(c => c.challenge_date === THIS_WEEK);
 
   const submitMutation = useMutation({
     mutationFn: async () => {
-      const score = questions.reduce((acc, q, i) => acc + (answers[i] === q.correct_answer ? 1 : 0), 0);
-      const isPerfect = score === 5;
+      const score = sortedQ.reduce((acc, q, i) => acc + (answers[i] === q.correct_answer ? 1 : 0), 0);
+      const total = sortedQ.length;
+      const isPerfect = score === total && total > 0;
       const xpEarned = isPerfect ? PERFECT_XP : score * PARTIAL_XP_PER_CORRECT;
       const earnedBadge = isPerfect && !myPoints?.badges?.includes("Quiz Master");
 
       await base44.entities.DailyChallenge.create({
         user_email: user.email,
-        challenge_date: TODAY,
-        course_id: selectedCourse?.id,
-        course_title: selectedCourse?.title,
+        challenge_date: THIS_WEEK,
+        course_title: settings?.week_label || "Weekly Challenge",
         score,
-        total_questions: 5,
-        passed: score >= 3,
+        total_questions: total,
+        passed: total > 0 && score / total >= 0.6,
         xp_earned: xpEarned,
         perfect_score: isPerfect,
       });
 
       if (myPoints && xpEarned > 0) {
-        await awardXP(myPoints.id, myPoints, xpEarned, {
-          quiz_master_badge: earnedBadge,
-        });
+        await awardXP(myPoints.id, myPoints, xpEarned, { quiz_master_badge: earnedBadge });
       }
 
-      return { score, isPerfect, xpEarned, earnedBadge };
+      return { score, total, isPerfect, xpEarned, earnedBadge };
     },
     onSuccess: (result) => {
       setQuizResult(result);
       setPhase("result");
-      queryClient.invalidateQueries({ queryKey: ["todayChallenge"] });
       queryClient.invalidateQueries({ queryKey: ["allChallenges"] });
       queryClient.invalidateQueries({ queryKey: ["myPointsChallenge"] });
       queryClient.invalidateQueries({ queryKey: ["myPoints"] });
@@ -230,40 +152,44 @@ Return ONLY valid JSON, no extra text.`;
     },
   });
 
+  const handleAnswer = (opt) => {
+    if (revealed) return;
+    setAnswers(prev => ({ ...prev, [currentQ]: opt }));
+    setRevealed(true);
+  };
+
   const handleNext = () => {
-    if (currentQ < questions.length - 1) {
-      setCurrentQ((q) => q + 1);
+    if (currentQ < sortedQ.length - 1) {
+      setCurrentQ(q => q + 1);
       setRevealed(false);
     } else {
       submitMutation.mutate();
     }
   };
 
-  const handleAnswer = (opt) => {
-    if (revealed) return;
-    setAnswers((prev) => ({ ...prev, [currentQ]: opt }));
-    setRevealed(true);
-  };
-
-  const totalPerfect = allChallenges.filter((c) => c.perfect_score).length;
+  const totalPerfect = allChallenges.filter(c => c.perfect_score).length;
   const totalDone = allChallenges.length;
-  const avgScore = totalDone > 0 ? (allChallenges.reduce((a, c) => a + (c.score || 0), 0) / totalDone).toFixed(1) : 0;
+  const avgScore = totalDone > 0
+    ? (allChallenges.reduce((a, c) => a + (c.score || 0), 0) / totalDone).toFixed(1)
+    : 0;
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <Brain className="w-6 h-6 text-fuchsia-400" /> Daily Challenges
+          <Brain className="w-6 h-6 text-fuchsia-500" /> Weekly Challenge
         </h1>
-        <p className="text-sm text-gray-500 mt-1">5-question quizzes — score 5/5 to earn the Quiz Master badge & 250 XP</p>
+        <p className="text-sm text-gray-500 mt-1">
+          {settings?.week_label ? `This week: ${settings.week_label}` : "Answer this week's questions — score perfectly to earn the Quiz Master badge & 250 XP"}
+        </p>
       </div>
 
-      {/* Stats row */}
+      {/* Stats */}
       <div className="grid grid-cols-3 gap-3">
         {[
           { label: "Challenges Done", value: totalDone, icon: Trophy, color: "text-amber-500" },
           { label: "Perfect Scores", value: totalPerfect, icon: Star, color: "text-fuchsia-500" },
-          { label: "Avg Score", value: `${avgScore}/5`, icon: Flame, color: "text-orange-500" },
+          { label: "Avg Score", value: `${avgScore}/${allChallenges[0]?.total_questions || "—"}`, icon: Flame, color: "text-orange-500" },
         ].map(({ label, value, icon: Icon, color }) => (
           <div key={label} className="bg-white border border-gray-100 rounded-2xl p-4 text-center shadow-sm">
             <Icon className={`w-5 h-5 mx-auto mb-1 ${color}`} />
@@ -274,145 +200,170 @@ Return ONLY valid JSON, no extra text.`;
       </div>
 
       {/* Main card */}
-      <div className="bg-white border border-gray-100 rounded-2xl p-6 min-h-[300px] shadow-sm">
+      <div className="bg-white border border-gray-100 rounded-2xl p-6 min-h-[280px] shadow-sm">
         <AnimatePresence mode="wait">
 
-          {/* Already done today */}
-          {alreadyDoneToday && phase !== "result" && (
+          {/* Disabled */}
+          {!isEnabled && (
+            <motion.div key="disabled" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-10 space-y-3">
+              <Lock className="w-10 h-10 text-gray-300 mx-auto" />
+              <h2 className="text-lg font-semibold text-gray-700">Challenge Paused</h2>
+              <p className="text-sm text-gray-400">The weekly challenge is temporarily disabled. Check back soon!</p>
+            </motion.div>
+          )}
+
+          {/* No questions yet */}
+          {isEnabled && sortedQ.length === 0 && !loadingQ && (
+            <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-10 space-y-3">
+              <Brain className="w-10 h-10 text-gray-300 mx-auto" />
+              <h2 className="text-lg font-semibold text-gray-700">No Questions Yet</h2>
+              <p className="text-sm text-gray-400">The admin hasn't added questions for this week yet. Check back soon!</p>
+            </motion.div>
+          )}
+
+          {/* Already done */}
+          {isEnabled && sortedQ.length > 0 && alreadyDoneThisWeek && phase !== "result" && (
             <motion.div key="done" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-10 space-y-4">
               <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto">
                 <CheckCircle2 className="w-8 h-8 text-emerald-500" />
               </div>
               <div>
-                <h2 className="text-xl font-semibold text-gray-900">Challenge Complete!</h2>
-                <p className="text-sm text-gray-500 mt-1">You scored <span className="text-gray-900 font-semibold">{todayChallenge[0].score}/5</span> today on <span className="text-violet-600">{todayChallenge[0].course_title}</span></p>
+                <h2 className="text-xl font-semibold text-gray-900">This Week's Challenge Complete!</h2>
+                {(() => {
+                  const thisWeekRecord = allChallenges.find(c => c.challenge_date === THIS_WEEK);
+                  return thisWeekRecord ? (
+                    <p className="text-sm text-gray-500 mt-1">
+                      You scored <span className="text-gray-900 font-semibold">{thisWeekRecord.score}/{thisWeekRecord.total_questions}</span>
+                      {thisWeekRecord.perfect_score && " — Perfect score! 🏆"}
+                    </p>
+                  ) : null;
+                })()}
               </div>
-              {todayChallenge[0].perfect_score && (
-                <div className="flex justify-center">
-                  <BadgeIcon name="Quiz Master" size="lg" />
-                </div>
-              )}
-              <p className="text-sm text-gray-400">Come back tomorrow for a new challenge 🌅</p>
+              <p className="text-sm text-gray-400">Come back next week for a new challenge 🌅</p>
             </motion.div>
           )}
 
           {/* Intro */}
-          {!alreadyDoneToday && phase === "intro" && (
-            <motion.div key="intro" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+          {isEnabled && sortedQ.length > 0 && !alreadyDoneThisWeek && phase === "intro" && (
+            <motion.div key="intro" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
               <div className="text-center space-y-2">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-fuchsia-500 to-violet-600 flex items-center justify-center mx-auto shadow-lg shadow-fuchsia-500/20">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-fuchsia-500 to-violet-600 flex items-center justify-center mx-auto shadow-lg shadow-fuchsia-200">
                   <Brain className="w-8 h-8 text-white" />
                 </div>
-                <h2 className="text-xl font-semibold text-gray-900">Ready for today's challenge?</h2>
-                <p className="text-sm text-gray-500 max-w-sm mx-auto">Pick a course and answer 5 AI-generated questions. Score perfectly to earn the <span className="text-fuchsia-600 font-semibold">Quiz Master</span> badge + <span className="text-emerald-600 font-semibold">250 XP</span>!</p>
+                <h2 className="text-xl font-semibold text-gray-900">Ready for this week's challenge?</h2>
+                {settings?.description && (
+                  <p className="text-sm text-gray-500 max-w-sm mx-auto">{settings.description}</p>
+                )}
+                <p className="text-sm text-gray-500 max-w-sm mx-auto">
+                  Answer <span className="text-fuchsia-600 font-semibold">{sortedQ.length} questions</span>. Score perfectly to earn the{" "}
+                  <span className="text-fuchsia-600 font-semibold">Quiz Master</span> badge +{" "}
+                  <span className="text-emerald-600 font-semibold">250 XP</span>!
+                </p>
               </div>
-
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-slate-300 mb-2">Choose a topic:</p>
-                {availableCourses.slice(0, 6).map((course) => (
-                  <button
-                    key={course.id}
-                    onClick={() => setSelectedCourse(course)}
-                    className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border text-sm text-left transition-all ${
-                      selectedCourse?.id === course.id
-                        ? "bg-violet-50 border-violet-300 text-violet-800 font-semibold"
-                        : "bg-gray-50 border-gray-200 text-gray-700 hover:border-violet-300 hover:text-violet-700"
-                    }`}
-                  >
-                    <span>{course.title}</span>
-                    <span className="text-[10px] text-gray-400 capitalize">{course.category?.replace(/_/g, " ")}</span>
-                  </button>
-                ))}
-              </div>
-
               <Button
-                onClick={() => { setPhase("loading"); generateMutation.mutate(selectedCourse); }}
-                disabled={!selectedCourse || generateMutation.isPending}
+                onClick={() => setPhase("quiz")}
                 className="w-full bg-gradient-to-r from-fuchsia-600 to-violet-600 hover:from-fuchsia-700 hover:to-violet-700 text-white font-semibold py-3"
               >
-                {generateMutation.isPending ? (
-                  <span className="flex items-center gap-2"><span className="animate-spin">⏳</span> Generating questions...</span>
-                ) : (
-                  <span className="flex items-center gap-2"><Zap className="w-4 h-4" /> Start Challenge</span>
-                )}
+                <Zap className="w-4 h-4 mr-2" /> Start Challenge
               </Button>
             </motion.div>
           )}
 
-          {/* Loading */}
-          {phase === "loading" && (
-            <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-16 space-y-4">
-              <div className="w-14 h-14 rounded-full bg-fuchsia-500/15 flex items-center justify-center mx-auto animate-pulse">
-                <Brain className="w-7 h-7 text-fuchsia-400" />
-              </div>
-              <p className="text-white font-medium">Crafting your questions...</p>
-              <p className="text-sm text-slate-500">AI is generating 5 questions about <span className="text-indigo-300">{selectedCourse?.title}</span></p>
-            </motion.div>
-          )}
-
           {/* Quiz */}
-          {phase === "quiz" && questions.length > 0 && (
-            <motion.div key="quiz" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-              {/* Progress bar */}
-              <div className="space-y-2">
+          {phase === "quiz" && sortedQ.length > 0 && (
+            <motion.div key="quiz" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
+              {/* Progress */}
+              <div className="space-y-1.5">
                 <div className="flex justify-between text-xs text-gray-500">
-                  <span>Question {currentQ + 1} of {questions.length}</span>
+                  <span>Question {currentQ + 1} of {sortedQ.length}</span>
                   <span className="text-violet-600 font-medium">{Object.keys(answers).length} answered</span>
                 </div>
                 <div className="h-1.5 bg-gray-100 rounded-full">
                   <div
                     className="h-full bg-gradient-to-r from-fuchsia-500 to-violet-500 rounded-full transition-all duration-300"
-                    style={{ width: `${((currentQ) / questions.length) * 100}%` }}
+                    style={{ width: `${(currentQ / sortedQ.length) * 100}%` }}
                   />
                 </div>
               </div>
 
-              <QuizQuestion
-                question={questions[currentQ]}
-                index={currentQ}
-                selected={answers[currentQ]}
-                onSelect={handleAnswer}
-                revealed={revealed}
-              />
+              {/* Question */}
+              <motion.div
+                key={currentQ}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-4"
+              >
+                <p className="text-gray-900 font-semibold text-base leading-snug">
+                  <span className="text-fuchsia-500 mr-2">Q{currentQ + 1}.</span>
+                  {sortedQ[currentQ]?.question}
+                </p>
 
-              {/* Explanation */}
-              <AnimatePresence>
-                {revealed && questions[currentQ]?.explanation && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 text-sm text-gray-700"
-                  >
-                    <span className="text-blue-600 font-semibold">💡 Explanation: </span>
-                    {questions[currentQ].explanation}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {(sortedQ[currentQ]?.options || []).filter(o => o).map((opt, i) => {
+                    const isCorrect = opt === sortedQ[currentQ]?.correct_answer;
+                    const isSelected = answers[currentQ] === opt;
+                    let cls = "bg-gray-50 border-gray-200 text-gray-800 hover:border-violet-400 hover:bg-violet-50";
+                    if (revealed) {
+                      if (isCorrect) cls = "bg-emerald-50 border-emerald-400 text-emerald-800";
+                      else if (isSelected) cls = "bg-red-50 border-red-400 text-red-800";
+                      else cls = "bg-gray-50 border-gray-200 text-gray-400";
+                    } else if (isSelected) {
+                      cls = "bg-violet-50 border-violet-400 text-violet-800";
+                    }
+                    return (
+                      <button
+                        key={i}
+                        disabled={revealed}
+                        onClick={() => handleAnswer(opt)}
+                        className={`px-4 py-3 rounded-xl border text-sm text-left transition-all font-medium ${cls} ${!revealed ? "cursor-pointer" : "cursor-default"}`}
+                      >
+                        <span className="text-xs opacity-50 mr-2 font-mono">{String.fromCharCode(65 + i)})</span>
+                        {opt}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Explanation */}
+                <AnimatePresence>
+                  {revealed && sortedQ[currentQ]?.explanation && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 text-sm text-gray-800"
+                    >
+                      <span className="text-blue-600 font-semibold">💡 </span>
+                      {sortedQ[currentQ].explanation}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {revealed && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                    <Button
+                      onClick={handleNext}
+                      disabled={submitMutation.isPending}
+                      className="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold"
+                    >
+                      {submitMutation.isPending ? "Saving..." : currentQ < sortedQ.length - 1 ? (
+                        <span className="flex items-center gap-2">Next Question <ChevronRight className="w-4 h-4" /></span>
+                      ) : (
+                        <span className="flex items-center gap-2"><Trophy className="w-4 h-4" /> Finish Challenge</span>
+                      )}
+                    </Button>
                   </motion.div>
                 )}
-              </AnimatePresence>
-
-              {revealed && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                  <Button
-                    onClick={handleNext}
-                    disabled={submitMutation.isPending}
-                    className="w-full bg-indigo-600 hover:bg-indigo-700 font-semibold"
-                  >
-                    {submitMutation.isPending ? "Saving..." : currentQ < questions.length - 1 ? (
-                      <span className="flex items-center gap-2">Next Question <ChevronRight className="w-4 h-4" /></span>
-                    ) : (
-                      <span className="flex items-center gap-2"><Trophy className="w-4 h-4" /> Finish Challenge</span>
-                    )}
-                  </Button>
-                </motion.div>
-              )}
+              </motion.div>
             </motion.div>
           )}
 
           {/* Result */}
           {phase === "result" && quizResult && (
             <motion.div key="result" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <ResultScreen {...quizResult} total={5} />
+              <ResultScreen {...quizResult} />
             </motion.div>
           )}
+
         </AnimatePresence>
       </div>
 
@@ -421,7 +372,7 @@ Return ONLY valid JSON, no extra text.`;
         <div>
           <h3 className="text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wider">Past Challenges</h3>
           <div className="space-y-2">
-            {[...allChallenges].sort((a, b) => new Date(b.challenge_date) - new Date(a.challenge_date)).slice(0, 7).map((c) => (
+            {[...allChallenges].sort((a, b) => b.challenge_date?.localeCompare(a.challenge_date)).slice(0, 7).map((c) => (
               <div key={c.id} className="flex items-center justify-between bg-white border border-gray-100 rounded-2xl px-4 py-3 shadow-sm">
                 <div className="flex items-center gap-3">
                   {c.perfect_score
@@ -431,13 +382,13 @@ Return ONLY valid JSON, no extra text.`;
                       : <XCircle className="w-4 h-4 text-red-400" />
                   }
                   <div>
-                    <p className="text-sm font-medium text-gray-800">{c.course_title || "Challenge"}</p>
+                    <p className="text-sm font-medium text-gray-800">{c.course_title || "Weekly Challenge"}</p>
                     <p className="text-xs text-gray-400">{c.challenge_date}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-sm font-bold text-gray-800">{c.score}/{c.total_questions}</span>
-                  <span className="text-xs text-emerald-400 font-medium">+{c.xp_earned} XP</span>
+                  <span className="text-xs text-emerald-500 font-medium">+{c.xp_earned} XP</span>
                 </div>
               </div>
             ))}
