@@ -143,7 +143,6 @@ export default function Messages() {
                       )}
                     </div>
                     <p className="text-xs text-gray-500 truncate">{lastMsg.content}</p>
-                    <p className="text-[10px] text-gray-400 mt-1">{formatMessageTime(lastMsg.created_date)}</p>
                   </button>
                 );
               })
