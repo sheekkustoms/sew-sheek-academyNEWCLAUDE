@@ -15,17 +15,17 @@ const BADGE_CONFIG = {
 };
 
 export default function BadgeIcon({ name, size = "md" }) {
-  const config = BADGE_CONFIG[name] || { icon: Award, color: "from-slate-500 to-slate-400", description: name };
+  const config = BADGE_CONFIG[name] || { icon: Award, color: "from-gray-400 to-gray-500", description: name };
   const Icon = config.icon;
   const sizeClasses = size === "sm" ? "w-8 h-8" : size === "lg" ? "w-14 h-14" : "w-10 h-10";
   const iconSize = size === "sm" ? "w-4 h-4" : size === "lg" ? "w-7 h-7" : "w-5 h-5";
 
   return (
     <div className="flex flex-col items-center gap-1" title={config.description}>
-      <div className={`${sizeClasses} rounded-xl bg-gradient-to-br ${config.color} flex items-center justify-center shadow-lg`}>
+      <div className={`${sizeClasses} rounded-xl bg-gradient-to-br ${config.color} flex items-center justify-center shadow-md`}>
         <Icon className={`${iconSize} text-white`} />
       </div>
-      {size !== "sm" && <span className="text-[10px] text-slate-400 text-center leading-tight max-w-[60px]">{name}</span>}
+      {size !== "sm" && <span className="text-[10px] text-gray-500 text-center leading-tight max-w-[60px]">{name}</span>}
     </div>
   );
 }

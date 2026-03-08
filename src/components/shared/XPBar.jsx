@@ -30,11 +30,10 @@ export default function XPBar({ xp = 0, showLevel = true, compact = false }) {
   if (compact) {
     return (
       <div className="flex items-center gap-2">
-        <div className="flex items-center gap-1 text-emerald-400 font-bold text-sm">
-          <Zap className="w-3.5 h-3.5" />
-          {xp} XP
+        <div className="flex items-center gap-1 text-fuchsia-600 font-bold text-sm">
+          <Zap className="w-3.5 h-3.5" /> {xp} XP
         </div>
-        <span className="text-xs text-slate-400">Lvl {level}</span>
+        <span className="text-xs text-gray-400">Lvl {level}</span>
       </div>
     );
   }
@@ -44,19 +43,17 @@ export default function XPBar({ xp = 0, showLevel = true, compact = false }) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           {showLevel && (
-            <span className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">
-              LVL {level}
-            </span>
+            <span className="bg-white/20 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">LVL {level}</span>
           )}
-          <span className="text-emerald-400 font-semibold text-sm flex items-center gap-1">
+          <span className="text-white/90 font-semibold text-sm flex items-center gap-1">
             <Zap className="w-3.5 h-3.5" /> {xp} XP
           </span>
         </div>
-        <span className="text-xs text-slate-400">{current}/{needed} to next level</span>
+        <span className="text-xs text-white/60">{current}/{needed} to next level</span>
       </div>
-      <div className="h-2 bg-slate-700/50 rounded-full overflow-hidden">
+      <div className="h-2.5 bg-white/20 rounded-full overflow-hidden">
         <motion.div
-          className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full"
+          className="h-full bg-white rounded-full"
           initial={{ width: 0 }}
           animate={{ width: `${percent}%` }}
           transition={{ duration: 1, ease: "easeOut" }}
