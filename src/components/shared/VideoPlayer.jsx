@@ -52,11 +52,7 @@ export default function VideoPlayer({ url, lessonId, enrollmentRequired }) {
           allow="autoplay; fullscreen"
           allowFullScreen
         />
-        {/* Overlay top-right corner to hide Google Drive download/save buttons */}
-        <div
-          className="absolute top-0 right-0 bg-black"
-          style={{ width: "220px", height: "48px", zIndex: 10, pointerEvents: "none" }}
-        />
+
       </div>
     );
   }
