@@ -47,34 +47,14 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
-import Dashboard from './pages/Dashboard';
-import Courses from './pages/Courses';
-import CourseDetail from './pages/CourseDetail';
-import Community from './pages/Community';
-import Leaderboard from './pages/Leaderboard';
-import DailyChallenges from './pages/DailyChallenges';
-import Notifications from './pages/Notifications';
 import AdminDashboard from './pages/AdminDashboard';
-import QuizHome from './pages/QuizHome';
-import QuizGame from './pages/QuizGame';
-import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
-    "Dashboard": Dashboard,
-    "Courses": Courses,
-    "CourseDetail": CourseDetail,
-    "Community": Community,
-    "Leaderboard": Leaderboard,
-    "DailyChallenges": DailyChallenges,
-    "Notifications": Notifications,
     "AdminDashboard": AdminDashboard,
-    "QuizHome": QuizHome,
-    "QuizGame": QuizGame,
 }
 
 export const pagesConfig = {
-    mainPage: "Dashboard",
+    mainPage: "AdminDashboard",
     Pages: PAGES,
-    Layout: __Layout,
 };
