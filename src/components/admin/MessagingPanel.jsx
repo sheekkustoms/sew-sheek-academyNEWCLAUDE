@@ -13,10 +13,15 @@ export default function MessagingPanel() {
   const [message, setMessage] = useState("");
   const [emailCopied, setEmailCopied] = useState(null);
 
+  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
+
   const { data: allUsers = [] } = useQuery({
     queryKey: ["messagingUsers"],
     queryFn: () => base44.entities.User.list(),
   });
+
+  // Filter to only show users that aren't admins or have messaging disabled
+  const messagingUsers = allUsers.filter(u => u.role !== "admin");
 
   const { data: messages = [] } = useQuery({
     queryKey: ["messages", selectedUser?.id],
@@ -26,7 +31,6 @@ export default function MessagingPanel() {
 
   const sendMutation = useMutation({
     mutationFn: async () => {
-      const user = await base44.auth.me();
       await base44.entities.Message.create({
         sender_email: user.email,
         sender_name: user.full_name || "Admin",
@@ -54,7 +58,7 @@ export default function MessagingPanel() {
       <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden flex flex-col">
         <div className="px-4 py-3 border-b border-gray-100 font-semibold text-gray-700">Members</div>
         <div className="overflow-y-auto flex-1 space-y-1 p-2">
-          {allUsers.map((u) => (
+           {messagingUsers.map((u) => (
             <button
               key={u.id}
               onClick={() => setSelectedUser(u)}
