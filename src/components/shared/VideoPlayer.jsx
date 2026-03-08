@@ -49,15 +49,13 @@ export default function VideoPlayer({ url, lessonId, enrollmentRequired }) {
           key={lessonId}
           className="w-full h-full"
           src={embed.src}
-          allow="fullscreen"
+          allow="autoplay; fullscreen"
           allowFullScreen
-          referrerPolicy="no-referrer"
-          sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
         />
-        {/* Transparent overlay on the top-right corner to block the Google Drive toolbar/download button */}
+        {/* Overlay top-right corner to hide Google Drive download/save buttons */}
         <div
           className="absolute top-0 right-0 bg-black"
-          style={{ width: "220px", height: "48px", zIndex: 10 }}
+          style={{ width: "220px", height: "48px", zIndex: 10, pointerEvents: "none" }}
         />
       </div>
     );
