@@ -173,6 +173,12 @@ export default function AdminDashboard() {
           <TabsTrigger value="invite" className="flex items-center gap-1">
             <UserPlus className="w-3.5 h-3.5" /> Invite
           </TabsTrigger>
+          <TabsTrigger value="liveclasses" className="flex items-center gap-1">
+            <Video className="w-3.5 h-3.5" /> Live Classes
+          </TabsTrigger>
+          <TabsTrigger value="levels" className="flex items-center gap-1">
+            <Zap className="w-3.5 h-3.5" /> Levels
+          </TabsTrigger>
         </TabsList>
 
         {/* Posts moderation */}
