@@ -183,7 +183,7 @@ export default function Messages() {
                     <div className="flex-1">
                       <div className="flex items-baseline gap-2 mb-1">
                         <p className="font-semibold text-gray-900">{msg.sender_name || "User"}</p>
-                        <p className="text-xs text-gray-400">{moment(msg.created_date).tz("America/New_York").format("h:mma")}</p>
+                        <p className="text-xs text-gray-400">{moment(msg.created_date).format("h:mma")}</p>
                       </div>
                       <div className="bg-gray-50 rounded-lg px-4 py-2 inline-block max-w-md">
                         <p className="text-sm text-gray-900">{msg.content}</p>
