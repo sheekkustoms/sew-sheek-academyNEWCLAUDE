@@ -174,8 +174,17 @@ export default function QuizBuilder() {
 
   const editingQuiz = quizzes.find(q => q.id === editingQuizId);
 
+  const hostingQuiz = quizzes.find(q => q.id === hostingQuizId);
+
   return (
     <div className="space-y-5">
+      {/* Live Host Panel */}
+      <AnimatePresence>
+        {hostingQuiz && (
+          <LiveGameHost quiz={hostingQuiz} onClose={() => setHostingQuizId(null)} />
+        )}
+      </AnimatePresence>
+
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-violet-700 font-bold">
           <Gamepad2 className="w-5 h-5" /> Quiz Builder
