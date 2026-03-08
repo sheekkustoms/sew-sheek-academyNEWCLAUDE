@@ -50,7 +50,7 @@ export default function Layout({ children, currentPageName }) {
     : NAV_ITEMS;
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
+    <div className="min-h-screen bg-rose-50/30 text-gray-900">
       <style>{`
         :root {
           --background: 0 0% 98%;
@@ -64,7 +64,7 @@ export default function Layout({ children, currentPageName }) {
           --secondary: 220 14% 96%;
           --secondary-foreground: 222 47% 11%;
           --muted: 220 14% 96%;
-          --muted-foreground: 220 9% 46%;
+          --muted-foreground: 220 9% 30%;
           --accent: 220 14% 96%;
           --accent-foreground: 222 47% 11%;
           --destructive: 0 84% 60%;
@@ -74,7 +74,7 @@ export default function Layout({ children, currentPageName }) {
           --ring: 262 83% 58%;
           --radius: 0.75rem;
         }
-        body { background-color: #f8fafc; }
+        body { background-color: #fff5f6; }
         * { box-sizing: border-box; }
       `}</style>
 
