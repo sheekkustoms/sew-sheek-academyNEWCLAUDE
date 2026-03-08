@@ -121,7 +121,7 @@ export default function Layout({ children, currentPageName }) {
         <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)} className="text-gray-500">
           <Menu className="w-5 h-5" />
         </Button>
-        <span className="text-lg font-bold bg-gradient-to-r from-pink-500 via-fuchsia-500 to-violet-500 bg-clip-text text-transparent">LearnXP</span>
+        <span className="text-lg font-bold bg-gradient-to-r from-pink-500 via-fuchsia-500 to-violet-500 bg-clip-text text-transparent">Sew Sheek Sewing</span>
         <div className="flex items-center gap-2">
           <Link to={createPageUrl("Notifications")} className="relative">
             <Bell className="w-5 h-5 text-gray-500" />
