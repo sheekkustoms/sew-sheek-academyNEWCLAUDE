@@ -2,22 +2,39 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Zap } from "lucide-react";
 
-const LEVEL_THRESHOLDS = [0, 100, 300, 600, 1000, 1500, 2200, 3000, 4000, 5500, 7500, 10000];
+export const DEFAULT_THRESHOLDS = [0, 100, 300, 600, 1000, 1500, 2200, 3000, 4000, 5500, 7500, 10000];
 
-export function getLevelFromXP(xp) {
+// Cache so all components share the same fetched thresholds
+let _cachedThresholds = DEFAULT_THRESHOLDS;
+let _cacheLoaded = false;
+
+export async function loadThresholds() {
+  if (_cacheLoaded) return _cachedThresholds;
+  try {
+    const { base44 } = await import("@/api/base44Client");
+    const settings = await base44.entities.LevelSettings.filter({ label: "default" });
+    if (settings.length > 0 && settings[0].thresholds?.length > 0) {
+      _cachedThresholds = settings[0].thresholds;
+    }
+  } catch {}
+  _cacheLoaded = true;
+  return _cachedThresholds;
+}
+
+export function getLevelFromXP(xp, thresholds = _cachedThresholds) {
   let level = 1;
-  for (let i = 1; i < LEVEL_THRESHOLDS.length; i++) {
-    if (xp >= LEVEL_THRESHOLDS[i]) level = i + 1;
+  for (let i = 1; i < thresholds.length; i++) {
+    if (xp >= thresholds[i]) level = i + 1;
     else break;
   }
   return level;
 }
 
-export function getXPForNextLevel(xp) {
-  const level = getLevelFromXP(xp);
-  if (level >= LEVEL_THRESHOLDS.length) return { current: xp, needed: xp, percent: 100 };
-  const currentLevelXP = LEVEL_THRESHOLDS[level - 1];
-  const nextLevelXP = LEVEL_THRESHOLDS[level];
+export function getXPForNextLevel(xp, thresholds = _cachedThresholds) {
+  const level = getLevelFromXP(xp, thresholds);
+  if (level >= thresholds.length) return { current: xp, needed: xp, percent: 100 };
+  const currentLevelXP = thresholds[level - 1];
+  const nextLevelXP = thresholds[level];
   const progress = xp - currentLevelXP;
   const needed = nextLevelXP - currentLevelXP;
   return { current: progress, needed, percent: Math.round((progress / needed) * 100) };
