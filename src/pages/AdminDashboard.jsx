@@ -50,6 +50,17 @@ export default function AdminDashboard() {
     queryFn: () => base44.entities.UserPoints.list("-total_xp", 10),
   });
 
+  const { data: allUserPoints = [] } = useQuery({
+    queryKey: ["adminAllUserPoints"],
+    queryFn: () => base44.entities.UserPoints.list("-last_activity_date", 200),
+  });
+
+  const userPointsMap = React.useMemo(() => {
+    const map = {};
+    allUserPoints.forEach(p => { map[p.user_email] = p; });
+    return map;
+  }, [allUserPoints]);
+
   const deletePostMutation = useMutation({
     mutationFn: (id) => base44.entities.CommunityPost.delete(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["adminPosts"] }),
