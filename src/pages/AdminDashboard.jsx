@@ -247,6 +247,11 @@ export default function AdminDashboard() {
           <CourseManager />
         </TabsContent>
 
+        {/* Weekly Challenge Manager */}
+        <TabsContent value="weekly" className="mt-4">
+          <WeeklyChallengeManager />
+        </TabsContent>
+
         {/* Invite Members */}
         <TabsContent value="invite" className="mt-4 space-y-4">
           <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm space-y-4">
