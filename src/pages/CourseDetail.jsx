@@ -101,7 +101,18 @@ export default function CourseDetail() {
           {/* Video player */}
           <div className="relative rounded-2xl overflow-hidden bg-gray-900 aspect-video shadow-lg">
             {activeLesson?.video_url ? (
-              <video key={activeLesson.id} controls className="w-full h-full object-contain" src={activeLesson.video_url} />
+              (() => {
+                const url = activeLesson.video_url;
+                const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+                const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+                if (ytMatch) {
+                  return <iframe key={activeLesson.id} className="w-full h-full" src={`https://www.youtube.com/embed/${ytMatch[1]}`} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />;
+                } else if (vimeoMatch) {
+                  return <iframe key={activeLesson.id} className="w-full h-full" src={`https://player.vimeo.com/video/${vimeoMatch[1]}`} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen />;
+                } else {
+                  return <video key={activeLesson.id} controls className="w-full h-full object-contain" src={url} />;
+                }
+              })()
             ) : (
               <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-500">
                 <Play className="w-16 h-16 mb-2 opacity-30" />
