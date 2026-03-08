@@ -15,11 +15,17 @@ export default function Messages() {
 
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
 
-  const { data: messages = [] } = useQuery({
+  const { data: allMessages = [] } = useQuery({
     queryKey: ["myMessages", user?.email],
-    queryFn: () => base44.entities.Message.filter({ recipient_email: user.email }),
+    queryFn: async () => {
+      const received = await base44.entities.Message.filter({ recipient_email: user.email });
+      const sent = await base44.entities.Message.filter({ sender_email: user.email });
+      return [...received, ...sent].sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
+    },
     enabled: !!user?.email,
   });
+
+  const messages = allMessages;
 
   // Group messages by conversation
   const conversations = messages.reduce((acc, msg) => {
