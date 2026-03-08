@@ -101,7 +101,10 @@ export default function AdminDashboard() {
     },
   });
 
-  if (user?.role !== "admin") {
+  const ADMIN_EMAILS = ["sheek24kustoms@gmail.com"];
+  const isAdminUser = user?.role === "admin" || ADMIN_EMAILS.includes(user?.email);
+
+  if (!isAdminUser) {
     return (
       <div className="max-w-lg mx-auto text-center py-20">
         <Shield className="w-12 h-12 text-red-300 mx-auto mb-3" />
