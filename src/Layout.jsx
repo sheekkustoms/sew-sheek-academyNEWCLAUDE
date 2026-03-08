@@ -70,6 +70,7 @@ export default function Layout({ children, currentPageName }) {
 
   return (
     <div className="min-h-screen bg-rose-50/30 text-gray-900">
+      <Toaster position="top-right" richColors />
       <style>{`
         :root {
           --background: 0 0% 98%;
