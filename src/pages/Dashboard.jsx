@@ -177,7 +177,7 @@ export default function Dashboard() {
             </Link>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {recommendedCourses.map((course, i) => <CourseCard key={course.id} course={course} index={i} />)}
+            {recommendedCourses.map((course, i) => <CourseCard key={course.id} course={course} index={i} userLevel={getLevelFromXP(myPoints?.total_xp || 0)} />)}
           </div>
         </div>
       )}
