@@ -70,7 +70,7 @@ export default function Community() {
         author_name: user.full_name || user.email,
         likes: [],
         comment_count: 0,
-        is_approved: true,
+        is_approved: false,
         is_pinned: false,
       });
       if (myPoints) {
