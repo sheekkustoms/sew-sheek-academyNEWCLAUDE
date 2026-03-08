@@ -362,17 +362,17 @@ export default function AdminDashboard() {
                   type="email"
                 />
                 <Button
-                  disabled={!inviteEmail || inviteSent}
-                  className="bg-gradient-to-r from-pink-500 to-violet-500 text-white shrink-0"
-                  onClick={async () => {
-                    await base44.users.inviteUser(inviteEmail, "user");
-                    setInviteSent(true);
-                    setInviteEmail("");
-                    setTimeout(() => setInviteSent(false), 3000);
-                  }}
-                >
-                  {inviteSent ? "✓ Sent!" : "Send Invite"}
-                </Button>
+                   disabled={!inviteEmail || inviteSent}
+                   className="bg-gradient-to-r from-pink-500 to-violet-500 text-white shrink-0"
+                   onClick={async () => {
+                     await base44.functions.invoke("handleUserInvite", { email: inviteEmail });
+                     setInviteSent(true);
+                     setInviteEmail("");
+                     setTimeout(() => setInviteSent(false), 3000);
+                   }}
+                 >
+                   {inviteSent ? "✓ Sent!" : "Send Invite"}
+                 </Button>
               </div>
             </div>
 
