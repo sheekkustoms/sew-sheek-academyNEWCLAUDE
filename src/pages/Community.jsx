@@ -49,24 +49,24 @@ export default function Community() {
   };
 
   const createPostMutation = useMutation({
-    mutationFn: async () => {
-      let image_url = "";
-      if (imageFile) {
-        setUploading(true);
-        const result = await base44.integrations.Core.UploadFile({ file: imageFile });
-        image_url = result.file_url;
-        setUploading(false);
-      }
-      await base44.entities.CommunityPost.create({
-        ...newPost,
-        image_url,
-        author_email: user.email,
-        author_name: user.full_name || user.email,
-        likes: [],
-        comment_count: 0,
-        is_approved: false,
-        is_pinned: false,
-      });
+   mutationFn: async () => {
+     let image_url = "";
+     if (imageFile) {
+       setUploading(true);
+       const result = await base44.integrations.Core.UploadFile({ file: imageFile });
+       image_url = result.file_url;
+       setUploading(false);
+     }
+     await base44.entities.CommunityPost.create({
+       ...newPost,
+       image_url,
+       author_email: user.email,
+       author_name: user.full_name || user.email,
+       likes: [],
+       comment_count: 0,
+       is_approved: user.role === "admin" ? true : false,
+       is_pinned: false,
+     });
       if (myPoints) {
         await awardXP(myPoints.id, myPoints, 15, { posts_created: (myPoints.posts_created || 0) + 1 });
       }

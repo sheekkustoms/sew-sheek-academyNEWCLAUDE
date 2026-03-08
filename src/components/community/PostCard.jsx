@@ -40,12 +40,13 @@ export default function PostCard({ post, currentUserEmail, onLike, onClick, inde
       {post.image_url && (
         <img src={post.image_url} alt="" className="w-full h-48 object-cover" />
       )}
+      {post.is_pinned && (
+        <div className="bg-blue-500 text-white px-4 py-2 flex items-center gap-2 text-sm font-semibold">
+          <Pin className="w-4 h-4" /> Pinned
+          <button className="ml-auto text-xs hover:text-blue-100">Unpin post</button>
+        </div>
+      )}
       <div className="p-5">
-        {post.is_pinned && (
-          <div className="flex items-center gap-1 text-amber-500 text-xs font-semibold mb-2">
-            <Pin className="w-3 h-3" /> Pinned
-          </div>
-        )}
         <div className="flex items-center gap-2 mb-2.5">
           <Badge className={`${categoryStyles[post.category] || "bg-gray-100 text-gray-600"} border text-[10px] uppercase tracking-wider`}>
             {categoryEmoji[post.category]} {post.category?.replace(/_/g, " ")}
