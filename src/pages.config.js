@@ -55,11 +55,11 @@ import DailyChallenges from './pages/DailyChallenges';
 import Dashboard from './pages/Dashboard';
 import Leaderboard from './pages/Leaderboard';
 import LiveClasses from './pages/LiveClasses';
+import Messages from './pages/Messages';
 import Notifications from './pages/Notifications';
 import QuizGame from './pages/QuizGame';
 import QuizHome from './pages/QuizHome';
 import UserProgress from './pages/UserProgress';
-import Messages from './pages/Messages';
 import __Layout from './Layout.jsx';
 
 
@@ -72,11 +72,11 @@ export const PAGES = {
     "Dashboard": Dashboard,
     "Leaderboard": Leaderboard,
     "LiveClasses": LiveClasses,
+    "Messages": Messages,
     "Notifications": Notifications,
     "QuizGame": QuizGame,
     "QuizHome": QuizHome,
     "UserProgress": UserProgress,
-    "Messages": Messages,
 }
 
 export const pagesConfig = {
