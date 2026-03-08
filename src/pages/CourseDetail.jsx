@@ -182,6 +182,13 @@ export default function CourseDetail() {
                 </Badge>
               </div>
 
+              {course.pdf_url && enrollment && (
+                <a href={course.pdf_url} target="_blank" rel="noopener noreferrer" download
+                  className="w-full flex items-center justify-center gap-2 bg-pink-50 hover:bg-pink-100 border border-pink-200 text-pink-700 font-semibold text-sm rounded-lg px-4 py-2.5 transition-colors">
+                  <FileDown className="w-4 h-4" /> Download Course PDF
+                </a>
+              )}
+
               {!enrollment ? (
                 <Button
                   onClick={() => enrollMutation.mutate()}
