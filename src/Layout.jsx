@@ -35,12 +35,28 @@ export default function Layout({ children, currentPageName }) {
     enabled: !!user?.email,
   });
 
+  const prevNotifIds = useRef(new Set());
+
   const { data: notifications = [] } = useQuery({
     queryKey: ["notifications", user?.email],
     queryFn: () => base44.entities.Notification.filter({ recipient_email: user.email, is_read: false }),
     enabled: !!user?.email,
     refetchInterval: 30000,
   });
+
+  // Toast new notifications that weren't there before
+  useEffect(() => {
+    if (!notifications.length) return;
+    const newOnes = notifications.filter(n => !prevNotifIds.current.has(n.id));
+    newOnes.forEach(n => {
+      toast(n.message, {
+        description: n.from_name ? `From: ${n.from_name}` : undefined,
+        icon: n.type === "announcement" ? "📢" : n.type === "like" ? "❤️" : n.type === "comment" ? "💬" : n.type === "badge" ? "🏅" : "🔔",
+        duration: 5000,
+      });
+    });
+    notifications.forEach(n => prevNotifIds.current.add(n.id));
+  }, [notifications]);
 
   const myPoints = userPoints?.[0];
   const level = getLevelFromXP(myPoints?.total_xp || 0);
