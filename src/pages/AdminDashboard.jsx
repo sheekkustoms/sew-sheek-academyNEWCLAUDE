@@ -212,6 +212,13 @@ export default function AdminDashboard() {
                 <div>
                   <p className="text-sm font-semibold text-gray-800">{u.full_name || u.email}</p>
                   <p className="text-xs text-gray-400">{u.email} · {u.role}</p>
+                  {userPointsMap[u.email] && (
+                    <p className="text-[10px] text-gray-400 mt-0.5">
+                      Last active: {userPointsMap[u.email].last_activity_date
+                        ? moment(userPointsMap[u.email].last_activity_date).fromNow()
+                        : "never"} · {userPointsMap[u.email].total_xp || 0} XP
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="flex items-center gap-2 flex-wrap justify-end">
