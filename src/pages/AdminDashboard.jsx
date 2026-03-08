@@ -404,6 +404,11 @@ export default function AdminDashboard() {
           <CategoryManager />
         </TabsContent>
 
+        {/* Messaging */}
+        <TabsContent value="messaging" className="mt-4">
+          <MessagingPanel />
+        </TabsContent>
+
         {/* Top members */}
         <TabsContent value="leaderboard" className="mt-4">
           <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
