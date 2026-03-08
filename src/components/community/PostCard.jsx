@@ -36,7 +36,7 @@ export default function PostCard({ post, currentUserEmail, onLike, onClick, inde
   });
 
   // Get unique commenters
-  const commenters = [...new Set(comments.map(c => ({ email: c.author_email, name: c.author_name })))].slice(0, 3);
+  const commenters = [...new Set(comments.map(c => ({ email: c.author_email, name: c.author_name })))];
   
   // Get likes (first 3)
   const likers = post.likes?.slice(0, 3) || [];
