@@ -134,7 +134,7 @@ export default function Messages() {
         </div>
 
         {/* Message view */}
-        <div className="hidden md:flex flex-col flex-1">
+        <div className={`flex flex-col flex-1 ${!selectedConversation ? "hidden md:flex" : ""}`}>
           {!selectedConversation ? (
             <div className="flex-1 flex items-center justify-center text-gray-400">
               <div className="text-center">
