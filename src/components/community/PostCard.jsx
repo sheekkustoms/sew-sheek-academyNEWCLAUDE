@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Heart, MessageCircle, Clock, Pin } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
 import moment from "moment";
 
 const categoryStyles = {
@@ -26,6 +28,18 @@ const categoryEmoji = {
 export default function PostCard({ post, currentUserEmail, onLike, onClick, index = 0 }) {
   const isLiked = post.likes?.includes(currentUserEmail);
   const likeCount = post.likes?.length || 0;
+
+  // Fetch comments to get commenters
+  const { data: comments = [] } = useQuery({
+    queryKey: ["postComments", post.id],
+    queryFn: () => base44.entities.Comment.filter({ post_id: post.id }),
+  });
+
+  // Get unique commenters
+  const commenters = [...new Set(comments.map(c => ({ email: c.author_email, name: c.author_name })))].slice(0, 3);
+  
+  // Get likes (first 3)
+  const likers = post.likes?.slice(0, 3) || [];
 
   return (
     <motion.div
@@ -66,7 +80,7 @@ export default function PostCard({ post, currentUserEmail, onLike, onClick, inde
           <span className="text-xs text-gray-500">{post.author_name || post.author_email}</span>
         </div>
 
-        <div className="flex items-center gap-4 mt-3 pt-3 border-t border-gray-50">
+        <div className="flex items-center gap-3 mt-3 pt-3 border-t border-gray-50">
           <Button
             variant="ghost"
             size="sm"
@@ -76,9 +90,27 @@ export default function PostCard({ post, currentUserEmail, onLike, onClick, inde
             <Heart className={`w-3.5 h-3.5 ${isLiked ? "fill-current" : ""}`} />
             {likeCount}
           </Button>
-          <div className="flex items-center gap-1.5 text-xs text-gray-400">
-            <MessageCircle className="w-3.5 h-3.5" />
-            {post.comment_count || 0}
+          
+          {/* Avatars of commenters and likers */}
+          <div className="flex items-center gap-2 ml-auto">
+            {(commenters.length > 0 || likers.length > 0) && (
+              <div className="flex -space-x-1.5">
+                {commenters.map((c, i) => (
+                  <div key={`c-${i}`} title={c.name} className="w-5 h-5 rounded-full bg-gradient-to-br from-pink-400 to-violet-400 flex items-center justify-center text-white text-[9px] font-bold border border-white">
+                    {(c.name || c.email)[0].toUpperCase()}
+                  </div>
+                ))}
+                {likers.map((email, i) => (
+                  <div key={`l-${i}`} title={email} className="w-5 h-5 rounded-full bg-gradient-to-br from-cyan-400 to-blue-400 flex items-center justify-center text-white text-[9px] font-bold border border-white">
+                    {(email || "?")[0].toUpperCase()}
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="flex items-center gap-1.5 text-xs text-gray-400">
+              <MessageCircle className="w-3.5 h-3.5" />
+              {post.comment_count || 0}
+            </div>
           </div>
         </div>
       </div>
