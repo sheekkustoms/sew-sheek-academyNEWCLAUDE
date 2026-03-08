@@ -1,35 +1,34 @@
-import { formatDistanceToNow, isToday, isYesterday, format } from 'date-fns';
+export function formatMessageTime(timestamp) {
+  if (!timestamp) return "";
 
-export function formatMessageTime(dateString) {
-  const date = new Date(dateString);
+  const date = new Date(timestamp);
+  if (isNaN(date.getTime())) return "";
+
   const now = new Date();
-  const diffMs = now - date;
-  const diffMins = Math.floor(diffMs / 60000);
+  const diffMs = now.getTime() - date.getTime();
+  const diffMinutes = Math.floor(diffMs / 60000);
 
-  // Less than 1 minute
-  if (diffMins < 1) {
-    return 'Just now';
-  }
+  if (diffMinutes < 1) return "Just now";
+  if (diffMinutes < 60) return `${diffMinutes}m ago`;
 
-  // Less than 1 hour
-  if (diffMins < 60) {
-    return `${diffMins}m ago`;
-  }
-
-  // Same day, older than 1 hour
-  if (isToday(date)) {
-    return date.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
+  const isToday = date.toDateString() === now.toDateString();
+  if (isToday) {
+    return date.toLocaleTimeString([], {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
     });
   }
 
-  // Yesterday
-  if (isYesterday(date)) {
-    return 'Yesterday';
+  const yesterday = new Date();
+  yesterday.setDate(now.getDate() - 1);
+
+  if (date.toDateString() === yesterday.toDateString()) {
+    return "Yesterday";
   }
 
-  // Older messages - show date
-  return format(date, 'MMM d');
+  return date.toLocaleDateString([], {
+    month: "short",
+    day: "numeric",
+  });
 }
