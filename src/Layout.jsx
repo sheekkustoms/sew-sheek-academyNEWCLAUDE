@@ -4,7 +4,7 @@ import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import {
-  LayoutDashboard, BookOpen, Users, Trophy, Menu, X, LogOut, Zap, ChevronRight
+  LayoutDashboard, BookOpen, Users, Trophy, Menu, X, LogOut, Zap, ChevronRight, Brain
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getLevelFromXP } from "./components/shared/XPBar";
@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { name: "Courses", icon: BookOpen, page: "Courses" },
   { name: "Community", icon: Users, page: "Community" },
   { name: "Leaderboard", icon: Trophy, page: "Leaderboard" },
+  { name: "Daily Challenges", icon: Brain, page: "DailyChallenges", highlight: true },
 ];
 
 export default function Layout({ children, currentPageName }) {

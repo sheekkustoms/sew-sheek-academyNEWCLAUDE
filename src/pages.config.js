@@ -52,6 +52,7 @@ import Courses from './pages/Courses';
 import CourseDetail from './pages/CourseDetail';
 import Community from './pages/Community';
 import Leaderboard from './pages/Leaderboard';
+import DailyChallenges from './pages/DailyChallenges';
 import __Layout from './Layout.jsx';
 
 
@@ -61,6 +62,7 @@ export const PAGES = {
     "CourseDetail": CourseDetail,
     "Community": Community,
     "Leaderboard": Leaderboard,
+    "DailyChallenges": DailyChallenges,
 }
 
 export const pagesConfig = {
