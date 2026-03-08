@@ -146,6 +146,9 @@ export default function AdminDashboard() {
           <TabsTrigger value="courses" className="flex items-center gap-1">
             <BookOpen className="w-3.5 h-3.5" /> Courses
           </TabsTrigger>
+          <TabsTrigger value="weekly" className="flex items-center gap-1">
+            <Brain className="w-3.5 h-3.5" /> Weekly Challenge
+          </TabsTrigger>
           <TabsTrigger value="invite" className="flex items-center gap-1">
             <UserPlus className="w-3.5 h-3.5" /> Invite
           </TabsTrigger>
