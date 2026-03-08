@@ -55,7 +55,7 @@ export default function AdminDashboard() {
     queryFn: () => base44.entities.UserPoints.list("-last_activity_date", 200),
   });
 
-  const userPointsMap = React.useMemo(() => {
+  const userPointsMap = useMemo(() => {
     const map = {};
     allUserPoints.forEach(p => { map[p.user_email] = p; });
     return map;
