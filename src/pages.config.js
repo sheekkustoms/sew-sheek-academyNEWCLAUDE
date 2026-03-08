@@ -54,10 +54,10 @@ import Courses from './pages/Courses';
 import DailyChallenges from './pages/DailyChallenges';
 import Dashboard from './pages/Dashboard';
 import Leaderboard from './pages/Leaderboard';
+import LiveClasses from './pages/LiveClasses';
 import Notifications from './pages/Notifications';
 import QuizGame from './pages/QuizGame';
 import QuizHome from './pages/QuizHome';
-import LiveClasses from './pages/LiveClasses';
 import __Layout from './Layout.jsx';
 
 
@@ -69,10 +69,10 @@ export const PAGES = {
     "DailyChallenges": DailyChallenges,
     "Dashboard": Dashboard,
     "Leaderboard": Leaderboard,
+    "LiveClasses": LiveClasses,
     "Notifications": Notifications,
     "QuizGame": QuizGame,
     "QuizHome": QuizHome,
-    "LiveClasses": LiveClasses,
 }
 
 export const pagesConfig = {

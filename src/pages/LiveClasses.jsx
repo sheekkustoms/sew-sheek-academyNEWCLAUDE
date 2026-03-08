@@ -91,11 +91,19 @@ export default function LiveClasses() {
               </div>
             </div>
             {cls.zoom_url && (
-              <a href={cls.zoom_url} target="_blank" rel="noopener noreferrer">
-                <Button className="bg-gradient-to-r from-pink-500 to-violet-500 text-white shadow gap-2 shrink-0">
-                  <Video className="w-4 h-4" /> Join Class
-                </Button>
-              </a>
+              <div className="flex flex-col items-end gap-2 shrink-0">
+                <a href={cls.zoom_url} target="_blank" rel="noopener noreferrer">
+                  <Button className="bg-gradient-to-r from-pink-500 to-violet-500 text-white shadow gap-2">
+                    <Video className="w-4 h-4" /> Join Class
+                  </Button>
+                </a>
+                <div className="text-xs text-gray-400 flex items-center gap-1">
+                  <span>Zoom link:</span>
+                  <a href={cls.zoom_url} target="_blank" rel="noopener noreferrer" className="text-violet-500 underline break-all max-w-[180px] truncate hover:text-pink-500 transition-colors">
+                    {cls.zoom_url}
+                  </a>
+                </div>
+              </div>
             )}
           </div>
           <div>
