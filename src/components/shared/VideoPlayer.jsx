@@ -13,8 +13,9 @@ function getVideoEmbed(url) {
   if (vimeoMatch) return { type: "iframe", src: `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1`, allowExtra: "autoplay; fullscreen; picture-in-picture" };
 
   // Google Drive — handle all share/view/open/uc formats
+  // Use /preview with no UI controls to prevent download/save options
   const gdriveMatch = url.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=view&)?id=)([a-zA-Z0-9_-]+)/);
-  if (gdriveMatch) return { type: "iframe", src: `https://drive.google.com/file/d/${gdriveMatch[1]}/preview`, allowExtra: "fullscreen" };
+  if (gdriveMatch) return { type: "gdrive", src: `https://drive.google.com/file/d/${gdriveMatch[1]}/preview`, fileId: gdriveMatch[1] };
 
   // Direct video file
   return { type: "video", src: url };
