@@ -230,7 +230,7 @@ export default function Layout({ children, currentPageName }) {
       </aside>
 
       {/* Main content */}
-      <main className={`lg:ml-64 min-h-screen ${showPWA ? "pt-24 lg:pt-10" : "pt-14 lg:pt-0"}`}>
+      <main className={`md:ml-64 min-h-screen ${showPWA ? "pt-24 md:pt-10" : "pt-14 md:pt-0"}`}>
         <div className="p-4 md:p-8">
           {children}
         </div>
