@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { getLevelFromXP } from "./components/shared/XPBar";
 import { toast } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 
 const NAV_ITEMS = [
   { name: "Dashboard", icon: LayoutDashboard, page: "Dashboard" },
