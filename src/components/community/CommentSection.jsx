@@ -41,6 +41,22 @@ export default function CommentSection({ postId, user, myPoints }) {
             is_read: false,
           });
         }
+        // Detect @mentions and notify mentioned users
+        const mentions = newComment.match(/@([\w.+-]+@[\w-]+\.[\w.]+)/g);
+        if (mentions) {
+          const uniqueMentions = [...new Set(mentions.map(m => m.slice(1)))];
+          await Promise.all(uniqueMentions
+            .filter(email => email !== user.email && email !== posts[0].author_email)
+            .map(email => base44.entities.Notification.create({
+              recipient_email: email,
+              type: "reply",
+              message: `${user.full_name || user.email} mentioned you in a comment on "${posts[0].title}"`,
+              from_name: user.full_name || user.email,
+              post_id: postId,
+              is_read: false,
+            }))
+          );
+        }
       }
       if (myPoints) {
         await awardXP(myPoints.id, myPoints, 5, { comments_made: (myPoints.comments_made || 0) + 1 });
