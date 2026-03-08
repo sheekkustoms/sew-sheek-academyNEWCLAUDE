@@ -25,13 +25,37 @@ export default function LiveClassManager() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["adminLiveClasses"] }),
   });
 
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.LiveClass.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["adminLiveClasses", "liveClasses"] });
+      setForm(EMPTY);
+      setEditingId(null);
+    },
+  });
+
   const handleSave = async () => {
     if (!form.title || !form.scheduled_at) return;
     setSaving(true);
-    await base44.entities.LiveClass.create(form);
-    queryClient.invalidateQueries({ queryKey: ["adminLiveClasses", "liveClasses"] });
+    if (editingId) {
+      await updateMutation.mutateAsync({ id: editingId, data: form });
+    } else {
+      await base44.entities.LiveClass.create(form);
+      queryClient.invalidateQueries({ queryKey: ["adminLiveClasses", "liveClasses"] });
+    }
     setForm(EMPTY);
+    setEditingId(null);
     setSaving(false);
+  };
+
+  const handleEdit = (cls) => {
+    setForm({ ...cls });
+    setEditingId(cls.id);
+  };
+
+  const handleCancel = () => {
+    setForm(EMPTY);
+    setEditingId(null);
   };
 
   return (
