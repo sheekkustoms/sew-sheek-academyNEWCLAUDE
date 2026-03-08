@@ -52,12 +52,16 @@ export default function VideoPlayer({ url, lessonId, enrollmentRequired }) {
           allow="autoplay; fullscreen"
           allowFullScreen
         />
-        {/* Block the Google Drive "open in new tab" icon top-right — intercepts all clicks */}
+        {/* Block the Google Drive "open in new tab" icon — show logo instead */}
         <div
-          className="absolute top-0 right-0 bg-gray-900"
+          className="absolute top-0 right-0 flex items-center justify-center bg-gray-900"
           style={{ width: "60px", height: "60px", zIndex: 10, pointerEvents: "all", cursor: "default" }}
           onClick={(e) => e.stopPropagation()}
-        />
+        >
+          <span className="text-[10px] font-extrabold text-center leading-tight bg-gradient-to-r from-pink-400 via-fuchsia-400 to-violet-400 bg-clip-text text-transparent px-1">
+            Sew<br />Sheek
+          </span>
+        </div>
       </div>
     );
   }
