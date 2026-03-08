@@ -17,7 +17,7 @@ const NAV_ITEMS = [
   { name: "Courses", icon: BookOpen, page: "Courses" },
   { name: "Community", icon: Users, page: "Community" },
   { name: "Leaderboard", icon: Trophy, page: "Leaderboard" },
-  { name: "Daily Challenges", icon: Brain, page: "DailyChallenges", highlight: true },
+  { name: "Weekly Challenge", icon: Brain, page: "DailyChallenges", highlight: true },
   { name: "Quiz Games", icon: Gamepad2, page: "QuizHome", highlight: true },
 ];
 
