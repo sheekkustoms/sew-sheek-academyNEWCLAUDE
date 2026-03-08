@@ -137,7 +137,7 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Sidebar overlay */}
       {sidebarOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
+        <div className="md:hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
       )}
 
       {/* Sidebar */}
