@@ -243,6 +243,95 @@ export default function AdminDashboard() {
           <CourseManager />
         </TabsContent>
 
+        {/* Invite Members */}
+        <TabsContent value="invite" className="mt-4 space-y-4">
+          <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm space-y-4">
+            <div className="flex items-center gap-2 text-violet-600 font-semibold">
+              <UserPlus className="w-5 h-5" /> Invite New Members
+            </div>
+            <p className="text-sm text-gray-500">
+              Send an invite email so someone can join Sew Sheek Sewing. They'll need to be approved by you (set your app to <strong>Private</strong> in Base44 Dashboard → Overview to require manual approval).
+            </p>
+
+            {/* Share link */}
+            <div className="bg-pink-50 border border-pink-200 rounded-xl p-4 space-y-2">
+              <p className="text-xs font-semibold text-pink-700 uppercase tracking-wide">Signup / Invite Link</p>
+              <div className="flex gap-2">
+                <Input
+                  readOnly
+                  value={window.location.origin}
+                  className="bg-white text-gray-800 font-mono text-sm border-pink-200"
+                />
+                <Button
+                  variant="outline"
+                  className="border-pink-300 text-pink-600 hover:bg-pink-50 shrink-0 gap-1"
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.origin);
+                    setLinkCopied(true);
+                    setTimeout(() => setLinkCopied(false), 2000);
+                  }}
+                >
+                  {linkCopied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  {linkCopied ? "Copied!" : "Copy"}
+                </Button>
+              </div>
+              <p className="text-xs text-gray-400">Share this link. New visitors will be asked to request access — you approve them from your Base44 dashboard notifications 🔔.</p>
+            </div>
+
+            {/* Invite by email */}
+            <div className="space-y-2">
+              <p className="text-xs font-semibold text-gray-700">Or invite directly by email:</p>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="student@email.com"
+                  value={inviteEmail}
+                  onChange={e => setInviteEmail(e.target.value)}
+                  className="border-gray-200"
+                  type="email"
+                />
+                <Button
+                  disabled={!inviteEmail || inviteSent}
+                  className="bg-gradient-to-r from-pink-500 to-violet-500 text-white shrink-0"
+                  onClick={async () => {
+                    await base44.users.inviteUser(inviteEmail, "user");
+                    setInviteSent(true);
+                    setInviteEmail("");
+                    setTimeout(() => setInviteSent(false), 3000);
+                  }}
+                >
+                  {inviteSent ? "✓ Sent!" : "Send Invite"}
+                </Button>
+              </div>
+            </div>
+
+            {/* Current users with photo status */}
+            <div className="border-t border-gray-100 pt-4">
+              <p className="text-xs font-semibold text-gray-700 mb-3">Members & Profile Photo Status</p>
+              <div className="space-y-2">
+                {allUsers.map(u => (
+                  <div key={u.id} className="flex items-center gap-3 p-2 rounded-xl bg-gray-50">
+                    {u.avatar_url ? (
+                      <img src={u.avatar_url} className="w-8 h-8 rounded-full object-cover border-2 border-green-300" />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-xs font-bold border-2 border-dashed border-gray-300">
+                        {(u.full_name || u.email)?.[0]?.toUpperCase()}
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-800 truncate">{u.full_name || u.email}</p>
+                      <p className="text-xs text-gray-400">{u.email}</p>
+                    </div>
+                    {u.avatar_url
+                      ? <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-semibold">Photo ✓</span>
+                      : <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-semibold">No Photo</span>
+                    }
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+
         {/* Top members */}
         <TabsContent value="leaderboard" className="mt-4">
           <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
