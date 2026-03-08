@@ -125,6 +125,7 @@ function CourseEditor({ course, onClose }) {
   const [form, setForm] = useState({ ...course });
   const [saving, setSaving] = useState(false);
   const [uploadingThumb, setUploadingThumb] = useState(false);
+  const [uploadingPdf, setUploadingPdf] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: lessons = [] } = useQuery({
