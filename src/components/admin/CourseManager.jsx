@@ -246,6 +246,30 @@ function CourseEditor({ course, onClose }) {
               className="border-gray-200 h-9 mt-2 text-xs" />
           </div>
 
+          {/* PDF Upload */}
+          <div>
+            <label className="text-xs text-gray-500 mb-1 block">Course PDF / Resource (downloadable by members)</label>
+            {form.pdf_url ? (
+              <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                <span className="text-xs text-emerald-700 flex-1 truncate">PDF uploaded ✓</span>
+                <button onClick={() => setForm({ ...form, pdf_url: "" })} className="text-gray-400 hover:text-red-500">
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <label className={`flex items-center gap-2 p-3 border-2 border-dashed rounded-xl cursor-pointer transition-colors ${uploadingPdf ? "border-violet-300 bg-violet-50" : "border-gray-200 hover:border-pink-300 hover:bg-pink-50"}`}>
+                {uploadingPdf ? (
+                  <div className="w-4 h-4 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Upload className="w-4 h-4 text-gray-400" />
+                )}
+                <span className="text-xs text-gray-500">{uploadingPdf ? "Uploading..." : "Upload PDF"}</span>
+                <input type="file" accept=".pdf" className="hidden" onChange={handlePdfUpload} disabled={uploadingPdf} />
+              </label>
+            )}
+          </div>
+
           <Button onClick={saveCourse} disabled={saving} className="w-full bg-gradient-to-r from-pink-500 to-violet-500 text-white">
             {saving ? "Saving..." : "Save Course Details"}
           </Button>
