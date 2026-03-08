@@ -69,6 +69,7 @@ export default function Courses() {
               course={course}
               enrollment={enrollments.find((e) => e.course_id === course.id)}
               index={i}
+              userLevel={userLevel}
             />
           ))}
         </div>
