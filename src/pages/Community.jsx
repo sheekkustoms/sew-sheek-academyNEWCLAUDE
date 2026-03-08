@@ -16,12 +16,6 @@ const SECTIONS = [
   { value: "all", label: "🌐 All Posts" },
   { value: "announcement", label: "📢 Announcements" },
   { value: "discussion", label: "💬 Discussion" },
-  { value: "beginner_help", label: "🌱 Beginner Help" },
-  { value: "troubleshooting", label: "🔧 Troubleshooting" },
-  { value: "student_projects", label: "🎨 Student Projects" },
-  { value: "ask_the_coach", label: "🙋 Ask the Coach" },
-  { value: "question", label: "❓ Questions" },
-  { value: "showcase", label: "✨ Showcase" },
   { value: "resource", label: "📚 Resources" },
 ];
 
