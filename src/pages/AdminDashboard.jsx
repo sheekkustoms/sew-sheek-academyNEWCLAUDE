@@ -8,6 +8,7 @@ import CourseManager from "../components/admin/CourseManager";
 import WeeklyChallengeManager from "../components/admin/WeeklyChallengeManager";
 import LiveClassManager from "../components/admin/LiveClassManager";
 import LevelSettingsManager from "../components/admin/LevelSettingsManager";
+import CategoryManager from "../components/admin/CategoryManager";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
