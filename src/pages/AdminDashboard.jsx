@@ -381,6 +381,16 @@ export default function AdminDashboard() {
           </div>
         </TabsContent>
 
+        {/* Live Classes */}
+        <TabsContent value="liveclasses" className="mt-4">
+          <LiveClassManager />
+        </TabsContent>
+
+        {/* Level Settings */}
+        <TabsContent value="levels" className="mt-4">
+          <LevelSettingsManager />
+        </TabsContent>
+
         {/* Top members */}
         <TabsContent value="leaderboard" className="mt-4">
           <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
