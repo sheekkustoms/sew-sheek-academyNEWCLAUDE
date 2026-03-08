@@ -181,12 +181,14 @@ export default function Messages() {
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-violet-400 flex items-center justify-center text-white font-bold text-sm shrink-0">
                         {(msg.sender_name || msg.sender_email)?.[0]?.toUpperCase()}
                       </div>
-                      <div className={`flex-1 ${isOwn ? "text-right" : ""}`}>
-                        <div className="flex items-baseline gap-2 mb-1" style={{ flexDirection: isOwn ? "row-reverse" : "row" }}>
-                          <p className="font-semibold text-gray-900">{msg.sender_name || "User"}</p>
-                        </div>
-                        <div className={`rounded-lg px-4 py-2 inline-block ${isOwn ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-900"}`}>
-                          <p className="text-sm">{msg.content}</p>
+                      <div className={`flex-1 flex ${isOwn ? "justify-end" : "justify-start"}`}>
+                        <div className={`max-w-xs lg:max-w-sm`}>
+                          <div className="flex items-baseline gap-2 mb-1" style={{ flexDirection: isOwn ? "row-reverse" : "row" }}>
+                            <p className="font-semibold text-gray-900 text-xs">{msg.sender_name || "User"}</p>
+                          </div>
+                          <div className={`rounded-lg px-4 py-2 break-words ${isOwn ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-900"}`}>
+                            <p className="text-sm">{msg.content}</p>
+                          </div>
                         </div>
                       </div>
                     </div>
