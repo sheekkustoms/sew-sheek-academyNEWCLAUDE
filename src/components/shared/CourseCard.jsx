@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
-import { Play, Zap, BookOpen } from "lucide-react";
+import { Play, Zap, BookOpen, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 
@@ -20,9 +20,11 @@ const difficultyColors = {
   advanced: "bg-red-100 text-red-700 border-red-200",
 };
 
-export default function CourseCard({ course, enrollment, index = 0 }) {
+export default function CourseCard({ course, enrollment, index = 0, userLevel = 0 }) {
   const gradient = categoryGradients[course.category] || "from-gray-500 to-gray-600";
   const progress = enrollment?.progress_percent || 0;
+  const requiredLevel = course.unlock_at_level || 0;
+  const isLocked = requiredLevel > 0 && userLevel < requiredLevel;
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }}>
