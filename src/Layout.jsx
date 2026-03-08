@@ -5,7 +5,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   LayoutDashboard, BookOpen, Users, Trophy, Menu, X, LogOut,
-  Zap, ChevronRight, Brain, Bell, Shield, Download, Gamepad2, Video
+  Zap, ChevronRight, Brain, Bell, Shield, Download, Gamepad2, Video, Mail
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getLevelFromXP } from "./components/shared/XPBar";
@@ -16,6 +16,7 @@ const NAV_ITEMS = [
   { name: "Dashboard", icon: LayoutDashboard, page: "Dashboard" },
   { name: "Courses", icon: BookOpen, page: "Courses" },
   { name: "Community", icon: Users, page: "Community" },
+  { name: "Messages", icon: Mail, page: "Messages" },
   { name: "Leaderboard", icon: Trophy, page: "Leaderboard" },
   { name: "Weekly Challenge", icon: Brain, page: "DailyChallenges", highlight: true },
   { name: "Quiz Games", icon: Gamepad2, page: "QuizHome", highlight: true },
