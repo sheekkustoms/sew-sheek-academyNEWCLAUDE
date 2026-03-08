@@ -200,7 +200,7 @@ export default function AdminDashboard() {
               </div>
               <div className="flex items-center gap-2">
                 {u.is_banned && <Badge className="bg-red-100 text-red-600 text-[10px]">Banned</Badge>}
-                {u.email !== user?.email && (
+                {u.email !== user?.email && !ADMIN_EMAILS.includes(u.email) && (
                   <Button size="sm" variant="outline" className={`h-8 text-xs gap-1 ${u.is_banned ? "text-green-600 hover:bg-green-50" : "text-red-500 hover:bg-red-50"}`} onClick={() => banUserMutation.mutate({ id: u.id, banned: u.is_banned })}>
                     <Ban className="w-3 h-3" /> {u.is_banned ? "Unban" : "Ban"}
                   </Button>
