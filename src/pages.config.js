@@ -55,6 +55,8 @@ import Leaderboard from './pages/Leaderboard';
 import DailyChallenges from './pages/DailyChallenges';
 import Notifications from './pages/Notifications';
 import AdminDashboard from './pages/AdminDashboard';
+import QuizHome from './pages/QuizHome';
+import QuizGame from './pages/QuizGame';
 import __Layout from './Layout.jsx';
 
 
@@ -67,6 +69,8 @@ export const PAGES = {
     "DailyChallenges": DailyChallenges,
     "Notifications": Notifications,
     "AdminDashboard": AdminDashboard,
+    "QuizHome": QuizHome,
+    "QuizGame": QuizGame,
 }
 
 export const pagesConfig = {
