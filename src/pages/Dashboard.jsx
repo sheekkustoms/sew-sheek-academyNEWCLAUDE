@@ -77,13 +77,37 @@ export default function Dashboard() {
       >
         <div className="absolute top-0 right-0 w-72 h-72 bg-white/10 rounded-full -translate-y-1/3 translate-x-1/4" />
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/4" />
-        <div className="relative z-10">
-          <h1 className="text-2xl md:text-3xl font-extrabold text-white mb-1">
-            Welcome back, {user?.full_name?.split(" ")[0] || "Learner"} 👋
-          </h1>
-          <p className="text-pink-100 text-sm mb-5">Keep learning and earn more XP today!</p>
-          <div className="max-w-md">
-            <XPBar xp={myPoints?.total_xp || 0} />
+        <div className="relative z-10 flex items-start gap-5">
+          {/* Profile photo */}
+          <div className="shrink-0">
+            <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+              {user?.avatar_url ? (
+                <img src={user.avatar_url} className="w-16 h-16 rounded-2xl object-cover border-2 border-white/40 shadow-lg" />
+              ) : (
+                <div className="w-16 h-16 rounded-2xl bg-white/20 border-2 border-dashed border-white/50 flex flex-col items-center justify-center shadow-lg">
+                  <Camera className="w-5 h-5 text-white/70" />
+                  <span className="text-[9px] text-white/70 mt-0.5">Add Photo</span>
+                </div>
+              )}
+              <div className="absolute inset-0 bg-black/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                {uploadingPhoto ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Camera className="w-5 h-5 text-white" />
+                )}
+              </div>
+            </div>
+            <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
+          </div>
+
+          <div className="flex-1">
+            <h1 className="text-2xl md:text-3xl font-extrabold text-white mb-1">
+              Welcome back, {user?.full_name?.split(" ")[0] || "Learner"} 👋
+            </h1>
+            <p className="text-pink-100 text-sm mb-5">Keep learning and earn more XP today!</p>
+            <div className="max-w-md">
+              <XPBar xp={myPoints?.total_xp || 0} />
+            </div>
           </div>
         </div>
       </motion.div>
