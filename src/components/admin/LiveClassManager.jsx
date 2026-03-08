@@ -93,9 +93,14 @@ export default function LiveClassManager() {
               <p className="text-sm font-semibold text-gray-800">{cls.title}</p>
               <p className="text-xs text-gray-400">{moment(cls.scheduled_at).format("MMM D, YYYY [at] h:mm A")}</p>
             </div>
-            <Button size="icon" variant="ghost" className="text-red-400 hover:bg-red-50 w-8 h-8" onClick={() => deleteMutation.mutate(cls.id)}>
-              <Trash2 className="w-3.5 h-3.5" />
-            </Button>
+            <div className="flex gap-1">
+              <Button size="icon" variant="ghost" className="text-violet-500 hover:bg-violet-50 w-8 h-8" onClick={() => handleEdit(cls)}>
+                <Edit2 className="w-3.5 h-3.5" />
+              </Button>
+              <Button size="icon" variant="ghost" className="text-red-400 hover:bg-red-50 w-8 h-8" onClick={() => deleteMutation.mutate(cls.id)}>
+                <Trash2 className="w-3.5 h-3.5" />
+              </Button>
+            </div>
           </div>
         ))}
         {classes.length === 0 && <p className="text-sm text-gray-400 text-center py-6">No classes yet.</p>}
