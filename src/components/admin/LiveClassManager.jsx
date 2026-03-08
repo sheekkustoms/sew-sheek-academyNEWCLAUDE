@@ -12,6 +12,7 @@ const EMPTY = { title: "", description: "", scheduled_at: "", zoom_url: "", is_a
 export default function LiveClassManager() {
   const queryClient = useQueryClient();
   const [form, setForm] = useState(EMPTY);
+  const [editingId, setEditingId] = useState(null);
   const [saving, setSaving] = useState(false);
 
   const { data: classes = [] } = useQuery({
