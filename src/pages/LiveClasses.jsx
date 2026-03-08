@@ -106,6 +106,10 @@ export default function LiveClasses() {
         </div>
       </div>
 
+      <div className="bg-violet-50 border border-violet-200 rounded-xl p-4 text-sm text-violet-900">
+        <p>💡 <span className="font-medium">Tip:</span> Click on any upcoming class to see the Zoom link and copy it before the session starts.</p>
+      </div>
+
       {upcoming.length === 0 && (
         <div className="bg-white border border-gray-100 rounded-2xl p-10 text-center shadow-sm">
           <Calendar className="w-10 h-10 text-gray-300 mx-auto mb-3" />
