@@ -28,8 +28,8 @@ export default function CourseCard({ course, enrollment, index = 0, userLevel = 
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }}>
-      <Link to={createPageUrl("CourseDetail") + `?id=${course.id}`}>
-        <div className="group bg-white border border-gray-100 rounded-2xl overflow-hidden hover:shadow-lg hover:border-violet-200 transition-all duration-300 shadow-sm">
+      <Link to={isLocked ? "#" : createPageUrl("CourseDetail") + `?id=${course.id}`} onClick={e => isLocked && e.preventDefault()}>
+        <div className={`group bg-white border border-gray-100 rounded-2xl overflow-hidden transition-all duration-300 shadow-sm ${isLocked ? "opacity-60 cursor-not-allowed" : "hover:shadow-lg hover:border-violet-200"}`}>
           <div className={`h-36 bg-gradient-to-br ${gradient} relative overflow-hidden`}>
             {course.thumbnail_url ? (
               <img src={course.thumbnail_url} alt={course.title} className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500" />
