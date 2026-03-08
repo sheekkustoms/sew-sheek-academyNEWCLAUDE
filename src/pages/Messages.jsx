@@ -69,6 +69,16 @@ export default function Messages() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [currentConversation]);
 
+  // Subscribe to new messages in real-time
+  useEffect(() => {
+    const unsubscribe = base44.entities.Message.subscribe((event) => {
+      if (event.type === "create") {
+        queryClient.invalidateQueries({ queryKey: ["myMessages"] });
+      }
+    });
+    return unsubscribe;
+  }, [queryClient]);
+
   const sendReplyMutation = useMutation({
     mutationFn: async () => {
       await base44.entities.Message.create({
