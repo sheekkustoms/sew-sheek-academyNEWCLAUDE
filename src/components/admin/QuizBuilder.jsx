@@ -261,6 +261,11 @@ export default function QuizBuilder() {
                     <Radio className="w-3.5 h-3.5" />
                   </Button>
                 )}
+                {quiz.quiz_type === "live" && (quiz.status === "waiting" || quiz.status === "active") && (
+                  <Button size="sm" variant="ghost" className="h-8 text-xs font-bold text-fuchsia-600 hover:bg-fuchsia-50 gap-1" title="Open host panel" onClick={() => setHostingQuizId(quiz.id)}>
+                    <Radio className="w-3.5 h-3.5" /> Host
+                  </Button>
+                )}
                 <Button size="icon" variant="ghost" className="w-8 h-8 text-red-400 hover:bg-red-50" onClick={() => deleteQuiz.mutate(quiz.id)}>
                   <Trash2 className="w-3.5 h-3.5" />
                 </Button>
