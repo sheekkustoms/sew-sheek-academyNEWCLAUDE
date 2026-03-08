@@ -150,7 +150,7 @@ export default function QuizBuilder() {
 
   const launchLive = useMutation({
     mutationFn: (id) => base44.entities.Quiz.update(id, { status: "waiting", is_published: true }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["adminQuizzes"] }),
+    onSuccess: (_, id) => { queryClient.invalidateQueries({ queryKey: ["adminQuizzes"] }); setHostingQuizId(id); },
   });
 
   const addQuestion = useMutation({
