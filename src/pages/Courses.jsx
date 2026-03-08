@@ -21,6 +21,13 @@ export default function Courses() {
     enabled: !!user?.email,
   });
 
+  const { data: myPoints } = useQuery({
+    queryKey: ["myPointsCourses", user?.email],
+    queryFn: () => getOrCreateUserPoints(user),
+    enabled: !!user?.email,
+  });
+  const userLevel = getLevelFromXP(myPoints?.total_xp || 0);
+
   const filtered = courses.filter((c) =>
     !search || c.title?.toLowerCase().includes(search.toLowerCase()) || c.description?.toLowerCase().includes(search.toLowerCase())
   );
