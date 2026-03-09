@@ -393,11 +393,27 @@ export default function AdminDashboard() {
                    setInviteEmails("");
                    setInviteSent(true);
                    setTimeout(() => { setInviteSent(false); setInviteResults(null); }, 5000);
+                   queryClient.invalidateQueries({ queryKey: ["invitedEmails"] });
                  }}
                >
                  {inviteSent ? "✓ Invites Sent!" : "Send Invites"}
                </Button>
             </div>
+
+            {/* Invite history */}
+            {invitedEmails.length > 0 && (
+              <div className="border-t border-gray-100 pt-4">
+                <p className="text-xs font-semibold text-gray-700 mb-3">Previously Invited Emails ({invitedEmails.length})</p>
+                <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                  {invitedEmails.map(inv => (
+                    <div key={inv.id} className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-xl">
+                      <span className="text-sm text-gray-700 font-mono">{inv.email}</span>
+                      <span className="text-[10px] text-gray-400">{moment(inv.created_date).fromNow()}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Current users with photo status */}
             <div className="border-t border-gray-100 pt-4">
