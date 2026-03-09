@@ -16,6 +16,7 @@ const typeConfig = {
 
 export default function Notifications() {
   const queryClient = useQueryClient();
+  const [, setRefresh] = useState(0);
 
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
 
@@ -24,6 +25,12 @@ export default function Notifications() {
     queryFn: () => base44.entities.Notification.filter({ recipient_email: user.email }),
     enabled: !!user?.email,
   });
+
+  // Refresh timestamps every minute
+  useEffect(() => {
+    const interval = setInterval(() => setRefresh(prev => prev + 1), 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const markAllRead = useMutation({
     mutationFn: async () => {
