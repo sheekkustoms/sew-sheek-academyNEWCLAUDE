@@ -101,17 +101,16 @@ export default function LiveClassDetail() {
           {/* Supply List */}
           {cls.supply_list && cls.supply_list.length > 0 && (
             <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
-              <h2 className="font-semibold text-gray-900 mb-6 text-lg">Supply List</h2>
-              <div className="space-y-3 text-gray-700 text-sm">
+              <h2 className="font-semibold text-gray-900 mb-4">Supply List</h2>
+              <div className="space-y-3 text-gray-700">
                 {cls.supply_list.map((item, idx) => {
                   const trimmed = item.trim();
-                  if (!trimmed) return null;
                   
                   // Category headers (contain emoji at start)
-                  if (/^[🧵🪡✂️📌🎨🔧📎]/.test(trimmed)) {
+                  if (/^[🧵🪡✂️📌🎨🔧]/.test(trimmed)) {
                     return (
-                      <div key={idx} className="mt-5 pt-3 first:mt-0 first:pt-0">
-                        <p className="font-bold text-gray-900 text-base">{trimmed}</p>
+                      <div key={idx} className="pt-2">
+                        <p className="font-bold text-lg text-gray-900">{trimmed}</p>
                       </div>
                     );
                   }
@@ -119,9 +118,9 @@ export default function LiveClassDetail() {
                   // OR divider
                   if (trimmed.toUpperCase() === "OR") {
                     return (
-                      <div key={idx} className="flex items-center gap-2 py-2">
+                      <div key={idx} className="flex items-center gap-3 py-1">
                         <div className="flex-1 h-px bg-amber-300" />
-                        <span className="text-xs text-amber-600 font-semibold px-2">OR</span>
+                        <span className="text-xs text-amber-600 font-semibold">OR</span>
                         <div className="flex-1 h-px bg-amber-300" />
                       </div>
                     );
@@ -129,10 +128,10 @@ export default function LiveClassDetail() {
                   
                   // Regular bullet items
                   return (
-                    <div key={idx} className="flex items-start gap-2 ml-2">
-                      <span className="text-amber-600 font-bold shrink-0 mt-0.5">•</span>
-                      <span className="leading-relaxed">{trimmed}</span>
-                    </div>
+                    <p key={idx} className="flex items-start gap-3 text-sm">
+                      <span className="text-amber-600 font-bold">•</span>
+                      <span>{trimmed}</span>
+                    </p>
                   );
                 })}
               </div>
