@@ -354,27 +354,44 @@ export default function AdminDashboard() {
             {/* Invite by email */}
             <div className="space-y-2">
               <p className="text-xs font-semibold text-gray-700">Or invite directly by email:</p>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="student@email.com"
-                  value={inviteEmail}
-                  onChange={e => setInviteEmail(e.target.value)}
-                  className="border-gray-200"
-                  type="email"
-                />
-                <Button
-                   disabled={!inviteEmail || inviteSent}
-                   className="bg-gradient-to-r from-pink-500 to-violet-500 text-white shrink-0"
-                   onClick={async () => {
-                     await base44.functions.invoke("handleUserInvite", { email: inviteEmail });
-                     setInviteSent(true);
-                     setInviteEmail("");
-                     setTimeout(() => setInviteSent(false), 3000);
-                   }}
-                 >
-                   {inviteSent ? "✓ Sent!" : "Send Invite"}
-                 </Button>
-              </div>
+              <p className="text-xs text-gray-400">Enter one email per line to send multiple invites at once.</p>
+              <Textarea
+                placeholder={"student1@email.com\nstudent2@email.com\nstudent3@email.com"}
+                value={inviteEmails}
+                onChange={e => setInviteEmails(e.target.value)}
+                className="border-gray-200 min-h-[100px] font-mono text-sm"
+              />
+              {inviteResults && (
+                <div className="text-xs space-y-1">
+                  {inviteResults.map((r, i) => (
+                    <div key={i} className={`flex items-center gap-1.5 ${r.ok ? "text-green-600" : "text-red-500"}`}>
+                      <span>{r.ok ? "✓" : "✗"}</span>
+                      <span>{r.email} — {r.ok ? "Invited!" : r.error}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <Button
+                 disabled={!inviteEmails.trim() || inviteSent}
+                 className="bg-gradient-to-r from-pink-500 to-violet-500 text-white"
+                 onClick={async () => {
+                   const emails = inviteEmails.split("\n").map(e => e.trim()).filter(e => e.length > 0);
+                   const results = await Promise.all(emails.map(async (email) => {
+                     try {
+                       await base44.functions.invoke("handleUserInvite", { email });
+                       return { email, ok: true };
+                     } catch (err) {
+                       return { email, ok: false, error: err.message || "Failed" };
+                     }
+                   }));
+                   setInviteResults(results);
+                   setInviteEmails("");
+                   setInviteSent(true);
+                   setTimeout(() => { setInviteSent(false); setInviteResults(null); }, 5000);
+                 }}
+               >
+                 {inviteSent ? "✓ Invites Sent!" : "Send Invites"}
+               </Button>
             </div>
 
             {/* Current users with photo status */}
