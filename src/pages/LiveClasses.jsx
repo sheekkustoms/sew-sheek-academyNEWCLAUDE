@@ -6,7 +6,7 @@ import { Calendar, Clock, Video, Copy, Check, Bell, BellOff, ChevronLeft, Chevro
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import moment from "moment";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 
 function ZoomLinkSection({ zoom_url }) {
@@ -202,6 +202,7 @@ function RemindMeButton({ cls }) {
 }
 
 export default function LiveClasses() {
+  const navigate = useNavigate();
   const { data: classes = [] } = useQuery({
     queryKey: ["liveClasses"],
     queryFn: () => base44.entities.LiveClass.filter({ is_active: true }),
@@ -245,7 +246,8 @@ export default function LiveClasses() {
 
       {upcoming.map((cls, i) => (
         <motion.div key={cls.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
-          className="bg-white border border-pink-100 rounded-2xl p-6 shadow-sm space-y-4"
+          onClick={() => navigate(createPageUrl("LiveClassDetail") + `/${cls.id}`)}
+          className="bg-white border border-pink-100 rounded-2xl p-6 shadow-sm space-y-4 cursor-pointer hover:shadow-lg hover:border-pink-300 transition-all"
         >
           <div className="flex items-start justify-between gap-3 flex-wrap">
             <div>

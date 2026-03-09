@@ -71,7 +71,10 @@ export default function LiveClassManager() {
   return (
     <div className="space-y-6">
       <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm space-y-4">
-        <h3 className="font-semibold text-gray-800 flex items-center gap-2"><Video className="w-4 h-4 text-violet-500" /> {editingId ? "Edit Class" : "Schedule New Class"}</h3>
+        <div className="flex items-center justify-between">
+          <h3 className="font-semibold text-gray-800 flex items-center gap-2"><Video className="w-4 h-4 text-violet-500" /> {editingId ? "Edit Class" : "Schedule New Class"}</h3>
+          {editingId && <Button variant="ghost" size="sm" onClick={handleCancel} className="text-gray-500 hover:text-gray-700">Clear</Button>}
+        </div>
         <Input placeholder="Class title..." value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
         <Textarea placeholder="Description (optional)..." value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} className="min-h-[70px]" />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -106,6 +109,16 @@ export default function LiveClassManager() {
             </label>
           )}
         </div>
+        <div>
+          <label className="text-xs text-gray-400 mb-2 block">Supply List (one per line)</label>
+          <textarea
+            value={(form.supply_list || []).join("\n")}
+            onChange={e => setForm({ ...form, supply_list: e.target.value.split("\n").filter(s => s.trim()) })}
+            placeholder="Thread&#10;Needle&#10;Fabric scraps..."
+            className="w-full p-3 border border-gray-200 rounded-lg text-sm font-mono resize-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+            rows={4}
+          />
+        </div>
         <div className="flex gap-2">
           <Button onClick={handleSave} disabled={saving || !form.title || !form.scheduled_at} className="bg-gradient-to-r from-pink-500 to-violet-500 text-white gap-2 flex-1">
             <Plus className="w-4 h-4" /> {saving ? "Saving..." : editingId ? "Update Class" : "Add Class"}
@@ -120,8 +133,8 @@ export default function LiveClassManager() {
 
       <div className="space-y-2">
         {classes.map(cls => (
-          <div key={cls.id} className="bg-white border border-gray-100 rounded-xl px-4 py-3 flex items-center justify-between gap-3 shadow-sm">
-            <div>
+          <div key={cls.id} className="bg-white border border-gray-100 rounded-xl px-4 py-3 flex items-center justify-between gap-3 shadow-sm hover:border-gray-300 hover:shadow-md transition-all">
+            <div onClick={() => handleEdit(cls)} className="flex-1 cursor-pointer">
               <p className="text-sm font-semibold text-gray-800">{cls.title}</p>
               <p className="text-xs text-gray-400">{moment(cls.scheduled_at).format("MMM D, YYYY [at] h:mm A")}</p>
             </div>
