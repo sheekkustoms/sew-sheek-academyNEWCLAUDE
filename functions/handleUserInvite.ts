@@ -29,6 +29,12 @@ Deno.serve(async (req) => {
       is_read: false,
     });
 
+    // Log the invited email
+    await base44.asServiceRole.entities.InvitedEmail.create({
+      email,
+      invited_by: user.email,
+    });
+
     return Response.json({ success: true });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
