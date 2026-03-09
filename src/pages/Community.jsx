@@ -11,6 +11,7 @@ import { Plus, Search, Users, ImagePlus, Pin, X, Trash2 } from "lucide-react";
 import PostCard from "../components/community/PostCard";
 import CommentSection from "../components/community/CommentSection";
 import { getOrCreateUserPoints, awardXP } from "../components/shared/useUserPoints";
+import { getDisplayName } from "../components/shared/useDisplayName";
 
 export default function Community() {
   const [search, setSearch] = useState("");
@@ -25,15 +26,8 @@ export default function Community() {
 
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
 
-  // Fetch user's display_name from User entity
-  const { data: userRecords } = useQuery({
-    queryKey: ["userDisplayName", user?.email],
-    queryFn: () => base44.entities.User.filter({ email: user.email }),
-    enabled: !!user?.email,
-  });
-
-  const userRecord = userRecords?.[0];
-  const displayName = userRecord?.display_name || user?.full_name || "Member";
+   // Get display name with fallback chain
+   const displayName = getDisplayName(user);
 
   const { data: categorySettings = [] } = useQuery({
     queryKey: ["categorySettings"],
