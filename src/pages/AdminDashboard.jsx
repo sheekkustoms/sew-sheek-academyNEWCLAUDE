@@ -33,8 +33,9 @@ export default function AdminDashboard() {
   const queryClient = useQueryClient();
   const [announcement, setAnnouncement] = useState("");
   const [announcementTitle, setAnnouncementTitle] = useState("");
-  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteEmails, setInviteEmails] = useState("");
   const [inviteSent, setInviteSent] = useState(false);
+  const [inviteResults, setInviteResults] = useState(null);
   const [linkCopied, setLinkCopied] = useState(false);
   const [adminMessagingEnabled, setAdminMessagingEnabled] = useState({});
 
