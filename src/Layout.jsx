@@ -21,6 +21,7 @@ const NAV_ITEMS = [
   { name: "Weekly Challenge", icon: Brain, page: "DailyChallenges", highlight: true },
   { name: "Quiz Games", icon: Gamepad2, page: "QuizHome", highlight: true },
   { name: "Live Classes", icon: Video, page: "LiveClasses" },
+  { name: "Profile Settings", icon: User, page: "ProfileSettings" },
 ];
 
 export default function Layout({ children, currentPageName }) {
