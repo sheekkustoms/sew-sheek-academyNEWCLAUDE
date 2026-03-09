@@ -185,81 +185,166 @@ IMPORTANT: Return ONLY valid JSON, no markdown formatting, no code blocks.`,
 
         <TabsContent value="ai" className="space-y-4 mt-4">
 
-      <Textarea
-        placeholder="Paste your course material, article, or notes here..."
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        className="min-h-[150px] border-amber-300"
-        disabled={isLoading}
-      />
-
-      <Button
-        onClick={handleGenerateQuestions}
-        disabled={isLoading || !content.trim()}
-        className="bg-amber-600 hover:bg-amber-700 text-white w-full"
-      >
-        {isLoading ? (
-          <>
-            <Loader2 className="w-4 h-4 animate-spin mr-2" />
-            Generating...
-          </>
-        ) : (
-          <>
-            <Wand2 className="w-4 h-4 mr-2" />
-            Generate Questions
-          </>
-        )}
-      </Button>
-
-      {error && (
-        <div className="flex gap-2 p-3 rounded-lg bg-red-100 border border-red-300 text-red-800 text-sm">
-          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-          {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="flex gap-2 p-3 rounded-lg bg-green-100 border border-green-300 text-green-800 text-sm">
-          <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
-          {success}
-        </div>
-      )}
-
-      {generatedQuestions.length > 0 && (
-        <div className="space-y-3 border-t border-amber-200 pt-4">
-          <h4 className="font-medium text-gray-900">Preview ({generatedQuestions.length} questions)</h4>
-          <div className="space-y-2 max-h-[300px] overflow-y-auto">
-            {generatedQuestions.map((q, idx) => (
-              <div key={idx} className="text-sm bg-white p-3 rounded-lg border border-amber-200">
-                <p className="font-medium text-gray-900 mb-1">{idx + 1}. {q.question_text}</p>
-                <ul className="space-y-1 ml-4 text-gray-700">
-                  {q.options.map((opt, optIdx) => (
-                    <li key={optIdx} className={optIdx === q.correct_answer_index ? "text-green-700 font-medium" : ""}>
-                      {String.fromCharCode(65 + optIdx)}) {opt}
-                      {optIdx === q.correct_answer_index && " ✓"}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
+          <Textarea
+            placeholder="Paste your course material, article, or notes here..."
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            className="min-h-[150px] border-amber-300"
+            disabled={isLoading}
+          />
 
           <Button
-            onClick={handleSaveQuestions}
-            disabled={isLoading}
-            className="bg-green-600 hover:bg-green-700 text-white w-full"
+            onClick={handleGenerateQuestions}
+            disabled={isLoading || !content.trim()}
+            className="bg-amber-600 hover:bg-amber-700 text-white w-full"
           >
             {isLoading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                Saving...
+                Generating...
               </>
             ) : (
-              "Save All Questions to Quiz"
+              <>
+                <Wand2 className="w-4 h-4 mr-2" />
+                Generate Questions
+              </>
             )}
           </Button>
-        </div>
-      )}
+
+          {error && (
+            <div className="flex gap-2 p-3 rounded-lg bg-red-100 border border-red-300 text-red-800 text-sm">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              {error}
+            </div>
+          )}
+
+          {success && (
+            <div className="flex gap-2 p-3 rounded-lg bg-green-100 border border-green-300 text-green-800 text-sm">
+              <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
+              {success}
+            </div>
+          )}
+
+          {generatedQuestions.length > 0 && (
+            <div className="space-y-3 border-t border-amber-200 pt-4">
+              <h4 className="font-medium text-gray-900">Preview ({generatedQuestions.length} questions)</h4>
+              <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                {generatedQuestions.map((q, idx) => (
+                  <div key={idx} className="text-sm bg-white p-3 rounded-lg border border-amber-200">
+                    <p className="font-medium text-gray-900 mb-1">{idx + 1}. {q.question_text}</p>
+                    <ul className="space-y-1 ml-4 text-gray-700">
+                      {q.options.map((opt, optIdx) => (
+                        <li key={optIdx} className={optIdx === q.correct_answer_index ? "text-green-700 font-medium" : ""}>
+                          {String.fromCharCode(65 + optIdx)}) {opt}
+                          {optIdx === q.correct_answer_index && " ✓"}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+
+              <Button
+                onClick={() => handleSaveQuestions(generatedQuestions)}
+                disabled={isLoading}
+                className="bg-green-600 hover:bg-green-700 text-white w-full"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    Saving...
+                  </>
+                ) : (
+                  "Save All Questions to Quiz"
+                )}
+              </Button>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="bulk" className="space-y-4 mt-4">
+          <div className="text-xs text-gray-600 bg-white p-3 rounded-lg border border-amber-200 space-y-1">
+            <p className="font-semibold">Format:</p>
+            <p>Q: What is 2+2?</p>
+            <p>A: 3</p>
+            <p>A: 4</p>
+            <p>A: 5</p>
+            <p>Correct: 4</p>
+            <p></p>
+            <p>Q: Next question?</p>
+            <p>A: Option 1</p>
+            <p>A: Option 2</p>
+            <p>Correct: Option 1</p>
+          </div>
+
+          <Textarea
+            placeholder="Paste questions and answers in the format shown above..."
+            value={bulkInput}
+            onChange={(e) => setBulkInput(e.target.value)}
+            className="min-h-[200px] border-amber-300 font-mono text-xs"
+            disabled={isLoading}
+          />
+
+          <Button
+            onClick={parseBulkQuestions}
+            disabled={isLoading || !bulkInput.trim()}
+            className="bg-amber-600 hover:bg-amber-700 text-white w-full"
+          >
+            <Copy className="w-4 h-4 mr-2" />
+            Parse Questions
+          </Button>
+
+          {error && (
+            <div className="flex gap-2 p-3 rounded-lg bg-red-100 border border-red-300 text-red-800 text-sm">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              {error}
+            </div>
+          )}
+
+          {success && (
+            <div className="flex gap-2 p-3 rounded-lg bg-green-100 border border-green-300 text-green-800 text-sm">
+              <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
+              {success}
+            </div>
+          )}
+
+          {bulkQuestions.length > 0 && (
+            <div className="space-y-3 border-t border-amber-200 pt-4">
+              <h4 className="font-medium text-gray-900">Parsed ({bulkQuestions.length} questions)</h4>
+              <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                {bulkQuestions.map((q, idx) => (
+                  <div key={idx} className="text-sm bg-white p-3 rounded-lg border border-amber-200">
+                    <p className="font-medium text-gray-900 mb-1">{idx + 1}. {q.question_text}</p>
+                    <ul className="space-y-1 ml-4 text-gray-700">
+                      {q.options.map((opt, optIdx) => (
+                        <li key={optIdx} className={optIdx === q.correct_answer_index ? "text-green-700 font-medium" : ""}>
+                          {String.fromCharCode(65 + optIdx)}) {opt}
+                          {optIdx === q.correct_answer_index && " ✓"}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+
+              <Button
+                onClick={() => handleSaveQuestions(bulkQuestions)}
+                disabled={isLoading}
+                className="bg-green-600 hover:bg-green-700 text-white w-full"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    Saving...
+                  </>
+                ) : (
+                  "Save All Questions to Quiz"
+                )}
+              </Button>
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
