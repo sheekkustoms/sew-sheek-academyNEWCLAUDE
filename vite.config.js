@@ -7,15 +7,22 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 export default defineConfig({
-  logLevel: 'error',
+  logLevel: 'info',
   plugins: [react()],
   resolve: {
     alias: {
       '@': resolve(__dirname, './src')
     }
   },
+  optimizeDeps: {
+    exclude: ['@base44/sdk', '@base44/vite-plugin']
+  },
   build: {
     sourcemap: false,
+    minify: false,
+    commonjsOptions: {
+      include: [/node_modules/]
+    },
     rollupOptions: {
       output: {
         manualChunks: undefined

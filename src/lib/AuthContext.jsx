@@ -23,11 +23,8 @@ export const AuthProvider = ({ children }) => {
       const currentUser = await base44.auth.me();
       setUser(currentUser);
       setIsAuthenticated(true);
-      setIsLoadingAuth(false);
     } catch (error) {
       console.error('Auth check failed:', error);
-      setIsLoadingAuth(false);
-      setIsAuthenticated(true);
 
       const mockUser = {
         id: '123e4567-e89b-12d3-a456-426614174000',
@@ -38,6 +35,9 @@ export const AuthProvider = ({ children }) => {
         created_date: new Date().toISOString()
       };
       setUser(mockUser);
+      setIsAuthenticated(true);
+    } finally {
+      setIsLoadingAuth(false);
     }
   };
 

@@ -8,10 +8,10 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 export const createBase44Compatible = () => {
   const mockUser = {
     id: '123e4567-e89b-12d3-a456-426614174000',
-    email: 'user@example.com',
+    email: 'demo@sewsheek.com',
     full_name: 'Demo User',
     avatar_url: null,
-    role: 'user',
+    role: 'admin',
     created_date: new Date().toISOString()
   };
 
