@@ -237,10 +237,10 @@ export default function Layout({ children, currentPageName }) {
 
           {/* User card */}
           {user && (
-            <div className="mx-4 mt-5 p-4 rounded-xl bg-gray-50 border border-gray-200">
+            <div className="mx-4 mt-5 p-4 rounded-xl bg-amber-100 border border-amber-300">
               <div className="flex items-center gap-3">
                 {user.avatar_url ? (
-                  <img src={user.avatar_url} className="w-10 h-10 rounded-full object-cover border border-gray-300" />
+                  <img src={user.avatar_url} className="w-10 h-10 rounded-full object-cover border border-amber-300" />
                 ) : (
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-700 to-pink-400 flex items-center justify-center text-white font-bold text-sm">
                     {(user.full_name || user.email)?.[0]?.toUpperCase()}
