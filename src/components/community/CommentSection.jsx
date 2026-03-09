@@ -61,8 +61,9 @@ export default function CommentSection({ postId, user, myPoints }) {
       const posts = await base44.entities.CommunityPost.filter({ id: postId });
       if (posts[0]) {
         await base44.entities.CommunityPost.update(postId, { comment_count: (posts[0].comment_count || 0) + 1 });
-        // Notify post author
-        if (posts[0].author_email !== user.email) {
+        
+        // Notify post author (if not replying to them)
+        if (posts[0].author_email !== user.email && !replyingTo) {
           await base44.entities.Notification.create({
             recipient_email: posts[0].author_email,
             type: "comment",
@@ -72,12 +73,28 @@ export default function CommentSection({ postId, user, myPoints }) {
             is_read: false,
           });
         }
+        
+        // Notify the person being replied to
+        if (replyingTo) {
+          const repliedToComment = comments.find(c => (c.author_name || c.author_email) === replyingTo);
+          if (repliedToComment && repliedToComment.author_email !== user.email) {
+            await base44.entities.Notification.create({
+              recipient_email: repliedToComment.author_email,
+              type: "reply",
+              message: `${user.full_name || user.email} replied to your comment on "${posts[0].title}"`,
+              from_name: user.full_name || user.email,
+              post_id: postId,
+              is_read: false,
+            });
+          }
+        }
+        
         // Detect @mentions and notify mentioned users
         const mentions = newComment.match(/@([\w.+-]+@[\w-]+\.[\w.]+)/g);
         if (mentions) {
           const uniqueMentions = [...new Set(mentions.map(m => m.slice(1)))];
           await Promise.all(uniqueMentions
-            .filter(email => email !== user.email && email !== posts[0].author_email)
+            .filter(email => email !== user.email && email !== posts[0].author_email && (!replyingTo || email !== comments.find(c => (c.author_name || c.author_email) === replyingTo)?.author_email))
             .map(email => base44.entities.Notification.create({
               recipient_email: email,
               type: "reply",
