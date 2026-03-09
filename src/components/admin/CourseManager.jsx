@@ -319,6 +319,25 @@ export default function CourseManager() {
     queryFn: () => base44.entities.Course.list("-created_date", 100),
   });
 
+  const sortedCourses = [...courses].sort((a, b) => (a.order || 0) - (b.order || 0));
+
+  const handleDragEnd = async (result) => {
+    const { source, destination } = result;
+    if (!destination) return;
+    if (source.index === destination.index) return;
+
+    const newOrder = Array.from(sortedCourses);
+    const [moved] = newOrder.splice(source.index, 1);
+    newOrder.splice(destination.index, 0, moved);
+
+    // Update order for affected courses
+    const updates = newOrder.map((course, idx) => 
+      base44.entities.Course.update(course.id, { order: idx })
+    );
+    await Promise.all(updates);
+    queryClient.invalidateQueries({ queryKey: ["adminCourses"] });
+  };
+
   const createCourse = useMutation({
     mutationFn: () => base44.entities.Course.create({ ...newForm, lesson_count: 0 }),
     onSuccess: (created) => {
