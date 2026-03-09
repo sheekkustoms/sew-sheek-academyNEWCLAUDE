@@ -30,7 +30,10 @@ export default function Dashboard() {
   const queryClient = useQueryClient();
   const fileInputRef = useRef(null);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [profileDone, setProfileDone] = useState(false);
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
+
+  const needsProfileSetup = user && (!user.avatar_url || !user.full_name) && !profileDone;
 
   const handlePhotoUpload = async (e) => {
     const file = e.target.files?.[0];
