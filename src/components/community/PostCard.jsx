@@ -53,8 +53,8 @@ export default function PostCard({ post, currentUserEmail, onLike, onClick, inde
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.04 }}
       onClick={onClick}
-      className={`group bg-white border rounded-2xl overflow-hidden hover:shadow-md transition-all cursor-pointer ${
-        post.is_pinned ? "border-amber-200 shadow-amber-50 shadow-sm" : "border-gray-100"
+      className={`group bg-white border rounded-lg overflow-hidden hover:shadow-sm transition-all cursor-pointer ${
+        post.is_pinned ? "border-yellow-300 bg-yellow-50" : "border-gray-200"
       }`}
     >
       {post.image_url && (
