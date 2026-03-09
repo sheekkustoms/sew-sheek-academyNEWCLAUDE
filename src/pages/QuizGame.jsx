@@ -42,10 +42,13 @@ export default function QuizGame() {
   const { data: questions = [] } = useQuery({
     queryKey: ["quizQuestions", quizId],
     queryFn: async () => {
+      if (!quizId) return [];
       const r = await base44.entities.QuizQuestion.filter({ quiz_id: quizId });
       return r.sort((a, b) => (a.order || 0) - (b.order || 0));
     },
     enabled: !!quizId,
+    staleTime: 0,
+    gcTime: 0,
   });
   const { data: myPoints } = useQuery({
     queryKey: ["myPointsQuiz", user?.email],
