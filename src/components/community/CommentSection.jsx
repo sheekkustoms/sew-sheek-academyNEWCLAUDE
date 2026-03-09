@@ -175,37 +175,39 @@ export default function CommentSection({ postId, user, myPoints }) {
            ))}
          </div>
        )}
-      <div className="flex gap-2 items-start">
+      <div className="flex gap-3 items-end mt-4 pt-4 border-t border-gray-200">
         {user?.avatar_url ? (
-          <img src={user.avatar_url} className="w-8 h-8 rounded-full object-cover border border-pink-100 shrink-0 mt-1" />
+          <img src={user.avatar_url} className="w-8 h-8 rounded-full object-cover border border-gray-200 shrink-0" />
         ) : (
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-violet-400 flex items-center justify-center text-white text-xs font-bold shrink-0 mt-1">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-violet-400 flex items-center justify-center text-white text-xs font-bold shrink-0">
             {(user?.full_name || user?.email || "?")[0].toUpperCase()}
           </div>
         )}
         <div className="flex-1 space-y-1">
           {replyingTo && (
-            <div className="flex items-center gap-1 text-xs text-violet-500 font-medium">
-              <CornerDownRight className="w-3 h-3" /> Replying to @{replyingTo}
-              <button onClick={() => { setReplyingTo(null); setNewComment(""); }} className="ml-1 text-gray-400 hover:text-gray-600">✕</button>
+            <div className="flex items-center gap-1 text-xs text-blue-600 font-medium mb-1">
+              Replying to @{replyingTo}
+              <button onClick={() => { setReplyingTo(null); setNewComment(""); }} className="ml-auto text-gray-400 hover:text-gray-600 text-xs">Clear</button>
             </div>
           )}
-          <Textarea
-            ref={textareaRef}
-            placeholder="Write a comment... (+5 XP)"
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            className="border-gray-200 min-h-[60px] text-sm bg-gray-50"
-          />
+          <div className="flex gap-2">
+            <Textarea
+              ref={textareaRef}
+              placeholder="Write a comment..."
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              className="border-gray-300 text-sm bg-white rounded-xl min-h-[44px] resize-none"
+            />
+            <Button
+              onClick={() => addCommentMutation.mutate()}
+              disabled={!newComment.trim() || addCommentMutation.isPending}
+              size="icon"
+              className="bg-blue-600 hover:bg-blue-700 text-white shrink-0"
+            >
+              <Send className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
-        <Button
-          onClick={() => addCommentMutation.mutate()}
-          disabled={!newComment.trim() || addCommentMutation.isPending}
-          size="icon"
-          className="bg-gradient-to-br from-pink-500 to-violet-500 text-white shrink-0 self-end"
-        >
-          <Send className="w-4 h-4" />
-        </Button>
       </div>
     </div>
   );
