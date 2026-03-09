@@ -12,13 +12,6 @@ import PostCard from "../components/community/PostCard";
 import CommentSection from "../components/community/CommentSection";
 import { getOrCreateUserPoints, awardXP } from "../components/shared/useUserPoints";
 
-const SECTIONS = [
-  { value: "all", label: "🌐 All Posts" },
-  { value: "announcement", label: "📢 Announcements" },
-  { value: "discussion", label: "💬 Discussion" },
-  { value: "resource", label: "📚 Resources" },
-];
-
 export default function Community() {
   const [search, setSearch] = useState("");
   const [section, setSection] = useState("all");
@@ -31,6 +24,16 @@ export default function Community() {
   const queryClient = useQueryClient();
 
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
+
+  const { data: categorySettings = [] } = useQuery({
+    queryKey: ["categorySettings"],
+    queryFn: () => base44.entities.CategorySettings.list(),
+  });
+  const dynamicCategories = categorySettings[0]?.categories || [];
+  const SECTIONS = [
+    { value: "all", label: "🌐 All Posts" },
+    ...dynamicCategories.map(c => ({ value: c.id, label: `${c.emoji || ""} ${c.label}`.trim() })),
+  ];
   const { data: posts = [], isLoading } = useQuery({
     queryKey: ["communityPosts"],
     queryFn: () => base44.entities.CommunityPost.list("-created_date", 100),
