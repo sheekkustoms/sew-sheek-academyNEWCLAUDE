@@ -8,13 +8,19 @@ import { motion } from "framer-motion";
 import moment from "moment";
 
 function RelativeTime({ date }) {
-  const [time, setTime] = useState(() => moment(date).fromNow());
+  const [time, setTime] = useState(() => {
+    const momentDate = moment.utc(date).local();
+    return momentDate.fromNow();
+  });
 
   useEffect(() => {
-    setTime(moment(date).fromNow());
-    const interval = setInterval(() => {
-      setTime(moment(date).fromNow());
-    }, 30000); // Update every 30 seconds
+    const updateTime = () => {
+      const momentDate = moment.utc(date).local();
+      setTime(momentDate.fromNow());
+    };
+    
+    updateTime();
+    const interval = setInterval(updateTime, 60000); // Update every minute
     return () => clearInterval(interval);
   }, [date]);
 
