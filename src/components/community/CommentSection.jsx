@@ -183,36 +183,6 @@ export default function CommentSection({ postId, user, myPoints }) {
            </motion.div>
          ))}
        </div>
-
-       {/* Like and Reply stats */}
-       {comments.length > 0 && (
-         <div className="space-y-2 pl-10">
-           {comments.map((comment) => (
-             <div key={comment.id} className="flex items-center gap-4 text-xs text-gray-600">
-               <button
-                 onClick={() => likeCommentMutation.mutate(comment)}
-                 className={`flex items-center gap-1 transition-colors ${
-                   comment.likes?.includes(user?.email) ? "text-pink-500" : "text-gray-400 hover:text-pink-500"
-                 }`}
-               >
-                 <Heart className={`w-3.5 h-3.5 ${comment.likes?.includes(user?.email) ? "fill-current" : ""}`} />
-                 {comment.likes?.length || 0}
-               </button>
-               <button
-                 onClick={() => {
-                   const name = comment.author_name || comment.author_email;
-                   setReplyingTo(name);
-                   setNewComment(`@${name} `);
-                   setTimeout(() => textareaRef.current?.focus(), 50);
-                 }}
-                 className="text-gray-400 hover:text-gray-600 transition-colors font-medium"
-               >
-                 Reply
-               </button>
-             </div>
-           ))}
-         </div>
-       )}
       <div className="flex gap-3 items-end mt-4 pt-4 border-t border-gray-200">
         {user?.avatar_url ? (
           <img src={user.avatar_url} className="w-8 h-8 rounded-full object-cover border border-gray-200 shrink-0" />
