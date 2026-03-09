@@ -184,7 +184,7 @@ export default function Community() {
       <div className="flex flex-col lg:flex-row gap-4">
         {/* Sections sidebar */}
         <div className="lg:w-52 shrink-0">
-            <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-3 space-y-1 sticky top-20">
+            <div className="bg-[#c9b6be] rounded-lg border border-pink-300 shadow-sm p-3 space-y-1 sticky top-20">
               {SECTIONS.map((s) => (
                 <button
                   key={s.value}
@@ -209,7 +209,7 @@ export default function Community() {
               placeholder="Search posts..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-10 h-11 bg-white border-gray-200 text-gray-800 placeholder:text-gray-500 rounded-lg"
+              className="pl-10 h-11 bg-[#c9b6be] border-pink-300 text-gray-800 placeholder:text-gray-600 rounded-lg"
             />
           </div>
 
@@ -218,7 +218,7 @@ export default function Community() {
               {Array(4).fill(0).map((_, i) => <div key={i} className="bg-white rounded-lg h-32 animate-pulse border border-gray-200" />)}
             </div>
           ) : filteredAndSorted.length === 0 ? (
-            <div className="text-center py-20 bg-white rounded-lg border border-gray-200">
+            <div className="text-center py-20 bg-[#c9b6be] rounded-lg border border-pink-300">
               <Users className="w-12 h-12 text-amber-300 mx-auto mb-3" />
               <p className="text-gray-500 font-medium">No posts here yet</p>
               <p className="text-sm text-gray-400 mt-1">Be the first to share!</p>
@@ -240,7 +240,7 @@ export default function Community() {
 
       {/* Create post dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-lg">
+        <DialogContent className="bg-[#c9b6be] border-pink-300 text-gray-900 max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold text-gray-900">Create a Post</DialogTitle>
           </DialogHeader>
@@ -299,7 +299,7 @@ export default function Community() {
 
       {/* Post detail */}
       <Dialog open={!!selectedPost} onOpenChange={() => setSelectedPost(null)}>
-        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-2xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="bg-[#c9b6be] border-pink-300 text-gray-900 max-w-2xl max-h-[85vh] overflow-y-auto">
           {selectedPost && (
             <>
               <DialogHeader>

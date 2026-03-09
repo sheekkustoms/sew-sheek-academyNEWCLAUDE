@@ -128,7 +128,7 @@ export default function Layout({ children, currentPageName }) {
           video, iframe, .no-print { display: none !important; }
         }
         * { box-sizing: border-box; }
-        body { background-color: #FFFEF8; }
+        body { background-color: #c9b6be; }
         button:hover { background-color: rgba(139, 115, 85, 0.1); }
         .btn-primary { background-color: #6B7A5C !important; }
         .btn-primary:hover { background-color: #556347 !important; }
@@ -199,7 +199,7 @@ export default function Layout({ children, currentPageName }) {
       )}
 
       {/* Mobile top bar */}
-      <div className={`md:hidden fixed left-0 right-0 z-50 bg-white border-b border-gray-200 px-4 h-14 flex items-center justify-between shadow-sm ${showPWA ? "top-10" : "top-0"}`}>
+      <div className={`md:hidden fixed left-0 right-0 z-50 bg-[#c9b6be] border-b border-pink-300 px-4 h-14 flex items-center justify-between shadow-sm ${showPWA ? "top-10" : "top-0"}`}>
         <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)} className="text-gray-600">
           <Menu className="w-5 h-5" />
         </Button>
@@ -223,10 +223,10 @@ export default function Layout({ children, currentPageName }) {
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed top-0 left-0 z-50 h-full w-64 bg-white border-r border-gray-200 shadow-sm transform transition-transform duration-300 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}>
+      <aside className={`fixed top-0 left-0 z-50 h-full w-64 bg-[#c9b6be] border-r border-pink-300 shadow-sm transform transition-transform duration-300 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}>
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="px-6 h-16 flex items-center justify-between border-b border-gray-200">
+          <div className="px-6 h-16 flex items-center justify-between border-b border-pink-300">
             <span className="text-xl font-bold text-gray-900">
               Oh Sew Sheek
             </span>
@@ -283,7 +283,7 @@ export default function Layout({ children, currentPageName }) {
           </nav>
 
           {/* Logout */}
-          <div className="p-3 border-t border-gray-200">
+          <div className="p-3 border-t border-pink-300">
             <button
               onClick={() => base44.auth.logout()}
               className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all w-full"
@@ -296,11 +296,11 @@ export default function Layout({ children, currentPageName }) {
       </aside>
 
       {/* Main content */}
-      <main className={`md:ml-64 min-h-screen bg-white ${showPWA ? "pt-24 md:pt-10" : "pt-14 md:pt-0"}`}>
+      <main className={`md:ml-64 min-h-screen bg-[#c9b6be] ${showPWA ? "pt-24 md:pt-10" : "pt-14 md:pt-0"}`}>
         {/* Desktop notification bell */}
         <div className="hidden md:block fixed top-6 right-6 z-40">
           <Link to={createPageUrl("Notifications")} className="relative inline-block">
-            <div className="p-2 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 transition-colors">
+            <div className="p-2 rounded-lg bg-[#c9b6be] border border-pink-300 hover:bg-pink-300 transition-colors">
               <Bell className="w-5 h-5 text-gray-600" />
               {unreadCount > 0 && (
                 <span className="absolute -top-1 -right-1 w-5 h-5 bg-pink-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">{unreadCount}</span>
