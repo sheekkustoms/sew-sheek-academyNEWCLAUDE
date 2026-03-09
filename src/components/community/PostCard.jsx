@@ -61,9 +61,8 @@ export default function PostCard({ post, currentUserEmail, onLike, onClick, inde
         <img src={post.image_url} alt="" className="w-full h-48 object-cover" />
       )}
       {post.is_pinned && (
-        <div className="bg-blue-500 text-white px-4 py-2 flex items-center gap-2 text-sm font-semibold">
+        <div className="bg-yellow-100 text-yellow-800 px-4 py-2 flex items-center gap-2 text-sm font-semibold border-b border-yellow-200">
           <Pin className="w-4 h-4" /> Pinned
-          <button className="ml-auto text-xs hover:text-blue-100">Unpin post</button>
         </div>
       )}
       <div className="p-5">
