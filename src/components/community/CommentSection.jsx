@@ -132,7 +132,15 @@ export default function CommentSection({ postId, user, myPoints }) {
               </div>
               <span className="text-[10px] text-gray-400">{moment(comment.created_date).fromNow()}</span>
             </div>
-            <p className="text-sm text-gray-600 ml-7">{comment.content}</p>
+            <p className="text-sm text-gray-600 ml-7">
+              {comment.content.split(/(@[\w.+-]+@[\w-]+\.[\w.]+)/).map((part, idx) =>
+                part.match(/@[\w.+-]+@[\w-]+\.[\w.]+/) ? (
+                  <span key={idx} className="text-gray-600">{part}</span>
+                ) : (
+                  <span key={idx}>{part}</span>
+                )
+              )}
+            </p>
             <div className="flex items-center gap-3 mt-2 ml-7">
               <button
                 onClick={() => likeCommentMutation.mutate(comment)}
