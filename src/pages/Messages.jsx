@@ -173,24 +173,40 @@ export default function Messages() {
               </div>
 
               {/* Messages */}
-              <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+              <div className="flex-1 overflow-y-auto px-4 md:px-6 py-5 space-y-5">
                 {currentConversation.messages.map((msg) => {
                   const isOwn = msg.sender_email === user?.email;
+                  const paragraphs = msg.content.split(/\n\n+/);
+                  const lines = msg.content.split(/\n/);
+                  const isLong = msg.content.length > 200;
                   return (
-                    <div key={msg.id} className={`flex gap-3 ${isOwn ? "flex-row-reverse" : ""}`}>
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-violet-400 flex items-center justify-center text-white font-bold text-sm shrink-0">
-                        {(msg.sender_name || msg.sender_email)?.[0]?.toUpperCase()}
-                      </div>
-                      <div className={`flex-1 flex ${isOwn ? "justify-end" : "justify-start"}`}>
-                        <div className={`max-w-xs lg:max-w-sm`}>
-                          <div className="flex items-baseline gap-2 mb-1" style={{ flexDirection: isOwn ? "row-reverse" : "row" }}>
-                            <p className="font-semibold text-gray-900 text-xs">{msg.sender_name || "User"}</p>
+                    <div key={msg.id} className={`flex flex-col ${isOwn ? "items-end" : "items-start"}`}>
+                      {/* Sender name */}
+                      <p className={`text-[11px] font-semibold mb-1 px-1 ${isOwn ? "text-blue-400" : "text-gray-400"}`}>
+                        {isOwn ? "You" : (msg.sender_name || "User")}
+                      </p>
+                      {/* Bubble */}
+                      <div
+                        className={`w-[85%] md:w-[65%] rounded-2xl px-4 py-3 break-words shadow-sm ${
+                          isOwn
+                            ? "bg-blue-500 text-white rounded-tr-sm"
+                            : "bg-gray-100 text-gray-800 rounded-tl-sm"
+                        }`}
+                      >
+                        {isLong ? (
+                          <div className={`text-sm leading-relaxed space-y-2 ${isOwn ? "text-white" : "text-gray-800"}`}>
+                            {paragraphs.map((para, i) => (
+                              <p key={i} className="whitespace-pre-wrap">{para}</p>
+                            ))}
                           </div>
-                          <div className={`rounded-lg px-4 py-2 break-words ${isOwn ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-900"}`}>
-                            <p className="text-sm">{msg.content}</p>
-                          </div>
-                        </div>
+                        ) : (
+                          <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                        )}
                       </div>
+                      {/* Timestamp */}
+                      <p className={`text-[10px] mt-1 px-1 ${isOwn ? "text-gray-400" : "text-gray-400"}`}>
+                        {new Date(msg.created_date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                      </p>
                     </div>
                   );
                 })}
@@ -198,12 +214,12 @@ export default function Messages() {
               </div>
 
               {/* Input */}
-              <div className="px-6 py-4 border-t border-gray-100 flex gap-2">
+              <div className="px-4 md:px-6 py-3 border-t border-gray-100 bg-white flex gap-2 items-end">
                 <Textarea
-                  placeholder="Type a reply..."
+                  placeholder="Type a reply… (Shift+Enter for new line)"
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
-                  className="resize-none h-10 text-sm border-gray-200"
+                  className="resize-none min-h-[44px] max-h-32 text-sm border-gray-200 flex-1 rounded-xl"
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !e.shiftKey) {
                       e.preventDefault();
@@ -214,7 +230,7 @@ export default function Messages() {
                 <Button
                   onClick={() => sendReplyMutation.mutate()}
                   disabled={!replyText.trim() || sendReplyMutation.isPending}
-                  className="bg-blue-500 hover:bg-blue-600 text-white shrink-0"
+                  className="bg-blue-500 hover:bg-blue-600 text-white shrink-0 rounded-xl h-11 w-11 p-0"
                 >
                   <Send className="w-4 h-4" />
                 </Button>
