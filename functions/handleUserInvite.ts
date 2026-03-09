@@ -15,27 +15,10 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Email required' }, { status: 400 });
     }
 
-    // Invite user
+    // Invite user - this sends the invite email automatically
     await base44.users.inviteUser(email, 'user');
 
-    // Auto-approve by creating a notification that they're approved
-    // When user joins via invite link, mark them as auto-approved
-    await base44.integrations.Core.SendEmail({
-      to: email,
-      subject: 'Welcome to Sew Sheek Sewing Academy!',
-      body: `Hi,
-
-You've been invited to join Sew Sheek Sewing Academy! Click the link below to join:
-
-https://sewsheek.academy
-
-Your access has been pre-approved. You'll be able to start learning immediately!
-
-Best regards,
-Sew Sheek Sewing Team`
-    });
-
-    return Response.json({ success: true, message: 'Invite sent and user will be auto-approved' });
+    return Response.json({ success: true });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
