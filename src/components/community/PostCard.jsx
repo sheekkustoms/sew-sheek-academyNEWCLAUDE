@@ -9,6 +9,29 @@ import moment from "moment";
 import RelativeTime from "@/components/shared/RelativeTime";
 import AvatarWithFallback from "@/components/shared/AvatarWithFallback";
 
+function useCommenterAvatars(comments) {
+  const emailsNeedingAvatars = comments
+    .filter(c => !c.author_avatar && c.author_email)
+    .map(c => c.author_email);
+
+  return useQuery({
+    queryKey: ["commenterAvatars", emailsNeedingAvatars.sort().join(",")],
+    queryFn: async () => {
+      if (!emailsNeedingAvatars.length) return {};
+      const map = {};
+      await Promise.all(
+        emailsNeedingAvatars.map(async (email) => {
+          const result = await base44.functions.invoke('getUserAvatar', { email });
+          map[email] = result.data.avatar_url;
+        })
+      );
+      return map;
+    },
+    enabled: emailsNeedingAvatars.length > 0,
+    staleTime: 60000,
+  });
+}
+
 const categoryStyles = {
   discussion: "bg-blue-100 text-blue-600 border-blue-200",
   question: "bg-amber-100 text-amber-600 border-amber-200",
@@ -39,6 +62,9 @@ export default function PostCard({ post, currentUserEmail, onLike, onClick, inde
      staleTime: 0,
    });
 
+   // Fetch missing avatars for commenters
+   const { data: fallbackAvatarMap = {} } = useCommenterAvatars(comments);
+
    // Sort comments by created_date descending to get the actual last comment
    const sortedComments = [...comments].sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
 
@@ -49,7 +75,7 @@ export default function PostCard({ post, currentUserEmail, onLike, onClick, inde
        commentersMap.set(c.author_email, {
          email: c.author_email,
          name: c.author_name,
-         avatarUrl: c.author_avatar || null,
+         avatarUrl: c.author_avatar || fallbackAvatarMap[c.author_email] || null,
        });
      }
    });
