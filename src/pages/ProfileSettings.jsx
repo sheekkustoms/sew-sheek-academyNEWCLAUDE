@@ -42,14 +42,31 @@ export default function ProfileSettings() {
     try {
       const trimmedName = fullName.trim();
       await base44.auth.updateMe({ full_name: trimmedName, avatar_url: avatarUrl });
-      // Also update UserPoints display name
+      
+      // Update UserPoints display name
       const pts = await base44.entities.UserPoints.filter({ user_email: user.email });
       if (pts[0]) {
         await base44.entities.UserPoints.update(pts[0].id, { user_name: trimmedName });
       }
-      // Refetch user to ensure all tabs see the latest data
+
+      // Update all community posts by this user
+      const myPosts = await base44.entities.CommunityPost.filter({ author_email: user.email });
+      await Promise.all(myPosts.map(post => 
+        base44.entities.CommunityPost.update(post.id, { author_name: trimmedName, author_avatar: avatarUrl })
+      ));
+
+      // Update all comments by this user
+      const myComments = await base44.entities.Comment.filter({ author_email: user.email });
+      await Promise.all(myComments.map(comment => 
+        base44.entities.Comment.update(comment.id, { author_name: trimmedName })
+      ));
+
+      // Refetch and invalidate all related queries
       await queryClient.refetchQueries({ queryKey: ["currentUser"] });
       queryClient.invalidateQueries({ queryKey: ["myPoints"] });
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["comments"] });
+      
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (err) {
