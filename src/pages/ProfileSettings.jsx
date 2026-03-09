@@ -17,10 +17,12 @@ export default function ProfileSettings() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
+  const initialized = useRef(false);
   useEffect(() => {
-    if (user) {
+    if (user && !initialized.current) {
       setFullName(user.full_name || "");
       setAvatarUrl(user.avatar_url || "");
+      initialized.current = true;
     }
   }, [user]);
 
@@ -36,22 +38,19 @@ export default function ProfileSettings() {
   const handleSave = async () => {
     if (!fullName.trim()) return;
     setSaving(true);
-    try {
-      const trimmedName = fullName.trim();
-      await base44.auth.updateMe({ full_name: trimmedName, avatar_url: avatarUrl });
-      // Also update UserPoints display name
-      const pts = await base44.entities.UserPoints.filter({ user_email: user.email });
-      if (pts[0]) {
-        await base44.entities.UserPoints.update(pts[0].id, { user_name: trimmedName });
-      }
-      // Invalidate and refetch user data
-      await queryClient.invalidateQueries({ queryKey: ["currentUser"] });
-      queryClient.invalidateQueries({ queryKey: ["myPoints"] });
-      setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
-    } finally {
-      setSaving(false);
+    const trimmedName = fullName.trim();
+    await base44.auth.updateMe({ full_name: trimmedName, avatar_url: avatarUrl });
+    // Also update UserPoints display name
+    const pts = await base44.entities.UserPoints.filter({ user_email: user.email });
+    if (pts[0]) {
+      await base44.entities.UserPoints.update(pts[0].id, { user_name: trimmedName });
     }
+    // Update the cached user directly so the name doesn't reset
+    queryClient.setQueryData(["currentUser"], (old) => old ? { ...old, full_name: trimmedName, avatar_url: avatarUrl } : old);
+    queryClient.invalidateQueries({ queryKey: ["myPoints"] });
+    setSaving(false);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 3000);
   };
 
   return (

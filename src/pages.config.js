@@ -57,10 +57,10 @@ import Leaderboard from './pages/Leaderboard';
 import LiveClasses from './pages/LiveClasses';
 import Messages from './pages/Messages';
 import Notifications from './pages/Notifications';
+import ProfileSettings from './pages/ProfileSettings';
 import QuizGame from './pages/QuizGame';
 import QuizHome from './pages/QuizHome';
 import UserProgress from './pages/UserProgress';
-import ProfileSettings from './pages/ProfileSettings';
 import __Layout from './Layout.jsx';
 
 
@@ -75,10 +75,10 @@ export const PAGES = {
     "LiveClasses": LiveClasses,
     "Messages": Messages,
     "Notifications": Notifications,
+    "ProfileSettings": ProfileSettings,
     "QuizGame": QuizGame,
     "QuizHome": QuizHome,
     "UserProgress": UserProgress,
-    "ProfileSettings": ProfileSettings,
 }
 
 export const pagesConfig = {
