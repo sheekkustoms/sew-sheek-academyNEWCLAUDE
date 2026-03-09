@@ -7,10 +7,12 @@ import { Wand2, Loader2, AlertCircle, CheckCircle2, Copy } from "lucide-react";
 
 export default function QuizContentParser({ quizId, onQuestionsGenerated }) {
   const [content, setContent] = useState("");
+  const [bulkInput, setBulkInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [generatedQuestions, setGeneratedQuestions] = useState([]);
+  const [bulkQuestions, setBulkQuestions] = useState([]);
 
   const handleGenerateQuestions = async () => {
     if (!content.trim()) {
