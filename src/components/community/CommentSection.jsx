@@ -98,6 +98,7 @@ export default function CommentSection({ postId, user, myPoints }) {
       queryClient.invalidateQueries({ queryKey: ["communityPosts"] });
       queryClient.invalidateQueries({ queryKey: ["myPointsCommunity", "myPoints"] });
       setNewComment("");
+      setReplyingTo(null);
     },
   });
 
