@@ -158,9 +158,9 @@ export default function PostCard({ post, currentUserEmail, onLike, onClick, inde
                      </div>
                    ))}
                  </div>
-                 {comments.length > 0 && (
+                 {sortedComments.length > 0 && (
                    <span className="text-xs text-blue-600 font-medium">
-                     Last comment <RelativeTime date={comments[comments.length - 1].created_date} />
+                     Last comment <RelativeTime date={sortedComments[0].created_date} />
                    </span>
                  )}
                </>
