@@ -421,7 +421,10 @@ export default function CourseManager() {
                       className={`bg-white border rounded-2xl shadow-sm overflow-hidden transition-all ${editingId === course.id ? "border-violet-300" : "border-gray-100"} ${snapshot.isDragging ? "shadow-lg ring-2 ring-violet-300" : ""}`}
                     >
             <div className="flex items-center gap-3 px-4 py-3">
-              {course.thumbnail_url ? (
+                <div {...provided.dragHandleProps}>
+                  <GripVertical className="w-4 h-4 text-gray-300 shrink-0" />
+                </div>
+                {course.thumbnail_url ? (
                 <img src={course.thumbnail_url} className="w-12 h-12 rounded-xl object-cover border border-gray-100 shrink-0" />
               ) : (
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-100 to-violet-100 flex items-center justify-center shrink-0">
