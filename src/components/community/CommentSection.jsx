@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,20 @@ import { Textarea } from "@/components/ui/textarea";
 import { Heart, Send, CornerDownRight } from "lucide-react";
 import { motion } from "framer-motion";
 import moment from "moment";
+
+function RelativeTime({ date }) {
+  const [time, setTime] = useState(() => moment(date).fromNow());
+
+  useEffect(() => {
+    setTime(moment(date).fromNow());
+    const interval = setInterval(() => {
+      setTime(moment(date).fromNow());
+    }, 30000); // Update every 30 seconds
+    return () => clearInterval(interval);
+  }, [date]);
+
+  return <span className="text-gray-500 text-xs">{time}</span>;
+}
 import { awardXP } from "../shared/useUserPoints";
 
 function useUserAvatars(emails) {
