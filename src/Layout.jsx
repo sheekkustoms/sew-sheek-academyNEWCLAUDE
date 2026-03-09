@@ -48,12 +48,18 @@ export default function Layout({ children, currentPageName }) {
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
 
-  const { data: user } = useQuery({
+  const { data: user, refetch: refetchUser } = useQuery({
     queryKey: ["currentUser"],
     queryFn: () => base44.auth.me(),
     staleTime: 0,
     gcTime: 0,
   });
+
+  // Refetch user whenever currentUser query changes
+  useEffect(() => {
+    const interval = setInterval(() => refetchUser(), 5000);
+    return () => clearInterval(interval);
+  }, [refetchUser]);
 
   const { data: userPoints } = useQuery({
     queryKey: ["myPoints", user?.email],
