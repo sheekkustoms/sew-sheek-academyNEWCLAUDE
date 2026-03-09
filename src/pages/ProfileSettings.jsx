@@ -27,19 +27,27 @@ export default function ProfileSettings() {
     },
   });
 
+  // Fetch user's display_name from User entity
+  const { data: userRecord } = useQuery({
+    queryKey: ["userRecord", user?.email],
+    queryFn: () => base44.entities.User.filter({ email: user.email }),
+    enabled: !!user?.email,
+  });
+
   // Initialize form with fresh user data whenever user changes
   useEffect(() => {
     if (user) {
+      const displayNameValue = userRecord?.[0]?.display_name || user.full_name || "";
       console.log("[ProfileSettings] Initializing form with user data:", {
         userId: user.id,
-        fullName: user.full_name,
+        displayName: displayNameValue,
       });
-      setDisplayName(user.full_name || "");
-      setOriginalName(user.full_name || "");
+      setDisplayName(displayNameValue);
+      setOriginalName(displayNameValue);
       setError("");
       setSuccess(false);
     }
-  }, [user]);
+  }, [user, userRecord]);
 
   const hasChanges = displayName.trim() !== originalName.trim();
   const isDisabled = saving || !hasChanges || !displayName.trim();
