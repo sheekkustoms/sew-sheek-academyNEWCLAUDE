@@ -32,15 +32,17 @@ export default function QuizContentParser({ quizId, onQuestionsGenerated }) {
 Content:
 ${content}
 
-Return the response as a JSON array with this exact structure:
-[
-  {
-    "question_text": "Question text here?",
-    "options": ["Option A", "Option B", "Option C", "Option D"],
-    "correct_answer_index": 0,
-    "points": 100
-  }
-]
+Return the response as a JSON object with this structure:
+{
+  "questions": [
+    {
+      "question_text": "Question text here?",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "correct_answer_index": 0,
+      "points": 100
+    }
+  ]
+}
 
 IMPORTANT: Return ONLY valid JSON, no markdown formatting, no code blocks.`,
         response_json_schema: {
@@ -62,7 +64,7 @@ IMPORTANT: Return ONLY valid JSON, no markdown formatting, no code blocks.`,
         }
       });
 
-      const questions = response.data?.questions || [];
+      const questions = response?.questions || [];
       
       if (questions.length === 0) {
         setError("No questions generated. Try different content.");
