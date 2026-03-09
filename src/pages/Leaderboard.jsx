@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
+import { getLevelFromXP } from "@/components/shared/XPBar";
 
 const RankBadge = ({ rank }) => {
   if (rank === 1) return <div className="w-8 h-8 rounded-lg bg-yellow-100 flex items-center justify-center text-lg">🥇</div>;
@@ -124,7 +125,7 @@ export default function Leaderboard() {
                     </div>
                     <div>
                       <p className="font-semibold text-gray-900">{member.user_name || member.user_email}</p>
-                      <p className="text-xs text-gray-500">Level {Math.floor(member.total_xp / 100) + 1}</p>
+                      <p className="text-xs text-gray-500">Level {getLevelFromXP(member.total_xp)}</p>
                     </div>
                   </div>
                   <div className="col-span-2 text-right">
