@@ -3,6 +3,60 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+
+// Register service worker for push notifications
+const registerServiceWorker = async () => {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    console.log('[Layout] Service Worker or Push API not supported');
+    return;
+  }
+
+  try {
+    const registration = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+    console.log('[Layout] Service Worker registered:', registration);
+
+    // Subscribe to push notifications
+    const permission = Notification.permission;
+    if (permission === 'granted') {
+      await subscribeUserToPush(registration);
+    }
+  } catch (error) {
+    console.error('[Layout] Service Worker registration failed:', error);
+  }
+};
+
+const subscribeUserToPush = async (registration) => {
+  try {
+    const subscription = await registration.pushManager.getSubscription();
+    
+    if (!subscription) {
+      // Create new subscription - note: VAPID public key needed
+      const vapidPublicKey = 'YOUR_VAPID_PUBLIC_KEY'; // Set this from env
+      console.log('[Layout] Creating push subscription...');
+      
+      const newSubscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: vapidPublicKey ? urlBase64ToUint8Array(vapidPublicKey) : undefined,
+      });
+
+      // Send subscription to server
+      await base44.functions.invoke('subscribeToNotifications', {
+        subscription: newSubscription.toJSON(),
+      });
+
+      console.log('[Layout] Push subscription successful');
+    }
+  } catch (error) {
+    console.error('[Layout] Push subscription failed:', error);
+  }
+};
+
+const urlBase64ToUint8Array = (base64String) => {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  return new Uint8Array([...rawData].map((char) => char.charCodeAt(0)));
+};
 import {
   LayoutDashboard, BookOpen, Users, Trophy, Menu, X, LogOut,
   Zap, ChevronRight, Brain, Bell, Shield, Download, Gamepad2, Video, Mail, User
@@ -36,7 +90,12 @@ export default function Layout({ children, currentPageName }) {
     if (!localStorage.getItem("notif_permission_asked")) {
       requestNotificationPermission().then(() => {
         localStorage.setItem("notif_permission_asked", "1");
+        // Register service worker after permission granted
+        registerServiceWorker();
       });
+    } else if (Notification.permission === 'granted') {
+      // If permission already granted, register service worker
+      registerServiceWorker();
     }
   }, []);
   const [deferredInstallPrompt, setDeferredInstallPrompt] = useState(null);
