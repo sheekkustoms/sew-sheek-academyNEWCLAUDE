@@ -50,16 +50,16 @@ export default function CommentSection({ postId, user, myPoints }) {
   const { data: avatarMap = {} } = useUserAvatars(commenterEmails);
 
   // Group comments: separate top-level from replies
-  const topLevelComments = comments.filter(c => !c.content.match(/@[\w.+-]+@[\w-]+\.[\w.]+/));
-  const replies = comments.filter(c => c.content.match(/@[\w.+-]+@[\w-]+\.[\w.]+/));
+  const topLevelComments = comments.filter(c => !c.content.match(/^@[^@\n]+\s/));
+  const replies = comments.filter(c => c.content.match(/^@[^@\n]+\s/));
   
   // Create a map of which comment each reply is responding to
   const replyMap = {};
   replies.forEach(reply => {
-    const mentionMatch = reply.content.match(/@([\w.+-]+@[\w-]+\.[\w.]+)/);
+    const mentionMatch = reply.content.match(/^@([^@\n]+?)\s/);
     if (mentionMatch) {
-      const mentionedEmail = mentionMatch[1];
-      const parentComment = comments.find(c => c.author_email === mentionedEmail && !c.content.match(/@[\w.+-]+@[\w-]+\.[\w.]+/));
+      const mentionedName = mentionMatch[1];
+      const parentComment = comments.find(c => (c.author_name || c.author_email) === mentionedName && !c.content.match(/^@[^@\n]+\s/));
       if (parentComment) {
         if (!replyMap[parentComment.id]) replyMap[parentComment.id] = [];
         replyMap[parentComment.id].push(reply);
