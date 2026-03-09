@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Crown, Medal, Zap, Flame, BookOpen } from "lucide-react";
 import { getLevelFromXP } from "../shared/XPBar";
 import BadgeIcon from "../shared/BadgeIcon";
+import AvatarWithFallback from "../shared/AvatarWithFallback";
 
 export default function LeaderboardRow({ entry, rank, isCurrentUser, index = 0 }) {
   const level = getLevelFromXP(entry.total_xp || 0);
@@ -19,12 +20,15 @@ export default function LeaderboardRow({ entry, rank, isCurrentUser, index = 0 }
       }`}
     >
       <div className="w-8 flex justify-center">
-        <span className="text-sm font-bold text-gray-400">#{rank}</span>
-      </div>
+         <span className="text-sm font-bold text-gray-400">#{rank}</span>
+       </div>
 
-      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-violet-500 flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-sm">
-        {(entry.user_name || entry.user_email || "?")[0].toUpperCase()}
-      </div>
+       <AvatarWithFallback
+         imageUrl={entry.avatar_url}
+         name={entry.user_name}
+         email={entry.user_email}
+         size="md"
+       />
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
