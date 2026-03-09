@@ -85,6 +85,25 @@ export default function Dashboard() {
     queryFn: () => base44.entities.LiveClass.filter({ is_active: true }),
   });
 
+  const { data: notifications = [] } = useQuery({
+    queryKey: ["notifications", user?.email],
+    queryFn: () => base44.entities.Notification.filter({ recipient_email: user.email, is_read: false }),
+    enabled: !!user?.email,
+  });
+
+  const queryClient = useQueryClient();
+
+  const markAllRead = useMutation({
+    mutationFn: async () => {
+      const unread = notifications.filter((n) => !n.is_read);
+      await Promise.all(unread.map((n) => base44.entities.Notification.update(n.id, { is_read: true })));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["allNotifications"] });
+    },
+  });
+
   const myPoints = userPoints?.[0];
   const lastEnrollment = enrollments?.[0];
   const lastCourse = courses?.find(c => c.id === lastEnrollment?.course_id);
