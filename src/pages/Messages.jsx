@@ -214,33 +214,32 @@ export default function Messages() {
               </div>
 
               {/* Input — hidden for system-only conversations */}
-              {currentConversation.messages.every(m => m.is_system_message) && (
+              {currentConversation.messages.every(m => m.is_system_message) ? (
                 <div className="px-4 md:px-6 py-3 border-t border-gray-100 bg-gray-50 text-center text-xs text-gray-400 italic">
                   This is an automated message — replies are not monitored.
                 </div>
-              )}
-              {!currentConversation.messages.every(m => m.is_system_message) && (
-              <div className="px-4 md:px-6 py-3 border-t border-gray-100 bg-white flex gap-2 items-end">
-                <Textarea
-                  placeholder="Type a reply… (Shift+Enter for new line)"
-                  value={replyText}
-                  onChange={(e) => setReplyText(e.target.value)}
-                  className="resize-none min-h-[44px] max-h-32 text-sm border-gray-200 flex-1 rounded-xl"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      if (replyText.trim()) sendReplyMutation.mutate();
-                    }
-                  }}
-                />
-                <Button
-                  onClick={() => sendReplyMutation.mutate()}
-                  disabled={!replyText.trim() || sendReplyMutation.isPending}
-                  className="bg-blue-500 hover:bg-blue-600 text-white shrink-0 rounded-xl h-11 w-11 p-0"
-                >
-                  <Send className="w-4 h-4" />
-                </Button>
-              </div>
+              ) : (
+                <div className="px-4 md:px-6 py-3 border-t border-gray-100 bg-white flex gap-2 items-end">
+                  <Textarea
+                    placeholder="Type a reply… (Shift+Enter for new line)"
+                    value={replyText}
+                    onChange={(e) => setReplyText(e.target.value)}
+                    className="resize-none min-h-[44px] max-h-32 text-sm border-gray-200 flex-1 rounded-xl"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        if (replyText.trim()) sendReplyMutation.mutate();
+                      }
+                    }}
+                  />
+                  <Button
+                    onClick={() => sendReplyMutation.mutate()}
+                    disabled={!replyText.trim() || sendReplyMutation.isPending}
+                    className="bg-blue-500 hover:bg-blue-600 text-white shrink-0 rounded-xl h-11 w-11 p-0"
+                  >
+                    <Send className="w-4 h-4" />
+                  </Button>
+                </div>
               )}
             </>
           )}
