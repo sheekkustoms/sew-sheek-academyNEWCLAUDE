@@ -22,12 +22,7 @@ export default function AvatarWithFallback({
   const initials = (name || email || "?")[0].toUpperCase();
   const displayName = name || email || "Member";
 
-  // Console logging for debugging avatar source
-  console.log("[AvatarWithFallback] Rendering avatar:", {
-    name: displayName,
-    hasImage: !!imageUrl,
-    imageUrl: imageUrl || "none",
-  });
+  console.log("[AvatarWithFallback] Rendering:", { name: displayName, hasImage: !!imageUrl });
 
   if (imageUrl) {
     return (
