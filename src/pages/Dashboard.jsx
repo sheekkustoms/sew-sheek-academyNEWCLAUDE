@@ -124,14 +124,27 @@ export default function Dashboard() {
   return (
     <div className="max-w-7xl mx-auto space-y-10">
       {/* Welcome Header */}
-      <div>
-         <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-2">
-           Welcome back, {user.role === "admin" ? "Coach" : (user.full_name && user.full_name !== user.email ? user.full_name.split(" ")[0] : "Member")}
-         </h1>
-        <p className="text-lg text-gray-600">
-          {moment().hour() < 12 ? "Good morning" : moment().hour() < 18 ? "Good afternoon" : "Good evening"}. Continue your learning journey.
-        </p>
-      </div>
+       <div className="flex items-start justify-between">
+         <div>
+          <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-2">
+            Welcome back, {user.role === "admin" ? "Coach" : (user.full_name && user.full_name !== user.email ? user.full_name.split(" ")[0] : "Member")}
+          </h1>
+         <p className="text-lg text-gray-600">
+           {moment().hour() < 12 ? "Good morning" : moment().hour() < 18 ? "Good afternoon" : "Good evening"}. Continue your learning journey.
+         </p>
+         </div>
+         {notifications.length > 0 && (
+           <Button 
+             variant="outline" 
+             size="sm" 
+             onClick={() => markAllRead.mutate()}
+             disabled={markAllRead.isPending}
+             className="gap-2 text-gray-600 whitespace-nowrap"
+           >
+             <CheckCheck className="w-4 h-4" /> Mark {notifications.length} as read
+           </Button>
+         )}
+       </div>
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
