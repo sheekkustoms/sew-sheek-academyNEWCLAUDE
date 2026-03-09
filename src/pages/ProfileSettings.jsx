@@ -61,12 +61,11 @@ export default function ProfileSettings() {
         base44.entities.Comment.update(comment.id, { author_name: trimmedName })
       ));
 
-      // Refetch and invalidate all related queries
-      queryClient.removeQueries({ queryKey: ["currentUser"] });
-      queryClient.removeQueries({ queryKey: ["myPoints"] });
-      const result = await queryClient.refetchQueries({ queryKey: ["currentUser"] });
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
-      queryClient.invalidateQueries({ queryKey: ["comments"] });
+      // Invalidate all queries to force refetch
+      queryClient.invalidateQueries();
+      // Wait a moment then reload page to ensure fresh data
+      await new Promise(resolve => setTimeout(resolve, 500));
+      window.location.reload();
       
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
