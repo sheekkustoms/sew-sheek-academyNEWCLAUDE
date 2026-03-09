@@ -245,7 +245,7 @@ export default function LiveClasses() {
               {cls.description && <p className="text-sm text-gray-500 mt-1">{cls.description}</p>}
               <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
                 <Clock className="w-3.5 h-3.5" />
-                {moment(cls.scheduled_at).format("dddd, MMMM D [at] h:mm A")}
+                {moment(cls.scheduled_at).local().format("dddd, MMMM D [at] h:mm A z")}
               </div>
             </div>
             {cls.zoom_url && (
