@@ -75,13 +75,26 @@ export default function Notifications() {
           {sorted.map((n, i) => {
             const cfg = typeConfig[n.type] || typeConfig.announcement;
             const Icon = cfg.icon;
+
+            const handleClick = async () => {
+              if (!n.is_read) {
+                await base44.entities.Notification.update(n.id, { is_read: true });
+                queryClient.invalidateQueries({ queryKey: ["allNotifications"] });
+                queryClient.invalidateQueries({ queryKey: ["notifications"] });
+              }
+              if (n.post_id) {
+                window.location.href = createPageUrl("Community") + `?postId=${n.post_id}`;
+              }
+            };
+
             return (
               <motion.div
                 key={n.id}
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.03 }}
-                className={`flex items-start gap-3 p-4 rounded-2xl border transition-all ${
+                onClick={handleClick}
+                className={`flex items-start gap-3 p-4 rounded-2xl border transition-all cursor-pointer hover:shadow-md ${
                   !n.is_read ? "bg-violet-50 border-violet-200" : "bg-white border-gray-100"
                 }`}
               >
