@@ -142,7 +142,8 @@ export default function ProfileSettings() {
       await queryClient.invalidateQueries({ queryKey: ["comments"] });
       console.log("[ProfileSettings] All queries invalidated");
 
-      // Step 7: Show success
+      // Step 7: Update local state and show success
+      setDisplayName(trimmedName);
       setOriginalName(trimmedName);
       setSuccess(true);
       console.log("[ProfileSettings] Save completed successfully");
