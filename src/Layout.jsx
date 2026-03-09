@@ -289,6 +289,17 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Main content */}
       <main className={`md:ml-64 min-h-screen bg-white ${showPWA ? "pt-24 md:pt-10" : "pt-14 md:pt-0"}`}>
+        {/* Desktop notification bell */}
+        <div className="hidden md:block fixed top-6 right-6 z-40">
+          <Link to={createPageUrl("Notifications")} className="relative inline-block">
+            <div className="p-2 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 transition-colors">
+              <Bell className="w-5 h-5 text-gray-600" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-pink-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">{unreadCount}</span>
+              )}
+            </div>
+          </Link>
+        </div>
         <div className="p-6 md:p-10">
           {children}
         </div>
