@@ -165,12 +165,21 @@ export default function CommentSection({ postId, user, myPoints }) {
             {(user?.full_name || user?.email || "?")[0].toUpperCase()}
           </div>
         )}
-        <Textarea
-          placeholder="Write a comment... (+5 XP)"
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          className="border-gray-200 min-h-[60px] text-sm bg-gray-50"
-        />
+        <div className="flex-1 space-y-1">
+          {replyingTo && (
+            <div className="flex items-center gap-1 text-xs text-violet-500 font-medium">
+              <CornerDownRight className="w-3 h-3" /> Replying to @{replyingTo}
+              <button onClick={() => { setReplyingTo(null); setNewComment(""); }} className="ml-1 text-gray-400 hover:text-gray-600">✕</button>
+            </div>
+          )}
+          <Textarea
+            ref={textareaRef}
+            placeholder="Write a comment... (+5 XP)"
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            className="border-gray-200 min-h-[60px] text-sm bg-gray-50"
+          />
+        </div>
         <Button
           onClick={() => addCommentMutation.mutate()}
           disabled={!newComment.trim() || addCommentMutation.isPending}
