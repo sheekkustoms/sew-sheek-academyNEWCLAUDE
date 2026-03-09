@@ -144,7 +144,7 @@ export default function ProfileSettings() {
         <h1 className="text-3xl font-light text-pink-500 mb-2">
           Account Settings
         </h1>
-        <p className="text-sm text-muted">
+        <p className="text-sm text-pink-500">
           Manage your profile information
         </p>
       </div>
@@ -157,7 +157,7 @@ export default function ProfileSettings() {
             <label className="text-sm font-semibold text-charcoal">
               Display Name
             </label>
-            <p className="text-xs text-muted mt-0.5">
+            <p className="text-xs text-pink-500 mt-0.5">
               This name appears across the community, leaderboard, and all your
               activity
             </p>
@@ -178,18 +178,18 @@ export default function ProfileSettings() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Email */}
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-muted uppercase tracking-wide">
+            <label className="text-xs font-semibold text-pink-500 uppercase tracking-wide">
               Email Address
             </label>
             <div className="h-11 bg-ivory-100 border border-ivory-200 rounded-lg px-4 flex items-center">
               <span className="text-base text-charcoal">{user?.email}</span>
             </div>
-            <p className="text-xs text-muted">Cannot be changed</p>
+            <p className="text-xs text-pink-500">Cannot be changed</p>
           </div>
 
           {/* User ID */}
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-muted uppercase tracking-wide">
+            <label className="text-xs font-semibold text-pink-500 uppercase tracking-wide">
               User ID
             </label>
             <div className="h-11 bg-ivory-100 border border-ivory-200 rounded-lg px-4 flex items-center">
@@ -197,12 +197,12 @@ export default function ProfileSettings() {
                 {user?.id}
               </span>
             </div>
-            <p className="text-xs text-muted">System generated</p>
+            <p className="text-xs text-pink-500">System generated</p>
           </div>
 
           {/* Role */}
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-muted uppercase tracking-wide">
+            <label className="text-xs font-semibold text-pink-500 uppercase tracking-wide">
               Account Type
             </label>
             <div className="h-11 bg-ivory-100 border border-ivory-200 rounded-lg px-4 flex items-center">
@@ -210,12 +210,12 @@ export default function ProfileSettings() {
                 {user?.role || "User"}
               </span>
             </div>
-            <p className="text-xs text-muted">Account role</p>
+            <p className="text-xs text-pink-500">Account role</p>
           </div>
 
           {/* Member Since */}
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-muted uppercase tracking-wide">
+            <label className="text-xs font-semibold text-pink-500 uppercase tracking-wide">
               Member Since
             </label>
             <div className="h-11 bg-ivory-100 border border-ivory-200 rounded-lg px-4 flex items-center">
@@ -229,7 +229,7 @@ export default function ProfileSettings() {
                   : "—"}
               </span>
             </div>
-            <p className="text-xs text-muted">Account creation date</p>
+            <p className="text-xs text-pink-500">Account creation date</p>
           </div>
         </div>
 
@@ -269,7 +269,7 @@ export default function ProfileSettings() {
       </div>
 
       {/* Info Footer */}
-      <p className="text-xs text-muted mt-6 text-center">
+      <p className="text-xs text-pink-500 mt-6 text-center">
         Your display name is used throughout the app. Changes are saved
         immediately.
       </p>
