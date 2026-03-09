@@ -43,9 +43,8 @@ export default function ProfileSettings() {
     if (pts[0]) {
       await base44.entities.UserPoints.update(pts[0].id, { user_name: trimmedName });
     }
-    // Update the cached user directly so the name doesn't reset
+    // Update the cached user directly so the name doesn't reset on refetch
     queryClient.setQueryData(["currentUser"], (old) => old ? { ...old, full_name: trimmedName, avatar_url: avatarUrl } : old);
-    await queryClient.invalidateQueries({ queryKey: ["currentUser"] });
     queryClient.invalidateQueries({ queryKey: ["myPoints"] });
     setSaving(false);
     setSaved(true);
