@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { 
   Loader2, Play, MessageSquare, Trophy, Calendar, TrendingUp,
-  ChevronRight, BookOpen, Zap
+  ChevronRight, BookOpen, Zap, Bell, CheckCheck
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import moment from "moment";
