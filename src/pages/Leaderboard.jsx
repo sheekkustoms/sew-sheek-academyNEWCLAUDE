@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { getLevelFromXP } from "@/components/shared/XPBar";
+import AvatarWithFallback from "@/components/shared/AvatarWithFallback";
 
 const RankBadge = ({ rank }) => {
   if (rank === 1) return <div className="w-8 h-8 rounded-lg bg-yellow-100 flex items-center justify-center text-lg">🥇</div>;
@@ -26,6 +27,19 @@ export default function Leaderboard() {
   const { data: user } = useQuery({
     queryKey: ["currentUser"],
     queryFn: () => base44.auth.me(),
+  });
+
+  // Fetch all user profiles to get avatar URLs
+  const { data: allUsers = [] } = useQuery({
+    queryKey: ["allUserProfiles"],
+    queryFn: () => base44.entities.User.list(),
+    staleTime: 60000,
+  });
+
+  // Create email->user map for avatar lookup
+  const userMap = {};
+  allUsers.forEach(user => {
+    userMap[user.email] = user;
   });
 
   const { data: weeklyChallengeSettings = [] } = useQuery({
@@ -49,12 +63,16 @@ export default function Leaderboard() {
   const todayChallenge = dailyChallenges?.find(c => c.challenge_date === todayDate);
   const questionCount = weeklyChallengeQuestions?.length || 0;
 
-  // Calculate rankings
-  const rankings = allPoints.map((p, idx) => ({
-    ...p,
-    rank: idx + 1,
-    isCurrentUser: user?.email === p.user_email,
-  }));
+  // Calculate rankings with avatar data
+   const rankings = allPoints.map((p, idx) => {
+     const userProfile = userMap[p.user_email];
+     return {
+       ...p,
+       rank: idx + 1,
+       isCurrentUser: user?.email === p.user_email,
+       avatar_url: userProfile?.avatar_url || null,
+     };
+   });
 
   const currentUserRank = rankings.find(r => r.isCurrentUser);
   const topMembers = rankings.slice(0, 10);
@@ -120,10 +138,13 @@ export default function Leaderboard() {
                     <RankBadge rank={member.rank} />
                   </div>
                   <div className="col-span-5 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-pink-400 flex items-center justify-center text-white font-bold text-sm">
-                      {(member.user_name || member.user_email)[0].toUpperCase()}
-                    </div>
-                    <div>
+                     <AvatarWithFallback
+                       imageUrl={member.avatar_url}
+                       name={member.user_name}
+                       email={member.user_email}
+                       size="md"
+                     />
+                     <div>
                       <p className="font-semibold text-gray-900">{member.user_name || member.user_email}</p>
                       <p className="text-xs text-gray-500">Level {getLevelFromXP(member.total_xp)}</p>
                     </div>
