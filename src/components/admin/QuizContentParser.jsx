@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Wand2, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Wand2, Loader2, AlertCircle, CheckCircle2, Copy } from "lucide-react";
 
 export default function QuizContentParser({ quizId, onQuestionsGenerated }) {
   const [content, setContent] = useState("");
