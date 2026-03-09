@@ -221,7 +221,7 @@ export default function Dashboard() {
                       await base44.entities.User.delete(m.id);
                       queryClient.invalidateQueries({ queryKey: ["allMembers"] });
                     }}
-                    className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full text-[10px] items-center justify-center hidden group-hover:flex shadow"
+                    className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full text-[10px] flex items-center justify-center shadow"
                   >
                     ×
                   </button>
