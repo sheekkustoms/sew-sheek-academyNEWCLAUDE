@@ -52,28 +52,56 @@ export default function Community() {
   };
 
   const createPostMutation = useMutation({
-   mutationFn: async () => {
-     let image_url = "";
-     if (imageFile) {
-       setUploading(true);
-       const result = await base44.integrations.Core.UploadFile({ file: imageFile });
-       image_url = result.file_url;
-       setUploading(false);
-     }
-     await base44.entities.CommunityPost.create({
-       ...newPost,
-       image_url,
-       author_email: user.email,
-       author_name: user.full_name || user.email,
-       author_avatar: user.avatar_url || "",
-       likes: [],
-       comment_count: 0,
-       is_approved: user.role === "admin" ? true : false,
-       is_pinned: false,
-     });
+    mutationFn: async () => {
+      let image_url = "";
+      if (imageFile) {
+        setUploading(true);
+        const result = await base44.integrations.Core.UploadFile({ file: imageFile });
+        image_url = result.file_url;
+        setUploading(false);
+      }
+      const createdPost = await base44.entities.CommunityPost.create({
+        ...newPost,
+        image_url,
+        author_email: user.email,
+        author_name: user.full_name || user.email,
+        author_avatar: user.avatar_url || "",
+        likes: [],
+        comment_count: 0,
+        is_approved: user.role === "admin" ? true : false,
+        is_pinned: false,
+      });
+
+      console.log("[Community] Post created:", {
+        postId: createdPost.id,
+        title: newPost.title,
+        author: user.email,
+        isAdmin: user.role === "admin",
+      });
+
+      // Award XP to creator
       if (myPoints) {
         await awardXP(myPoints.id, myPoints, 15, { posts_created: (myPoints.posts_created || 0) + 1 });
       }
+
+      // Notify all users if this is an admin post
+      if (user.role === "admin") {
+        console.log("[Community] Triggering notifications for admin post...");
+        try {
+          const notifyResult = await base44.functions.invoke('notifyOnNewPost', {
+            postId: createdPost.id,
+            postTitle: newPost.title,
+            authorEmail: user.email,
+            authorName: user.full_name || user.email,
+            isAnnouncement: true,
+          });
+          console.log("[Community] Notification result:", notifyResult.data);
+        } catch (notifyErr) {
+          console.error("[Community] Failed to send notifications:", notifyErr);
+        }
+      }
+
+      return createdPost;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["communityPosts"] });
