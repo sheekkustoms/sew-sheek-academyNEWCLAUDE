@@ -23,7 +23,8 @@ function useUserAvatars(emails) {
       return map;
     },
     enabled: emails.length > 0,
-    staleTime: 60000,
+    staleTime: 30000,
+    refetchInterval: 30000,
   });
 }
 
