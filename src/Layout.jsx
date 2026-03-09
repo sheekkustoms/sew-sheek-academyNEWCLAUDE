@@ -5,7 +5,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   LayoutDashboard, BookOpen, Users, Trophy, Menu, X, LogOut,
-  Zap, ChevronRight, Brain, Bell, Shield, Download, Gamepad2, Video, Mail
+  Zap, ChevronRight, Brain, Bell, Shield, Download, Gamepad2, Video, Mail, User
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getLevelFromXP } from "./components/shared/XPBar";
