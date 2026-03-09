@@ -48,18 +48,23 @@ export default function Layout({ children, currentPageName }) {
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
 
-  const { data: user, refetch: refetchUser } = useQuery({
+  const { data: user } = useQuery({
     queryKey: ["currentUser"],
     queryFn: () => base44.auth.me(),
     staleTime: 0,
     gcTime: 0,
   });
 
-  // Refetch user whenever currentUser query changes
-  useEffect(() => {
-    const interval = setInterval(() => refetchUser(), 5000);
-    return () => clearInterval(interval);
-  }, [refetchUser]);
+  // Fetch user's display_name from User entity
+  const { data: userRecords } = useQuery({
+    queryKey: ["userDisplayName", user?.email],
+    queryFn: () => base44.entities.User.filter({ email: user.email }),
+    enabled: !!user?.email,
+    refetchInterval: 3000, // Refetch every 3 seconds to catch display name updates
+  });
+
+  const userRecord = userRecords?.[0];
+  const displayName = userRecord?.display_name || user?.full_name || "Member";
 
   const { data: userPoints } = useQuery({
     queryKey: ["myPoints", user?.email],
