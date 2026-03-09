@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Trash2, Edit2, Play, Eye, Gamepad2, ChevronDown, ChevronUp, X, Copy, Radio } from "lucide-react";
 import LiveGameHost from "./LiveGameHost";
 import QuizContentParser from "./QuizContentParser";
+import QuizEditor from "./QuizEditor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
