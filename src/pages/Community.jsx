@@ -140,22 +140,22 @@ export default function Community() {
       <div className="flex flex-col lg:flex-row gap-4">
         {/* Sections sidebar */}
         <div className="lg:w-52 shrink-0">
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 space-y-0.5">
-            {SECTIONS.map((s) => (
-              <button
-                key={s.value}
-                onClick={() => setSection(s.value)}
-                className={`w-full text-left px-3 py-2 rounded-xl text-sm transition-all ${
-                  section === s.value
-                    ? "bg-gradient-to-r from-pink-50 to-violet-50 text-violet-700 font-semibold border border-violet-200/50"
-                    : "text-gray-600 hover:bg-gray-50"
-                }`}
-              >
-                {s.label}
-              </button>
-            ))}
+            <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-3 space-y-1 sticky top-20">
+              {SECTIONS.map((s) => (
+                <button
+                  key={s.value}
+                  onClick={() => setSection(s.value)}
+                  className={`w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                    section === s.value
+                      ? "bg-yellow-50 text-gray-900 border border-yellow-200"
+                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                  }`}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
 
         {/* Posts feed */}
         <div className="flex-1 space-y-4">
