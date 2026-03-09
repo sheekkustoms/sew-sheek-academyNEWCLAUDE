@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Plus, Search, Users, ImagePlus, Pin, X } from "lucide-react";
+import { Plus, Search, Users, ImagePlus, Pin, X, Trash2 } from "lucide-react";
 import PostCard from "../components/community/PostCard";
 import CommentSection from "../components/community/CommentSection";
 import { getOrCreateUserPoints, awardXP } from "../components/shared/useUserPoints";
@@ -134,6 +134,18 @@ export default function Community() {
       }
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["communityPosts"] }),
+  });
+
+  const deletePostMutation = useMutation({
+    mutationFn: async (post) => {
+      await base44.entities.CommunityPost.delete(post.id);
+      const comments = await base44.entities.Comment.filter({ post_id: post.id });
+      await Promise.all(comments.map(c => base44.entities.Comment.delete(c.id)));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["communityPosts"] });
+      setSelectedPost(null);
+    },
   });
 
   // Sort: pinned first, then by date
@@ -293,10 +305,25 @@ export default function Community() {
                 <img src={selectedPost.image_url} className="w-full rounded-lg object-cover max-h-60 mb-4" />
               )}
               <p className="text-base text-gray-700 mb-4">{selectedPost.content}</p>
-              <p className="text-xs text-gray-500 mb-6 pb-4 border-b border-gray-100">
-                by {selectedPost.author_name || selectedPost.author_email} · {new Date(selectedPost.created_date).toLocaleDateString()}
-                {selectedPost.is_pinned && <span className="ml-2 text-yellow-600">📌 Pinned</span>}
-              </p>
+              <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
+                <p className="text-xs text-gray-500">
+                  by {selectedPost.author_name || selectedPost.author_email} · {new Date(selectedPost.created_date).toLocaleDateString()}
+                  {selectedPost.is_pinned && <span className="ml-2 text-yellow-600">📌 Pinned</span>}
+                </p>
+                {selectedPost.author_email === user?.email && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 px-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded text-xs"
+                    onClick={() => {
+                      if (window.confirm("Delete this post?")) deletePostMutation.mutate(selectedPost);
+                    }}
+                    disabled={deletePostMutation.isPending}
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </Button>
+                )}
+              </div>
               <CommentSection postId={selectedPost.id} user={user} myPoints={myPoints} />
             </>
           )}
