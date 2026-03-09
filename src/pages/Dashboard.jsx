@@ -75,6 +75,7 @@ export default function Dashboard() {
     <div className="max-w-6xl mx-auto space-y-8">
       {needsProfileSetup && <ProfileSetupModal user={user} onComplete={() => setProfileDone(true)} />}
       {/* Welcome hero */}
+
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
