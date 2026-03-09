@@ -311,7 +311,7 @@ export default function CourseManager() {
   const queryClient = useQueryClient();
   const [showNew, setShowNew] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [newForm, setNewForm] = useState({ title: "", description: "", category: "beginner_sewing", difficulty: "beginner", xp_reward: 100, is_published: false });
+  const [newForm, setNewForm] = useState({ title: "", description: "", category: "beginner_sewing", difficulty: "beginner", level: 1, xp_reward: 100, is_published: false });
 
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
   const { data: courses = [] } = useQuery({
