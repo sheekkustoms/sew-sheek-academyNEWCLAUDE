@@ -101,9 +101,20 @@ export default function PostCard({ post, currentUserEmail, onLike, onClick, inde
             {likeCount}
           </Button>
           
-          <div className="flex items-center gap-1.5 text-xs text-gray-400 ml-auto">
-             <MessageCircle className="w-3.5 h-3.5" />
-             {post.comment_count || 0}
+          <div className="flex items-center gap-2 ml-auto">
+             {commenters.length > 0 && (
+               <div className="flex -space-x-1.5">
+                 {commenters.map((c, i) => (
+                   <div key={`c-${i}`} title={c.name} className="w-5 h-5 rounded-full bg-gradient-to-br from-pink-400 to-violet-400 flex items-center justify-center text-white text-[9px] font-bold border border-white">
+                     {(c.name || c.email)[0].toUpperCase()}
+                   </div>
+                 ))}
+               </div>
+             )}
+             <div className="flex items-center gap-1.5 text-xs text-gray-400">
+               <MessageCircle className="w-3.5 h-3.5" />
+               {post.comment_count || 0}
+             </div>
            </div>
         </div>
       </div>
