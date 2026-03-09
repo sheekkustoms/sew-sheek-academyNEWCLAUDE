@@ -140,21 +140,45 @@ export default function CommentSection({ postId, user, myPoints }) {
              className="flex gap-3"
            >
              <CommentAvatar email={comment.author_email} name={comment.author_name} avatarMap={avatarMap} />
-             <div className="flex-1 bg-gray-100 rounded-2xl p-4">
-               <div className="flex items-center gap-2 mb-1">
-                 <span className="font-bold text-gray-900 text-sm">{comment.author_name || comment.author_email}</span>
-                 <span className="text-gray-500 text-xs">•</span>
-                 <RelativeTime date={comment.created_date} />
+             <div className="flex-1">
+               <div className="bg-gray-100 rounded-2xl p-4">
+                 <div className="flex items-center gap-2 mb-1">
+                   <span className="font-bold text-gray-900 text-sm">{comment.author_name || comment.author_email}</span>
+                   <span className="text-gray-500 text-xs">•</span>
+                   <RelativeTime date={comment.created_date} />
+                 </div>
+                 <p className="text-gray-800 text-sm leading-relaxed">
+                   {comment.content.split(/(@[\w.+-]+@[\w-]+\.[\w.]+)/).map((part, idx) =>
+                     part.match(/@[\w.+-]+@[\w-]+\.[\w.]+/) ? (
+                       <span key={idx} className="text-blue-600 font-medium">{part}</span>
+                     ) : (
+                       <span key={idx}>{part}</span>
+                     )
+                   )}
+                 </p>
                </div>
-               <p className="text-gray-800 text-sm leading-relaxed">
-                 {comment.content.split(/(@[\w.+-]+@[\w-]+\.[\w.]+)/).map((part, idx) =>
-                   part.match(/@[\w.+-]+@[\w-]+\.[\w.]+/) ? (
-                     <span key={idx} className="text-blue-600 font-medium">{part}</span>
-                   ) : (
-                     <span key={idx}>{part}</span>
-                   )
-                 )}
-               </p>
+               <div className="flex items-center gap-4 mt-2 ml-0 text-xs text-gray-600">
+                 <button
+                   onClick={() => likeCommentMutation.mutate(comment)}
+                   className={`flex items-center gap-1 transition-colors ${
+                     comment.likes?.includes(user?.email) ? "text-pink-500" : "text-gray-400 hover:text-pink-500"
+                   }`}
+                 >
+                   <Heart className={`w-3.5 h-3.5 ${comment.likes?.includes(user?.email) ? "fill-current" : ""}`} />
+                   {comment.likes?.length || 0}
+                 </button>
+                 <button
+                   onClick={() => {
+                     const name = comment.author_name || comment.author_email;
+                     setReplyingTo(name);
+                     setNewComment(`@${name} `);
+                     setTimeout(() => textareaRef.current?.focus(), 50);
+                   }}
+                   className="text-gray-400 hover:text-gray-600 transition-colors font-medium"
+                 >
+                   Reply
+                 </button>
+               </div>
              </div>
            </motion.div>
          ))}
