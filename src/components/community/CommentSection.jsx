@@ -10,30 +10,12 @@ import { awardXP } from "../shared/useUserPoints";
 import { getDisplayName } from "../shared/useDisplayName";
 import AvatarWithFallback from "../shared/AvatarWithFallback";
 
-function useUserAvatars(emails) {
-  return useQuery({
-    queryKey: ["userAvatars", emails.sort().join(",")],
-    queryFn: async () => {
-      if (!emails.length) return {};
-      const users = await base44.entities.User.list();
-      const map = {};
-      users.forEach(u => { 
-        map[u.email] = { avatar_url: u.avatar_url || null, display_name: u.display_name || null };
-      });
-      return map;
-    },
-    enabled: emails.length > 0,
-    staleTime: 30000,
-    refetchInterval: 30000,
-  });
-}
+// No longer needed - avatars are stored directly in comments
 
-function CommentAvatar({ email, name, avatarMap }) {
-   const userInfo = avatarMap?.[email];
-   const avatar = userInfo?.avatar_url;
+function CommentAvatar({ email, name, avatarUrl }) {
    return (
      <AvatarWithFallback
-       imageUrl={avatar}
+       imageUrl={avatarUrl}
        name={name}
        email={email}
        size="sm"
@@ -56,8 +38,7 @@ export default function CommentSection({ postId, user, myPoints }) {
   // Get current user's display_name with fallback chain
    const userDisplayName = getDisplayName(user);
 
-  const commenterEmails = [...new Set(comments.map(c => c.author_email).filter(Boolean))];
-  const { data: avatarMap = {} } = useUserAvatars(commenterEmails);
+
 
   // Group comments: separate top-level from replies
   const topLevelComments = comments.filter(c => !c.content.match(/^@[^@\n]+\s/));
@@ -93,6 +74,7 @@ export default function CommentSection({ postId, user, myPoints }) {
        post_id: postId,
        author_email: user.email,
        author_name: userDisplayName,
+       author_avatar: user.avatar_url || null,
        content: commentContent,
        likes: [],
      });
@@ -195,7 +177,7 @@ export default function CommentSection({ postId, user, myPoints }) {
                transition={{ delay: i * 0.03 }}
                className="flex gap-3"
              >
-               <CommentAvatar email={comment.author_email} name={comment.author_name} avatarMap={avatarMap} />
+               <CommentAvatar email={comment.author_email} name={comment.author_name} avatarUrl={comment.author_avatar} />
                <div className="flex-1">
                  <div className="bg-gray-100 rounded-2xl p-4">
                    <div className="flex items-center gap-2 mb-1">
@@ -259,7 +241,7 @@ export default function CommentSection({ postId, user, myPoints }) {
                        transition={{ delay: i * 0.03 + j * 0.02 }}
                        className="flex gap-3"
                      >
-                       <CommentAvatar email={reply.author_email} name={reply.author_name} avatarMap={avatarMap} />
+                       <CommentAvatar email={reply.author_email} name={reply.author_name} avatarUrl={reply.author_avatar} />
                        <div className="flex-1">
                          <div className="bg-blue-50 rounded-2xl p-4 border border-blue-100">
                            <div className="flex items-center gap-2 mb-2">
