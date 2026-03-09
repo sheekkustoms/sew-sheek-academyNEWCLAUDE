@@ -460,11 +460,17 @@ export default function CourseManager() {
               </div>
             </div>
           </div>
-        ))}
-        {courses.length === 0 && (
-          <p className="text-center text-sm text-gray-400 py-8">No courses yet. Create your first one above!</p>
-        )}
-      </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+              {sortedCourses.length === 0 && (
+                <p className="text-center text-sm text-gray-400 py-8">No courses yet. Create your first one above!</p>
+              )}
+            </div>
+          )}
+          </Droppable>
+          </DragDropContext>
     </div>
   );
 }
