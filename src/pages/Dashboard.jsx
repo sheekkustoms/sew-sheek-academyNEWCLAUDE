@@ -193,6 +193,31 @@ export default function Dashboard() {
         </div>
       )}
 
+      {/* Members */}
+      {members.length > 0 && (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+              <Users className="w-5 h-5 text-violet-500" /> Members
+            </h2>
+            <span className="text-xs text-gray-400">{members.length} total</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {members.map((m) => (
+              <div key={m.id} title={m.full_name || m.email} className="w-10 h-10 rounded-full overflow-hidden shrink-0 border-2 border-white shadow-sm">
+                {m.avatar_url ? (
+                  <img src={m.avatar_url} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-pink-400 to-violet-400 flex items-center justify-center text-white text-sm font-bold">
+                    {(m.full_name || m.email || "?")[0].toUpperCase()}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Mini leaderboard */}
       {topLearners.length > 0 && (
         <div>
