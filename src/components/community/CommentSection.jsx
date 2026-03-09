@@ -227,9 +227,9 @@ export default function CommentSection({ postId, user, myPoints }) {
              {replyMap[comment.id] && (
                <div className="ml-10 space-y-2 mt-2">
                  {replyMap[comment.id].map((reply, j) => {
-                   const mentionMatch = reply.content.match(/@([\w.+-]+@[\w-]+\.[\w.]+)/);
-                   const mentionedName = mentionMatch ? mentionMatch[1].split('@')[0] : '';
-                   const replyContent = reply.content.replace(/@[\w.+-]+@[\w-]+\.[\w.]+\s?/g, "");
+                   const mentionMatch = reply.content.match(/^@([^@\n]+?)\s/);
+                   const mentionedName = mentionMatch ? mentionMatch[1] : '';
+                   const replyContent = reply.content.replace(/^@[^@\n]+?\s/, "");
 
                    return (
                      <motion.div
