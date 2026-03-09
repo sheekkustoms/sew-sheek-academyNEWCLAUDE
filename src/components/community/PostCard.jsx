@@ -38,6 +38,9 @@ export default function PostCard({ post, currentUserEmail, onLike, onClick, inde
      staleTime: 0,
    });
 
+   // Sort comments by created_date descending to get the actual last comment
+   const sortedComments = [...comments].sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+
    // Get unique commenters (by email) - limit to 5
    const commentersMap = new Map();
    comments.forEach(c => {
