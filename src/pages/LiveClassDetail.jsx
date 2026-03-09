@@ -101,17 +101,40 @@ export default function LiveClassDetail() {
           {/* Supply List */}
           {cls.supply_list && cls.supply_list.length > 0 && (
             <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
-              <h2 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-amber-600" /> Supply List
-              </h2>
-              <ul className="space-y-2">
-                {cls.supply_list.map((item, idx) => (
-                  <li key={idx} className="flex items-start gap-3 text-gray-700">
-                    <CheckCircle2 className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
+              <h2 className="font-semibold text-gray-900 mb-4">Supply List</h2>
+              <div className="space-y-4 text-gray-700">
+                {cls.supply_list.map((item, idx) => {
+                  const trimmed = item.trim();
+                  
+                  // Category headers (contain emoji at start)
+                  if (/^[🧵🪡✂️📌🎨🔧]/.test(trimmed)) {
+                    return (
+                      <div key={idx} className="space-y-2">
+                        <p className="font-semibold text-gray-900">{trimmed}</p>
+                      </div>
+                    );
+                  }
+                  
+                  // OR divider
+                  if (trimmed.toUpperCase() === "OR") {
+                    return (
+                      <div key={idx} className="flex items-center gap-3 py-1">
+                        <div className="flex-1 h-px bg-amber-300" />
+                        <span className="text-sm text-amber-600 font-medium">OR</span>
+                        <div className="flex-1 h-px bg-amber-300" />
+                      </div>
+                    );
+                  }
+                  
+                  // Regular bullet items
+                  return (
+                    <p key={idx} className="flex items-start gap-3">
+                      <span className="text-amber-600 mt-0.5">•</span>
+                      <span>{trimmed}</span>
+                    </p>
+                  );
+                })}
+              </div>
             </div>
           )}
 
