@@ -132,15 +132,28 @@ export default function CommentSection({ postId, user, myPoints }) {
               <span className="text-[10px] text-gray-400">{moment(comment.created_date).fromNow()}</span>
             </div>
             <p className="text-sm text-gray-600 ml-7">{comment.content}</p>
-            <button
-              onClick={() => likeCommentMutation.mutate(comment)}
-              className={`flex items-center gap-1 mt-2 ml-7 text-xs transition-colors ${
-                comment.likes?.includes(user?.email) ? "text-pink-500" : "text-gray-400 hover:text-pink-500"
-              }`}
-            >
-              <Heart className={`w-3 h-3 ${comment.likes?.includes(user?.email) ? "fill-current" : ""}`} />
-              {comment.likes?.length || 0}
-            </button>
+            <div className="flex items-center gap-3 mt-2 ml-7">
+              <button
+                onClick={() => likeCommentMutation.mutate(comment)}
+                className={`flex items-center gap-1 text-xs transition-colors ${
+                  comment.likes?.includes(user?.email) ? "text-pink-500" : "text-gray-400 hover:text-pink-500"
+                }`}
+              >
+                <Heart className={`w-3 h-3 ${comment.likes?.includes(user?.email) ? "fill-current" : ""}`} />
+                {comment.likes?.length || 0}
+              </button>
+              <button
+                onClick={() => {
+                  const name = comment.author_name || comment.author_email;
+                  setReplyingTo(name);
+                  setNewComment(`@${name} `);
+                  setTimeout(() => textareaRef.current?.focus(), 50);
+                }}
+                className="flex items-center gap-1 text-xs text-gray-400 hover:text-violet-500 transition-colors"
+              >
+                <CornerDownRight className="w-3 h-3" /> Reply
+              </button>
+            </div>
           </motion.div>
         ))}
       </div>
