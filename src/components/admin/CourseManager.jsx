@@ -343,7 +343,7 @@ export default function CourseManager() {
     onSuccess: (created) => {
       queryClient.invalidateQueries({ queryKey: ["adminCourses"] });
       setShowNew(false);
-      setNewForm({ title: "", description: "", category: "beginner_sewing", difficulty: "beginner", xp_reward: 100, is_published: false });
+      setNewForm({ title: "", description: "", category: "beginner_sewing", difficulty: "beginner", level: 1, xp_reward: 100, is_published: false });
       setEditingId(created.id);
     },
   });
