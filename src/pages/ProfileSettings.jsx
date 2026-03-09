@@ -141,7 +141,7 @@ export default function ProfileSettings() {
     <div className="max-w-2xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-light text-charcoal mb-2">
+        <h1 className="text-3xl font-light text-pink-500 mb-2">
           Account Settings
         </h1>
         <p className="text-sm text-muted">
