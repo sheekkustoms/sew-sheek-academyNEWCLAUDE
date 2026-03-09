@@ -168,7 +168,7 @@ export default function Community() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between bg-white rounded-lg p-6 shadow-sm">
         <div>
           <h1 className="text-4xl font-bold text-gray-900">Community</h1>
           <p className="text-lg text-gray-600 mt-2">Connect, share, and grow together</p>
@@ -184,7 +184,7 @@ export default function Community() {
       <div className="flex flex-col lg:flex-row gap-4">
         {/* Sections sidebar */}
         <div className="lg:w-52 shrink-0">
-            <div className="bg-[#c9b6be] rounded-lg border border-pink-300 shadow-sm p-3 space-y-1 sticky top-20">
+            <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-3 space-y-1 sticky top-20">
               {SECTIONS.map((s) => (
                 <button
                   key={s.value}
@@ -192,7 +192,7 @@ export default function Community() {
                   className={`w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
                     section === s.value
                       ? "bg-green-700 text-white border border-green-800"
-                      : "text-gray-700 hover:text-gray-900 hover:bg-pink-50"
+                      : "text-gray-700 hover:text-gray-900 hover:bg-gray-100"
                   }`}
                 >
                   {s.label}
@@ -202,14 +202,14 @@ export default function Community() {
           </div>
 
         {/* Posts feed */}
-        <div className="flex-1 space-y-4">
-          <div className="relative">
-            <Search className="absolute left-4 top-3 w-4 h-4 text-gray-400" />
+         <div className="flex-1 space-y-4">
+          <div className="relative bg-white rounded-lg p-2 shadow-sm">
+            <Search className="absolute left-6 top-5 w-4 h-4 text-gray-400" />
             <Input
               placeholder="Search posts..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-10 h-11 bg-[#c9b6be] border-pink-300 text-gray-800 placeholder:text-gray-600 rounded-lg"
+              className="pl-10 h-11 bg-white border-gray-200 text-gray-800 placeholder:text-gray-500 rounded-lg"
             />
           </div>
 
@@ -218,10 +218,10 @@ export default function Community() {
               {Array(4).fill(0).map((_, i) => <div key={i} className="bg-white rounded-lg h-32 animate-pulse border border-gray-200" />)}
             </div>
           ) : filteredAndSorted.length === 0 ? (
-            <div className="text-center py-20 bg-[#c9b6be] rounded-lg border border-pink-300">
-              <Users className="w-12 h-12 text-amber-300 mx-auto mb-3" />
-              <p className="text-gray-500 font-medium">No posts here yet</p>
-              <p className="text-sm text-gray-400 mt-1">Be the first to share!</p>
+            <div className="text-center py-20 bg-white rounded-lg border border-gray-200 shadow-sm">
+              <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-700 font-medium">No posts here yet</p>
+              <p className="text-sm text-gray-500 mt-1">Be the first to share!</p>
             </div>
           ) : (
             filteredAndSorted.map((post, i) => (
@@ -240,7 +240,7 @@ export default function Community() {
 
       {/* Create post dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="bg-[#c9b6be] border-pink-300 text-gray-900 max-w-lg">
+        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold text-gray-900">Create a Post</DialogTitle>
           </DialogHeader>
@@ -299,7 +299,7 @@ export default function Community() {
 
       {/* Post detail */}
       <Dialog open={!!selectedPost} onOpenChange={() => setSelectedPost(null)}>
-        <DialogContent className="bg-[#c9b6be] border-pink-300 text-gray-900 max-w-2xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-2xl max-h-[85vh] overflow-y-auto">
           {selectedPost && (
             <>
               <DialogHeader>
