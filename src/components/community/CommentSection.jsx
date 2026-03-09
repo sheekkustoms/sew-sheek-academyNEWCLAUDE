@@ -49,6 +49,15 @@ export default function CommentSection({ postId, user, myPoints }) {
     enabled: !!postId,
   });
 
+  // Fetch current user's display_name
+  const { data: userRecord } = useQuery({
+    queryKey: ["userRecord", user?.email],
+    queryFn: () => base44.entities.User.filter({ email: user.email }),
+    enabled: !!user?.email,
+  });
+
+  const userDisplayName = userRecord?.[0]?.display_name || user?.full_name || user?.email;
+
   const commenterEmails = [...new Set(comments.map(c => c.author_email).filter(Boolean))];
   const { data: avatarMap = {} } = useUserAvatars(commenterEmails);
 
