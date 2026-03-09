@@ -17,10 +17,12 @@ export default function ProfileSettings() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
+  const initialized = useRef(false);
   useEffect(() => {
-    if (user) {
+    if (user && !initialized.current) {
       setFullName(user.full_name || "");
       setAvatarUrl(user.avatar_url || "");
+      initialized.current = true;
     }
   }, [user]);
 
