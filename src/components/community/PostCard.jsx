@@ -35,11 +35,17 @@ export default function PostCard({ post, currentUserEmail, onLike, onClick, inde
     queryFn: () => base44.entities.Comment.filter({ post_id: post.id }),
   });
 
-  // Get unique commenters
-  const commenters = [...new Set(comments.map(c => ({ email: c.author_email, name: c.author_name })))];
+  // Get unique commenters (by email)
+  const commentersMap = new Map();
+  comments.forEach(c => {
+    if (!commentersMap.has(c.author_email)) {
+      commentersMap.set(c.author_email, { email: c.author_email, name: c.author_name });
+    }
+  });
+  const commenters = Array.from(commentersMap.values());
   
-  // Get likes (first 3)
-  const likers = post.likes?.slice(0, 3) || [];
+  // Get unique likers
+  const uniqueLikers = [...new Set(post.likes || [])].slice(0, 3);
 
   return (
     <motion.div
