@@ -171,13 +171,13 @@ export default function Community() {
 
           {isLoading ? (
             <div className="space-y-4">
-              {Array(4).fill(0).map((_, i) => <div key={i} className="bg-white rounded-2xl h-32 animate-pulse border border-gray-100" />)}
+              {Array(4).fill(0).map((_, i) => <div key={i} className="bg-white rounded-lg h-32 animate-pulse border border-gray-200" />)}
             </div>
           ) : filteredAndSorted.length === 0 ? (
-            <div className="text-center py-20 bg-white rounded-2xl border border-gray-100">
+            <div className="text-center py-20 bg-white rounded-lg border border-gray-200">
               <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-              <p className="text-gray-500">No posts here yet</p>
-              <p className="text-sm text-gray-400 mt-1">Be the first to post!</p>
+              <p className="text-gray-500 font-medium">No posts here yet</p>
+              <p className="text-sm text-gray-400 mt-1">Be the first to share!</p>
             </div>
           ) : (
             filteredAndSorted.map((post, i) => (
