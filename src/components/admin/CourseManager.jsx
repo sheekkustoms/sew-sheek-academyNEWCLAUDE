@@ -198,12 +198,21 @@ function CourseEditor({ course, onClose }) {
           <Input placeholder="Course title..." value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="border-gray-200" />
           <Textarea placeholder="Course description..." value={form.description || ""} onChange={e => setForm({ ...form, description: e.target.value })} className="border-gray-200 min-h-[80px]" />
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             <div>
               <label className="text-xs text-gray-500 mb-1 block">Category</label>
               <Select value={form.category} onValueChange={v => setForm({ ...form, category: v })}>
                 <SelectTrigger className="border-gray-200 h-9 text-sm"><SelectValue /></SelectTrigger>
                 <SelectContent>{CATEGORIES.map(c => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-xs text-gray-500 mb-1 block">Level</label>
+              <Select value={String(form.level || 1)} onValueChange={v => setForm({ ...form, level: +v })}>
+                <SelectTrigger className="border-gray-200 h-9 text-sm"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {[1, 2, 3, 4].map(l => <SelectItem key={l} value={String(l)}>Level {l}</SelectItem>)}
+                </SelectContent>
               </Select>
             </div>
             <div>
