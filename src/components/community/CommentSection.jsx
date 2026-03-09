@@ -44,6 +44,9 @@ export default function CommentSection({ postId, user, myPoints }) {
     enabled: !!postId,
   });
 
+  const commenterEmails = [...new Set(comments.map(c => c.author_email).filter(Boolean))];
+  const { data: avatarMap = {} } = useUserAvatars(commenterEmails);
+
   const addCommentMutation = useMutation({
     mutationFn: async () => {
       await base44.entities.Comment.create({
