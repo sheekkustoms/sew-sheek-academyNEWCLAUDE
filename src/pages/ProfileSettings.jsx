@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Check, AlertCircle } from "lucide-react";
+import { Loader2, Check, AlertCircle, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getDisplayName, updateUserDisplayName } from "@/components/shared/useDisplayName";
@@ -14,6 +14,7 @@ export default function ProfileSettings() {
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
 
   // Fetch current user
    const { data: user, isLoading: userLoading } = useQuery({
@@ -47,6 +48,44 @@ export default function ProfileSettings() {
 
   const hasChanges = displayName.trim() !== originalName.trim();
   const isDisabled = saving || !hasChanges || !displayName.trim();
+
+  const handlePhotoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error("Please select a valid image file");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be less than 5MB");
+      return;
+    }
+
+    setUploadingPhoto(true);
+    try {
+      // Upload file to get URL
+      const response = await base44.integrations.Core.UploadFile({ file });
+      const photoUrl = response.file_url;
+
+      // Update user's avatar_url
+      await base44.auth.updateMe({ avatar_url: photoUrl });
+
+      // Invalidate user query to refresh
+      queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+
+      toast.success("Profile photo updated!");
+    } catch (err) {
+      toast.error("Failed to upload photo. Please try again.");
+      console.error("Photo upload error:", err);
+    } finally {
+      setUploadingPhoto(false);
+      e.target.value = "";
+    }
+  };
 
   const handleSave = async () => {
     if (!displayName.trim()) {
@@ -163,6 +202,51 @@ export default function ProfileSettings() {
 
       {/* Main Settings Card */}
       <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-8 space-y-8">
+        {/* Profile Photo Section */}
+        <div className="space-y-3">
+          <label className="text-sm font-semibold text-gray-900">
+            Profile Photo
+          </label>
+          <div className="flex items-center gap-6">
+            <div className="w-24 h-24 rounded-full bg-gray-100 border border-gray-200 overflow-hidden flex items-center justify-center">
+              {user?.avatar_url ? (
+                <img src={user.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-yellow-400 to-pink-400 flex items-center justify-center text-white text-2xl font-bold">
+                  {(user?.full_name || user?.email)?.[0]?.toUpperCase()}
+                </div>
+              )}
+            </div>
+            <div className="flex-1">
+              <label htmlFor="photo-upload" className="block">
+                <Button
+                  asChild
+                  variant="outline"
+                  className="cursor-pointer border-gray-200 hover:bg-gray-50"
+                  disabled={uploadingPhoto}
+                >
+                  <span className="flex items-center gap-2">
+                    <Upload className="w-4 h-4" />
+                    {uploadingPhoto ? "Uploading..." : "Change Photo"}
+                  </span>
+                </Button>
+              </label>
+              <input
+                id="photo-upload"
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoUpload}
+                disabled={uploadingPhoto}
+                className="hidden"
+              />
+              <p className="text-xs text-gray-500 mt-2">JPG, PNG or GIF (max 5MB)</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="h-px bg-gray-200" />
+
         {/* Display Name Section */}
         <div className="space-y-3">
           <div>
