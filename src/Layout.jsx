@@ -96,28 +96,28 @@ export default function Layout({ children, currentPageName }) {
           video, iframe, .no-print { display: none !important; }
         }
         :root {
-          --background: 0 0% 98%;
-          --foreground: 222 47% 11%;
+          --background: 0 0% 98.5%;
+          --foreground: 0 0% 15%;
           --card: 0 0% 100%;
-          --card-foreground: 222 47% 11%;
+          --card-foreground: 0 0% 15%;
           --popover: 0 0% 100%;
-          --popover-foreground: 222 47% 11%;
-          --primary: 262 83% 58%;
+          --popover-foreground: 0 0% 15%;
+          --primary: 0 0% 15%;
           --primary-foreground: 0 0% 100%;
-          --secondary: 220 14% 96%;
-          --secondary-foreground: 222 47% 11%;
-          --muted: 220 14% 96%;
-          --muted-foreground: 220 9% 30%;
-          --accent: 220 14% 96%;
-          --accent-foreground: 222 47% 11%;
+          --secondary: 0 0% 96%;
+          --secondary-foreground: 0 0% 15%;
+          --muted: 0 0% 96%;
+          --muted-foreground: 0 0% 48%;
+          --accent: 0 0% 96%;
+          --accent-foreground: 0 0% 15%;
           --destructive: 0 84% 60%;
           --destructive-foreground: 0 0% 100%;
-          --border: 220 13% 91%;
-          --input: 220 13% 91%;
-          --ring: 262 83% 58%;
+          --border: 0 0% 92%;
+          --input: 0 0% 92%;
+          --ring: 0 0% 15%;
           --radius: 0.75rem;
         }
-        body { background-color: #fff5f6; }
+        body { background-color: #faf9f7; }
         * { box-sizing: border-box; }
       `}</style>
 
