@@ -273,6 +273,41 @@ export default function Dashboard() {
           )}
         </DashboardCard>
 
+        {/* Quiz Games */}
+        <DashboardCard title="Quiz Games" action="QuizHome" actionLabel="Play More Quizzes">
+          <div className="space-y-4">
+            {liveQuizzes.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold text-yellow-600 mb-2 uppercase">🔴 Live Games</p>
+                {liveQuizzes.map(quiz => (
+                  <Link key={quiz.id} to={createPageUrl("QuizGame") + `?id=${quiz.id}&mode=live`}>
+                    <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg hover:bg-yellow-100 transition-colors mb-2">
+                      <p className="font-semibold text-gray-900 text-sm">{quiz.title}</p>
+                      <p className="text-xs text-gray-500 mt-0.5">Code: {quiz.game_code}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+            {practiceQuizzes.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold text-violet-600 mb-2 uppercase">📋 Practice</p>
+                {practiceQuizzes.map(quiz => (
+                  <Link key={quiz.id} to={createPageUrl("QuizGame") + `?id=${quiz.id}&mode=practice`}>
+                    <div className="p-3 bg-violet-50 border border-violet-200 rounded-lg hover:bg-violet-100 transition-colors mb-2">
+                      <p className="font-semibold text-gray-900 text-sm">{quiz.title}</p>
+                      <p className="text-xs text-gray-500 mt-0.5 capitalize">{quiz.category?.replace(/_/g, " ")}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+            {liveQuizzes.length === 0 && practiceQuizzes.length === 0 && (
+              <p className="text-gray-500 text-center py-6 text-sm">No quizzes available yet</p>
+            )}
+          </div>
+        </DashboardCard>
+
         {/* Progress Overview */}
         <DashboardCard title="Your Progress">
           <div className="space-y-6">
