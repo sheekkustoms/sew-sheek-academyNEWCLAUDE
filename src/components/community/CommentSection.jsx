@@ -5,27 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Heart, Send, CornerDownRight } from "lucide-react";
 import { motion } from "framer-motion";
-import moment from "moment";
-
-function RelativeTime({ date }) {
-  const [time, setTime] = useState(() => {
-    const momentDate = moment.utc(date).local();
-    return momentDate.fromNow();
-  });
-
-  useEffect(() => {
-    const updateTime = () => {
-      const momentDate = moment.utc(date).local();
-      setTime(momentDate.fromNow());
-    };
-    
-    updateTime();
-    const interval = setInterval(updateTime, 60000); // Update every minute
-    return () => clearInterval(interval);
-  }, [date]);
-
-  return <span className="text-gray-500 text-xs">{time}</span>;
-}
+import RelativeTime from "@/components/shared/RelativeTime";
 import { awardXP } from "../shared/useUserPoints";
 
 function useUserAvatars(emails) {
