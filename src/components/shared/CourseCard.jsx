@@ -22,7 +22,10 @@ const difficultyColors = {
 
 export default function CourseCard({ course, enrollment, index = 0, userLevel = 0 }) {
   const gradient = categoryGradients[course.category] || "from-gray-500 to-gray-600";
-  const progress = enrollment?.progress_percent || 0;
+  // Compute progress from actual completed lessons for accuracy
+  const completedCount = enrollment?.completed_lessons?.length || 0;
+  const totalLessons = course.lesson_count || 0;
+  const progress = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : (enrollment?.progress_percent || 0);
   const requiredLevel = course.unlock_at_level || 0;
   const isLocked = requiredLevel > 0 && userLevel < requiredLevel;
 
