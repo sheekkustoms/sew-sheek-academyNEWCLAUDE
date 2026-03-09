@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Bell, Heart, MessageCircle, Star, Megaphone, CheckCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import moment from "moment";
+import { createPageUrl } from "@/utils";
 
 const typeConfig = {
   like: { icon: Heart, color: "bg-pink-100 text-pink-500", label: "liked your post" },
