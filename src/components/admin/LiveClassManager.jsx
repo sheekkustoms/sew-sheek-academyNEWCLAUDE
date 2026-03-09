@@ -4,16 +4,17 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Trash2, Plus, Video, Edit2, X } from "lucide-react";
+import { Trash2, Plus, Video, Edit2, X, Upload, CheckCircle2 } from "lucide-react";
 import moment from "moment";
 
-const EMPTY = { title: "", description: "", scheduled_at: "", zoom_url: "", is_active: true };
+const EMPTY = { title: "", description: "", scheduled_at: "", zoom_url: "", pdf_url: "", is_active: true };
 
 export default function LiveClassManager() {
   const queryClient = useQueryClient();
   const [form, setForm] = useState(EMPTY);
   const [editingId, setEditingId] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [uploadingPdf, setUploadingPdf] = useState(false);
 
   const { data: classes = [] } = useQuery({
     queryKey: ["adminLiveClasses"],
@@ -58,6 +59,15 @@ export default function LiveClassManager() {
     setEditingId(null);
   };
 
+  const handlePdfUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingPdf(true);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    setForm(f => ({ ...f, pdf_url: file_url }));
+    setUploadingPdf(false);
+  };
+
   return (
     <div className="space-y-6">
       <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm space-y-4">
@@ -73,6 +83,28 @@ export default function LiveClassManager() {
             <label className="text-xs text-gray-400 mb-1 block">Zoom / Meeting Link</label>
             <Input placeholder="https://zoom.us/j/..." value={form.zoom_url} onChange={e => setForm({ ...form, zoom_url: e.target.value })} />
           </div>
+        </div>
+        <div>
+          <label className="text-xs text-gray-400 mb-1 block">Class Materials PDF</label>
+          {form.pdf_url ? (
+            <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+              <span className="text-xs text-emerald-700 flex-1 truncate">PDF uploaded ✓</span>
+              <button onClick={() => setForm({ ...form, pdf_url: "" })} className="text-gray-400 hover:text-red-500">
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ) : (
+            <label className={`flex items-center gap-2 p-3 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${uploadingPdf ? "border-violet-300 bg-violet-50" : "border-gray-200 hover:border-pink-300 hover:bg-pink-50"}`}>
+              {uploadingPdf ? (
+                <div className="w-4 h-4 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Upload className="w-4 h-4 text-gray-400" />
+              )}
+              <span className="text-xs text-gray-500">{uploadingPdf ? "Uploading..." : "Upload PDF"}</span>
+              <input type="file" accept=".pdf" className="hidden" onChange={handlePdfUpload} disabled={uploadingPdf} />
+            </label>
+          )}
         </div>
         <div className="flex gap-2">
           <Button onClick={handleSave} disabled={saving || !form.title || !form.scheduled_at} className="bg-gradient-to-r from-pink-500 to-violet-500 text-white gap-2 flex-1">
