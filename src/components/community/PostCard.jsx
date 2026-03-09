@@ -71,7 +71,7 @@ export default function PostCard({ post, currentUserEmail, onLike, onClick, inde
              <div>
                <h3 className="font-bold text-gray-900 text-base">{post.author_name || post.author_email}</h3>
                <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                 <span>{moment(post.created_date).fromNow()}</span>
+                 <span>{moment.utc(post.created_date).local().fromNow()}</span>
                  <span>•</span>
                  <span className="capitalize">{post.category?.replace(/_/g, " ")}</span>
                </div>
