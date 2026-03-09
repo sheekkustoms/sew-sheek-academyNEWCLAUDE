@@ -10,12 +10,34 @@ import { awardXP } from "../shared/useUserPoints";
 import { getDisplayName } from "../shared/useDisplayName";
 import AvatarWithFallback from "../shared/AvatarWithFallback";
 
-// No longer needed - avatars are stored directly in comments
+function useCommentAuthorAvatars(comments) {
+  const emailsNeedingAvatars = comments
+    .filter(c => !c.author_avatar && c.author_email)
+    .map(c => c.author_email);
 
-function CommentAvatar({ email, name, avatarUrl }) {
+  return useQuery({
+    queryKey: ["commentAvatars", emailsNeedingAvatars.sort().join(",")],
+    queryFn: async () => {
+      if (!emailsNeedingAvatars.length) return {};
+      const map = {};
+      await Promise.all(
+        emailsNeedingAvatars.map(async (email) => {
+          const result = await base44.functions.invoke('getUserAvatar', { email });
+          map[email] = result.data.avatar_url;
+        })
+      );
+      return map;
+    },
+    enabled: emailsNeedingAvatars.length > 0,
+    staleTime: 60000,
+  });
+}
+
+function CommentAvatar({ email, name, avatarUrl, fallbackAvatarMap }) {
+   const displayUrl = avatarUrl || fallbackAvatarMap?.[email];
    return (
      <AvatarWithFallback
-       imageUrl={avatarUrl}
+       imageUrl={displayUrl}
        name={name}
        email={email}
        size="sm"
@@ -35,8 +57,11 @@ export default function CommentSection({ postId, user, myPoints }) {
     enabled: !!postId,
   });
 
+  // Get avatars for comments missing them
+  const { data: fallbackAvatarMap = {} } = useCommentAuthorAvatars(comments);
+
   // Get current user's display_name with fallback chain
-   const userDisplayName = getDisplayName(user);
+    const userDisplayName = getDisplayName(user);
 
 
 
@@ -177,7 +202,7 @@ export default function CommentSection({ postId, user, myPoints }) {
                transition={{ delay: i * 0.03 }}
                className="flex gap-3"
              >
-               <CommentAvatar email={comment.author_email} name={comment.author_name} avatarUrl={comment.author_avatar} />
+               <CommentAvatar email={comment.author_email} name={comment.author_name} avatarUrl={comment.author_avatar} fallbackAvatarMap={fallbackAvatarMap} />
                <div className="flex-1">
                  <div className="bg-gray-100 rounded-2xl p-4">
                    <div className="flex items-center gap-2 mb-1">
@@ -241,7 +266,7 @@ export default function CommentSection({ postId, user, myPoints }) {
                        transition={{ delay: i * 0.03 + j * 0.02 }}
                        className="flex gap-3"
                      >
-                       <CommentAvatar email={reply.author_email} name={reply.author_name} avatarUrl={reply.author_avatar} />
+                       <CommentAvatar email={reply.author_email} name={reply.author_name} avatarUrl={reply.author_avatar} fallbackAvatarMap={fallbackAvatarMap} />
                        <div className="flex-1">
                          <div className="bg-blue-50 rounded-2xl p-4 border border-blue-100">
                            <div className="flex items-center gap-2 mb-2">
