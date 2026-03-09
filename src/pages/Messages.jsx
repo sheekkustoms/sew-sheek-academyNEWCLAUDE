@@ -213,7 +213,13 @@ export default function Messages() {
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Input */}
+              {/* Input — hidden for system-only conversations */}
+              {currentConversation.messages.every(m => m.is_system_message) && (
+                <div className="px-4 md:px-6 py-3 border-t border-gray-100 bg-gray-50 text-center text-xs text-gray-400 italic">
+                  This is an automated message — replies are not monitored.
+                </div>
+              )}
+              {!currentConversation.messages.every(m => m.is_system_message) && (
               <div className="px-4 md:px-6 py-3 border-t border-gray-100 bg-white flex gap-2 items-end">
                 <Textarea
                   placeholder="Type a reply… (Shift+Enter for new line)"
