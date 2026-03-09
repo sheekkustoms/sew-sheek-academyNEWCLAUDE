@@ -238,6 +238,32 @@ export default function AdminDashboard() {
 
         {/* Users */}
         <TabsContent value="users" className="space-y-3 mt-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-start justify-between gap-3">
+            <div className="flex items-start gap-3">
+              <Bell className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
+              <div>
+                <p className="text-sm font-semibold text-blue-900">Push Notifications</p>
+                <p className="text-xs text-blue-700 mt-1">Force all members to enable notifications. They'll get an in-app reminder.</p>
+              </div>
+            </div>
+            <Button 
+              size="sm"
+              className="bg-blue-600 hover:bg-blue-700 text-white shrink-0"
+              onClick={async () => {
+                setForceSubLoading(true);
+                try {
+                  const result = await base44.functions.invoke('forceSubscribeAllUsers', {});
+                  alert(`✓ Notified ${result.data.unsubscribed} members to enable push notifications.`);
+                } catch (err) {
+                  alert('Error: ' + err.message);
+                }
+                setForceSubLoading(false);
+              }}
+              disabled={forceSubLoading}
+            >
+              {forceSubLoading ? "Sending..." : "Notify All"}
+            </Button>
+          </div>
           {allUsers.map((u) => (
             <div key={u.id} className="bg-white border border-gray-100 rounded-2xl p-4 flex items-center justify-between shadow-sm">
               <div className="flex items-center gap-3">
