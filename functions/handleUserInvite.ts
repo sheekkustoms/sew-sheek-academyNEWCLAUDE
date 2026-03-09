@@ -5,7 +5,10 @@ Deno.serve(async (req) => {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
     
-    if (!user || user.role !== 'admin') {
+    const ADMIN_EMAILS = ["sheek24kustoms@gmail.com"];
+    const isAdmin = user?.role === 'admin' || ADMIN_EMAILS.includes(user?.email);
+    
+    if (!user || !isAdmin) {
       return Response.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
