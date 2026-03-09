@@ -81,11 +81,21 @@ export default function CommentSection({ postId, user, myPoints }) {
 
   const addCommentMutation = useMutation({
    mutationFn: async () => {
+     // When replying, update the mention to use the current display_name
+     let commentContent = newComment;
+     if (replyingTo) {
+       const repliedToComment = comments.find(c => (c.author_name || c.author_email) === replyingTo);
+       if (repliedToComment) {
+         const currentDisplayName = repliedToComment.author_email === user.email ? userDisplayName : repliedToComment.author_name;
+         commentContent = newComment.replace(/^@[^\s]+/, `@${currentDisplayName}`);
+       }
+     }
+
      await base44.entities.Comment.create({
        post_id: postId,
        author_email: user.email,
        author_name: userDisplayName,
-       content: newComment,
+       content: commentContent,
        likes: [],
      });
      const posts = await base44.entities.CommunityPost.filter({ id: postId });
