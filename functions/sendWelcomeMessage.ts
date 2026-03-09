@@ -21,8 +21,9 @@ Deno.serve(async (req) => {
       sender_name: 'Sew Sheek Sewing',
       recipient_email: newUser.email,
       recipient_name: newUser.full_name || newUser.email,
-      content: `🎉 Welcome to Sew Sheek Sewing Academy, ${newUser.full_name || 'friend'}!\n\nI'm so excited to have you here! 🪡✨\n\nHere's how to get started:\n📚 Head to the Courses tab to begin your first lesson\n🏆 Earn XP and level up as you learn\n💬 Join the Community to connect with other students\n🎯 Try the Weekly Challenge to test your skills\n\nIf you ever have questions, just reply to this message — I'm here to help!\n\nHappy sewing! 🧵\n– Coach Sheek`,
+      content: `🎉 Welcome to Sew Sheek Sewing Academy, ${newUser.full_name || 'friend'}!\n\nI'm so excited to have you here! 🪡✨\n\nHere's how to get started:\n📚 Head to the Courses tab to begin your first lesson\n🏆 Earn XP and level up as you learn\n💬 Join the Community to connect with other students\n🎯 Try the Weekly Challenge to test your skills\n\nHappy sewing! 🧵\n– Coach Sheek`,
       is_read: false,
+      is_system_message: true,
     });
 
     // Also send a welcome notification
