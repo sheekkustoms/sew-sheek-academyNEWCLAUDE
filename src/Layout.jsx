@@ -128,7 +128,7 @@ export default function Layout({ children, currentPageName }) {
           video, iframe, .no-print { display: none !important; }
         }
         * { box-sizing: border-box; }
-        body { background-color: #c9b6be; }
+        body { background-color: #d6bbc0; }
         button:hover { background-color: rgba(139, 115, 85, 0.1); }
         .btn-primary { background-color: #6B7A5C !important; }
         .btn-primary:hover { background-color: #556347 !important; }
@@ -199,7 +199,7 @@ export default function Layout({ children, currentPageName }) {
       )}
 
       {/* Mobile top bar */}
-      <div className={`md:hidden fixed left-0 right-0 z-50 bg-[#c9b6be] border-b border-pink-300 px-4 h-14 flex items-center justify-between shadow-sm ${showPWA ? "top-10" : "top-0"}`}>
+      <div className={`md:hidden fixed left-0 right-0 z-50 bg-[#d6bbc0] border-b border-pink-300 px-4 h-14 flex items-center justify-between shadow-sm ${showPWA ? "top-10" : "top-0"}`}>
         <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)} className="text-gray-600">
           <Menu className="w-5 h-5" />
         </Button>
@@ -296,11 +296,11 @@ export default function Layout({ children, currentPageName }) {
       </aside>
 
       {/* Main content */}
-      <main className={`md:ml-64 min-h-screen bg-[#c9b6be] ${showPWA ? "pt-24 md:pt-10" : "pt-14 md:pt-0"}`}>
+      <main className={`md:ml-64 min-h-screen bg-[#d6bbc0] ${showPWA ? "pt-24 md:pt-10" : "pt-14 md:pt-0"}`}>
         {/* Desktop notification bell */}
         <div className="hidden md:block fixed top-6 right-6 z-40">
           <Link to={createPageUrl("Notifications")} className="relative inline-block">
-            <div className="p-2 rounded-lg bg-[#c9b6be] border border-pink-300 hover:bg-pink-300 transition-colors">
+            <div className="p-2 rounded-lg bg-[#d6bbc0] border border-pink-300 hover:bg-pink-300 transition-colors">
               <Bell className="w-5 h-5 text-gray-600" />
               {unreadCount > 0 && (
                 <span className="absolute -top-1 -right-1 w-5 h-5 bg-pink-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">{unreadCount}</span>
