@@ -304,7 +304,11 @@ export default function QuizBuilder() {
                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
                    className="border-t border-gray-100 bg-gray-50/50 p-4 space-y-3"
                  >
-                   <QuizContentParser quizId={quiz.id} onQuestionsGenerated={() => queryClient.invalidateQueries({ queryKey: ["adminQuizQuestions", quiz.id] })} />
+                   <QuizContentParser quizId={quiz.id} onQuestionsGenerated={() => {
+                     queryClient.invalidateQueries({ queryKey: ["adminQuizQuestions", quiz.id] });
+                     queryClient.invalidateQueries({ queryKey: ["adminQuizzes"] });
+                     queryClient.invalidateQueries({ queryKey: ["quiz", quiz.id] });
+                   }} />
 
                    <div className="flex items-center justify-between">
                      <p className="text-sm font-semibold text-gray-700">Questions ({sortedQuestions.length})</p>
