@@ -87,17 +87,22 @@ export default function Layout({ children, currentPageName }) {
   useEffect(() => {
     if (!localStorage.getItem("pwa_dismissed")) setShowPWA(true);
     
-    // Request browser notification permission
-    if (!localStorage.getItem("notif_permission_asked")) {
-      requestNotificationPermission().then(() => {
-        localStorage.setItem("notif_permission_asked", "1");
-        // Register service worker after permission granted
-        registerServiceWorker();
-      });
-    } else if (Notification.permission === 'granted') {
-      // If permission already granted, register service worker
-      registerServiceWorker();
-    }
+    // Register service worker immediately, request permission if not done
+    (async () => {
+      try {
+        await registerServiceWorker();
+        
+        // Request permission if not already asked
+        if (!localStorage.getItem("notif_permission_asked")) {
+          await requestNotificationPermission();
+          localStorage.setItem("notif_permission_asked", "1");
+          // Re-register after permission granted
+          await registerServiceWorker();
+        }
+      } catch (error) {
+        console.error('[Layout] Notification setup failed:', error);
+      }
+    })();
   }, []);
   const [deferredInstallPrompt, setDeferredInstallPrompt] = useState(null);
 
