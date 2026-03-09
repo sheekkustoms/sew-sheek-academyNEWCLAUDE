@@ -6,6 +6,7 @@ import { Heart, MessageCircle, Clock, Pin } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import moment from "moment";
+import RelativeTime from "@/components/shared/RelativeTime";
 
 const categoryStyles = {
   discussion: "bg-blue-100 text-blue-600 border-blue-200",
