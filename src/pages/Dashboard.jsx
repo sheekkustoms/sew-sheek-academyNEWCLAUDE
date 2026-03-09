@@ -8,6 +8,7 @@ import {
   ChevronRight, BookOpen, Zap, Bell, CheckCheck, Gamepad2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { getDisplayName } from "@/components/shared/useDisplayName";
 import moment from "moment";
 
 const StatCard = ({ icon: Icon, label, value, color }) => (
@@ -46,6 +47,7 @@ export default function Dashboard() {
     queryFn: () => base44.auth.me(),
     staleTime: 0,
     gcTime: 0,
+    refetchInterval: 5000,
   });
 
   const { data: userPoints } = useQuery({
@@ -134,7 +136,7 @@ export default function Dashboard() {
        <div className="flex items-start justify-between">
          <div>
           <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-2">
-            Welcome back, {user.role === "admin" ? "Coach" : (user.full_name && user.full_name !== user.email ? user.full_name.split(" ")[0] : "Member")}
+            Welcome back, {user.role === "admin" ? "Coach" : (getDisplayName(user)?.split(" ")[0] || "Member")}
           </h1>
          <p className="text-lg text-gray-600">
            {moment().hour() < 12 ? "Good morning" : moment().hour() < 18 ? "Good afternoon" : "Good evening"}. Continue your learning journey.
