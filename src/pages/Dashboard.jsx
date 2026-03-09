@@ -204,13 +204,27 @@ export default function Dashboard() {
           </div>
           <div className="flex flex-wrap gap-2">
             {members.map((m) => (
-              <div key={m.id} title={m.full_name || m.email} className="w-10 h-10 rounded-full overflow-hidden shrink-0 border-2 border-white shadow-sm">
-                {m.avatar_url ? (
-                  <img src={m.avatar_url} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-pink-400 to-violet-400 flex items-center justify-center text-white text-sm font-bold">
-                    {(m.full_name || m.email || "?")[0].toUpperCase()}
-                  </div>
+              <div key={m.id} className="relative group" title={m.full_name || m.email}>
+                <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 border-2 border-white shadow-sm">
+                  {m.avatar_url ? (
+                    <img src={m.avatar_url} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-pink-400 to-violet-400 flex items-center justify-center text-white text-sm font-bold">
+                      {(m.full_name || m.email || "?")[0].toUpperCase()}
+                    </div>
+                  )}
+                </div>
+                {user?.role === "admin" && m.email !== user?.email && (
+                  <button
+                    onClick={async () => {
+                      if (!confirm(`Remove ${m.full_name || m.email}?`)) return;
+                      await base44.entities.User.delete(m.id);
+                      queryClient.invalidateQueries({ queryKey: ["allMembers"] });
+                    }}
+                    className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full text-[10px] items-center justify-center hidden group-hover:flex shadow"
+                  >
+                    ×
+                  </button>
                 )}
               </div>
             ))}
