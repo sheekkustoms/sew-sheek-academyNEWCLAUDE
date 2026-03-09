@@ -221,8 +221,10 @@ export default function LiveClasses() {
         </div>
       </div>
 
+      <MiniCalendar classes={upcoming} />
+
       <div className="bg-violet-50 border border-violet-200 rounded-xl p-4 text-sm text-violet-900">
-        <p>💡 <span className="font-medium">Tip:</span> Click on any upcoming class to see the Zoom link and copy it before the session starts.</p>
+        <p>💡 <span className="font-medium">Tip:</span> Times shown in your local timezone. Hit "Remind Me" to get a browser notification 15 minutes before class!</p>
       </div>
 
       {upcoming.length === 0 && (
