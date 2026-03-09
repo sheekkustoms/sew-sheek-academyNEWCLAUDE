@@ -71,12 +71,19 @@ export default function ProfileSettings() {
          newName: trimmedName,
        });
 
-       // Step 1: Update user profile via auth
-       console.log("[ProfileSettings] Step 1: Updating user profile...");
-       await base44.auth.updateMe({
-         display_name: trimmedName,
-       });
-       console.log("[ProfileSettings] User profile updated");
+       // Step 1: Update User entity with display_name
+       console.log("[ProfileSettings] Step 1: Updating User entity...");
+       const userRecordId = userRecord?.[0]?.id;
+       if (userRecordId) {
+         await base44.entities.User.update(userRecordId, {
+           display_name: trimmedName,
+         });
+         console.log("[ProfileSettings] User entity updated:", { id: userRecordId });
+       } else {
+         console.warn("[ProfileSettings] No User record found to update");
+         setError("Unable to find user profile. Please refresh and try again.");
+         return;
+       }
 
        // Step 2: Update UserPoints record
        console.log("[ProfileSettings] Step 2: Updating UserPoints...");
