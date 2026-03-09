@@ -26,7 +26,8 @@ function useUserAvatars(emails) {
 }
 
 function CommentAvatar({ email, name, avatarMap }) {
-  const avatar = avatarMap?.[email];
+  const userInfo = avatarMap?.[email];
+  const avatar = userInfo?.avatar_url;
   return avatar ? (
     <img src={avatar} className="w-7 h-7 rounded-full object-cover border border-pink-100 shrink-0" />
   ) : (
