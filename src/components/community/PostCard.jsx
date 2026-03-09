@@ -110,7 +110,7 @@ export default function PostCard({ post, currentUserEmail, onLike, onClick, inde
                     {(c.name || c.email)[0].toUpperCase()}
                   </div>
                 ))}
-                {likers.map((email, i) => (
+                {uniqueLikers.map((email, i) => (
                   <div key={`l-${i}`} title={email} className="w-5 h-5 rounded-full bg-gradient-to-br from-cyan-400 to-blue-400 flex items-center justify-center text-white text-[9px] font-bold border border-white">
                     {(email || "?")[0].toUpperCase()}
                   </div>
