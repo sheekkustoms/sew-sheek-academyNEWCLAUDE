@@ -71,20 +71,26 @@ export default function ProfileSettings() {
          newName: trimmedName,
        });
 
-       // Step 1: Update auth profile
-       console.log("[ProfileSettings] Step 1: Updating auth profile...");
-       const updateResult = await base44.auth.updateMe({ full_name: trimmedName });
-       console.log("[ProfileSettings] Auth profile update result:", updateResult);
-       console.log("[ProfileSettings] Auth profile updated successfully");
+       // Step 1: Get or create User entity record
+       console.log("[ProfileSettings] Step 1: Getting User entity record...");
+       let userRecordId = userRecord?.[0]?.id;
+       if (!userRecordId) {
+         // Create User entity record if it doesn't exist
+         const created = await base44.entities.User.create({
+           email: user.email,
+           display_name: trimmedName,
+         });
+         userRecordId = created.id;
+         console.log("[ProfileSettings] Created new User record:", { id: userRecordId });
+       } else {
+         // Update existing User record with new display_name
+         await base44.entities.User.update(userRecordId, {
+           display_name: trimmedName,
+         });
+         console.log("[ProfileSettings] Updated User record:", { id: userRecordId });
+       }
 
-      // Step 2: Force refetch the current user from auth immediately
-      console.log("[ProfileSettings] Step 2: Refetching auth user...");
-      const refetchResult = await refetchUser();
-      console.log("[ProfileSettings] Auth user refetched:", {
-        newName: refetchResult.data?.full_name,
-      });
-
-      // Step 3: Update UserPoints record
+      // Step 2: Update UserPoints record
       console.log("[ProfileSettings] Step 3: Updating UserPoints...");
       const userPointsRecords = await base44.entities.UserPoints.filter({
         user_email: user.email,
