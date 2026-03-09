@@ -36,13 +36,15 @@ export default function ProfileSettings() {
   const handleSave = async () => {
     if (!fullName.trim()) return;
     setSaving(true);
-    await base44.auth.updateMe({ full_name: fullName.trim(), avatar_url: avatarUrl });
+    const trimmedName = fullName.trim();
+    await base44.auth.updateMe({ full_name: trimmedName, avatar_url: avatarUrl });
     // Also update UserPoints display name
     const pts = await base44.entities.UserPoints.filter({ user_email: user.email });
     if (pts[0]) {
-      await base44.entities.UserPoints.update(pts[0].id, { user_name: fullName.trim() });
+      await base44.entities.UserPoints.update(pts[0].id, { user_name: trimmedName });
     }
-    queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+    // Update the cached user directly so the name doesn't reset
+    queryClient.setQueryData(["currentUser"], (old) => old ? { ...old, full_name: trimmedName, avatar_url: avatarUrl } : old);
     queryClient.invalidateQueries({ queryKey: ["myPoints"] });
     setSaving(false);
     setSaved(true);
