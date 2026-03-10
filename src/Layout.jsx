@@ -420,6 +420,13 @@ export default function Layout({ children, currentPageName }) {
               <Link
                 key={item.page}
                 to={createPageUrl(item.page)}
+                onClick={(e) => {
+                  if (isActive) {
+                    e.preventDefault();
+                    window.history.replaceState(null, "", createPageUrl(item.page));
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }
+                }}
                 className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-medium transition-colors ${
                   isActive ? "text-pink-600" : "text-gray-400"
                 }`}
