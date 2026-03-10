@@ -329,6 +329,30 @@ export default function QuizBuilder() {
                        <Plus className="w-3.5 h-3.5" /> Add Question
                      </Button>
                    </div>
+
+                   {/* Bulk points distributor */}
+                   {sortedQuestions.length > 0 && (
+                     <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 rounded-xl px-3 py-2">
+                       <span className="text-xs font-semibold text-yellow-700 shrink-0">Quiz Total Points:</span>
+                       <Input
+                         type="number"
+                         placeholder="e.g. 500"
+                         value={totalPoints}
+                         onChange={e => setTotalPoints(e.target.value)}
+                         className="h-7 text-xs border-yellow-300 bg-white w-24"
+                         min="1"
+                       />
+                       <Button
+                         size="sm"
+                         onClick={distributePoints}
+                         disabled={!totalPoints || parseInt(totalPoints) < 1}
+                         className="h-7 text-xs bg-yellow-500 hover:bg-yellow-600 text-white px-3 shrink-0"
+                       >
+                         Distribute Evenly
+                       </Button>
+                       <span className="text-[10px] text-yellow-600 shrink-0">{sortedQuestions.length > 0 && totalPoints ? `= ${Math.floor(parseInt(totalPoints) / sortedQuestions.length)} pts/question` : ""}</span>
+                     </div>
+                   )}
                    {sortedQuestions.length === 0 ? (
                      <p className="text-center text-sm text-gray-400 py-6">No questions yet — add your first one!</p>
                    ) : sortedQuestions.map((q, i) => (
