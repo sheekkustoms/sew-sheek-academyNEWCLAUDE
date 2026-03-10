@@ -87,6 +87,7 @@ export default function LevelSettingsManager() {
       <Button onClick={handleSave} disabled={saving} className="bg-gradient-to-r from-pink-500 to-violet-500 text-white gap-2">
         <Save className="w-4 h-4" /> {saving ? "Saving..." : saved ? "Saved ✓" : "Save Thresholds"}
       </Button>
+      </div>
     </div>
   );
 }
