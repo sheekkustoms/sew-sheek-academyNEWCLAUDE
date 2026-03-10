@@ -249,8 +249,8 @@ export default function Community() {
 
       <div className="flex flex-col lg:flex-row gap-4">
         {/* Sections sidebar */}
-        <div className="lg:w-52 shrink-0">
-            <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-3 space-y-1 sticky top-20">
+         <div className="lg:w-52 shrink-0">
+            <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-3 space-y-1 sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto">
               {SECTIONS.map((s) => (
                 <button
                   key={s.value}
