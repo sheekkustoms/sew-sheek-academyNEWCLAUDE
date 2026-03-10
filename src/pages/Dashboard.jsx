@@ -358,5 +358,6 @@ export default function Dashboard() {
         </DashboardCard>
       </div>
     </div>
+    </PullToRefresh>
   );
 }
