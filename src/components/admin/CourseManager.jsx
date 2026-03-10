@@ -176,12 +176,12 @@ function ModuleRow({ module, courseId, onDelete }) {
             className="flex-1 text-sm font-medium bg-white border border-violet-200 rounded px-2 py-0.5 focus:outline-none"
           />
         ) : (
-          <span
-            className="flex-1 text-sm font-semibold text-gray-700 cursor-pointer hover:text-violet-600"
-            onDoubleClick={() => setEditingTitle(true)}
-          >
-            {module.title}
-          </span>
+          <span className="flex-1 text-sm font-semibold text-gray-700">{module.title}</span>
+        )}
+        {!editingTitle && (
+          <button onClick={() => setEditingTitle(true)} className="text-gray-300 hover:text-violet-500 p-1">
+            <Edit2 className="w-3 h-3" />
+          </button>
         )}
         <span className="text-[10px] text-gray-400">{sortedLessons.length} lessons</span>
         <button onClick={addLesson} className="text-violet-400 hover:text-violet-600 p-1">
