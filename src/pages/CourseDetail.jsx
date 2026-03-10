@@ -176,6 +176,12 @@ export default function CourseDetail() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
+      {isPreview && (
+        <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-sm text-amber-800 font-medium">
+          <Eye className="w-4 h-4 shrink-0" />
+          <span>Admin Preview — this is how members will see this course. Progress changes won't be saved.</span>
+        </div>
+      )}
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Main content */}
         <div className="lg:col-span-2 space-y-4">
