@@ -8,11 +8,11 @@ export const DEFAULT_THRESHOLDS = [0, 100, 300, 600, 1000, 1500, 2200, 3000, 400
 let _cachedThresholds = DEFAULT_THRESHOLDS;
 let _cacheLoaded = false;
 
-export async function loadThresholds() {
-  if (_cacheLoaded) return _cachedThresholds;
+export async function loadThresholds(force = false) {
+  if (_cacheLoaded && !force) return _cachedThresholds;
   try {
     const { base44 } = await import("@/api/base44Client");
-    const settings = await base44.entities.LevelSettings.filter({ label: "default" });
+    const settings = await base44.entities.LevelSettings.list();
     if (settings.length > 0 && settings[0].thresholds?.length > 0) {
       _cachedThresholds = settings[0].thresholds;
     }
