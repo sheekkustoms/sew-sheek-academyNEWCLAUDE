@@ -109,6 +109,13 @@ export default function Dashboard() {
   });
 
   const queryClient = useQueryClient();
+  const approvePendingPost = useMutation({
+    mutationFn: (id) => base44.entities.CommunityPost.update(id, { is_approved: true }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pendingPosts"] });
+      queryClient.invalidateQueries({ queryKey: ["communityPosts"] });
+    },
+  });
 
   const markAllRead = useMutation({
     mutationFn: async () => {
