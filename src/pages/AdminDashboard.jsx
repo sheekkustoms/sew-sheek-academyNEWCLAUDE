@@ -97,6 +97,26 @@ export default function AdminDashboard() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["adminUsers"] }),
   });
 
+  const removeUserMutation = useMutation({
+    mutationFn: async (u) => {
+      // Delete all user data across entities
+      const [posts, comments, points, enrollments] = await Promise.all([
+        base44.entities.CommunityPost.filter({ author_email: u.email }),
+        base44.entities.Comment.filter({ author_email: u.email }),
+        base44.entities.UserPoints.filter({ user_email: u.email }),
+        base44.entities.Enrollment.filter({ user_email: u.email }),
+      ]);
+      await Promise.all([
+        ...posts.map(p => base44.entities.CommunityPost.delete(p.id)),
+        ...comments.map(c => base44.entities.Comment.delete(c.id)),
+        ...points.map(p => base44.entities.UserPoints.delete(p.id)),
+        ...enrollments.map(e => base44.entities.Enrollment.delete(e.id)),
+        base44.entities.User.delete(u.id),
+      ]);
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["adminUsers"] }),
+  });
+
   const toggleAdminMutation = useMutation({
     mutationFn: ({ id, currentRole }) => base44.entities.User.update(id, { role: currentRole === "admin" ? "user" : "admin" }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["adminUsers"] }),
