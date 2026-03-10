@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { getDisplayName } from "@/components/shared/useDisplayName";
 import { getLevelFromXP, loadThresholds } from "@/components/shared/XPBar";
 import moment from "moment";
+import ShopNow from "../components/dashboard/ShopNow";
 
 const StatCard = ({ icon: Icon, label, value, color }) => (
   <div className="bg-white border border-gray-200 rounded-lg p-5 flex items-center gap-4">
