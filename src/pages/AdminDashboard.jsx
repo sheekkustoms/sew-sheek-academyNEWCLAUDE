@@ -320,6 +320,18 @@ export default function AdminDashboard() {
                     <Button size="sm" variant="outline" className={`h-8 text-xs gap-1 ${u.is_banned ? "text-green-600 hover:bg-green-50" : "text-red-500 hover:bg-red-50"}`} onClick={() => banUserMutation.mutate({ id: u.id, banned: u.is_banned })}>
                       <Ban className="w-3 h-3" /> {u.is_banned ? "Unban" : "Ban"}
                     </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-8 text-xs gap-1 text-red-700 hover:bg-red-100 border-red-300"
+                      onClick={() => {
+                        if (window.confirm(`Remove ${u.full_name || u.email} from the app? This will delete their account and all their data.`)) {
+                          removeUserMutation.mutate(u);
+                        }
+                      }}
+                    >
+                      <UserX className="w-3 h-3" /> Remove
+                    </Button>
                   </>
                 )}
               </div>
