@@ -194,6 +194,10 @@ export default function QuizBuilder() {
     if (!total || sortedQuestions.length === 0) return;
     const perQuestion = Math.floor(total / sortedQuestions.length);
     const remainder = total - perQuestion * sortedQuestions.length;
+    // First reset all to 0 so useEffect detects change, then set final values
+    await Promise.all(sortedQuestions.map(q =>
+      base44.entities.QuizQuestion.update(q.id, { points: 0 })
+    ));
     await Promise.all(sortedQuestions.map((q, i) =>
       base44.entities.QuizQuestion.update(q.id, { points: perQuestion + (i === 0 ? remainder : 0) })
     ));
