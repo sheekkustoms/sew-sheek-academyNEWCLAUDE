@@ -187,7 +187,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <StatCard icon={Zap} label="Total Points" value={myPoints?.total_xp || 0} color="bg-yellow-500" />
         <StatCard icon={BookOpen} label="Courses" value={myPoints?.courses_completed || 0} color="bg-pink-400" />
-        <StatCard icon={TrendingUp} label="Level" value={Math.floor((myPoints?.total_xp || 0) / 100) + 1} color="bg-gray-800" />
+        <StatCard icon={TrendingUp} label="Level" value={level} color="bg-gray-800" />
       </div>
 
       {/* Admin: Pending Posts Alert */}
