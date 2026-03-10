@@ -50,10 +50,11 @@ const categoryEmoji = {
   question: "❓", showcase: "✨", resource: "📚",
 };
 
-export default function PostCard({ post, currentUserEmail, onLike, onClick, index = 0, isAdminPost = false, isAdmin = false }) {
+export default function PostCard({ post, currentUserEmail, onLike, onClick, index = 0, isAdminPost = false, isAdmin = false, currentUserPoints = null }) {
    const isLiked = post.likes?.includes(currentUserEmail);
    const likeCount = post.likes?.length || 0;
    const queryClient = useQueryClient();
+   const { awardXP } = require("../shared/useUserPoints");
 
    // Fetch comments to get commenters
    const { data: comments = [] } = useQuery({
@@ -159,7 +160,20 @@ export default function PostCard({ post, currentUserEmail, onLike, onClick, inde
              variant="ghost"
              size="sm"
              className={`h-7 px-2 gap-1 text-xs rounded font-medium ${isLiked ? "text-pink-600" : "text-gray-600 hover:text-pink-600"}`}
-             onClick={(e) => { e.stopPropagation(); onLike(post); }}
+             onClick={(e) => { 
+               e.stopPropagation(); 
+               onLike(post);
+               // Award 2 XP to liker if not already liked
+               if (!isLiked && currentUserPoints) {
+                 awardXP(currentUserPoints.id, currentUserPoints, 2);
+               }
+               // Award 2 XP to post author
+               base44.entities.UserPoints.filter({ user_email: post.author_email }).then(authorPoints => {
+                 if (authorPoints[0]) {
+                   awardXP(authorPoints[0].id, authorPoints[0], 2);
+                 }
+               });
+             }}
            >
              <Heart className={`w-3.5 h-3.5 ${isLiked ? "fill-current" : ""}`} />
              {likeCount}
