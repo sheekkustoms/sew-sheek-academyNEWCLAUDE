@@ -128,6 +128,7 @@ function CourseEditor({ course, onClose }) {
   const [saving, setSaving] = useState(false);
   const [uploadingThumb, setUploadingThumb] = useState(false);
   const [uploadingPdf, setUploadingPdf] = useState(false);
+  const [activePanel, setActivePanel] = useState("lessons"); // lessons | details | settings | materials | styling
   const queryClient = useQueryClient();
 
   const { data: lessons = [] } = useQuery({
@@ -182,134 +183,185 @@ function CourseEditor({ course, onClose }) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["adminLessons", course.id] }),
   });
 
+  const SIDE_MENU = [
+    { id: "details", icon: Edit2, label: "Edit Details", sub: "Course Info & Settings" },
+    { id: "settings", icon: Settings, label: "Settings", sub: "Configure Course Settings" },
+    { id: "materials", icon: FolderOpen, label: "Course Materials", sub: "Reference Material & Files" },
+    { id: "styling", icon: Palette, label: "Styling", sub: "Thumbnail & Presentation" },
+  ];
+
   return (
-    <div className="bg-white border border-violet-200 rounded-2xl shadow-lg overflow-hidden">
+    <div className="bg-white border border-violet-200 rounded-2xl shadow-xl overflow-hidden">
       {/* Header */}
-      <div className="flex items-center gap-3 px-5 py-4 bg-gradient-to-r from-pink-50 to-violet-50 border-b border-violet-100">
-        <BookOpen className="w-5 h-5 text-violet-600" />
-        <span className="font-bold text-violet-800 flex-1">Editing: {course.title}</span>
-        <Button variant="ghost" size="icon" className="w-8 h-8 text-gray-400" onClick={onClose}><X className="w-4 h-4" /></Button>
+      <div className="flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-pink-50 to-violet-50 border-b border-violet-100">
+        <BookOpen className="w-4 h-4 text-violet-600 shrink-0" />
+        <Input
+          value={form.title}
+          onChange={e => setForm({ ...form, title: e.target.value })}
+          className="flex-1 border-0 bg-transparent font-bold text-violet-800 text-base h-8 p-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+          placeholder="Course title..."
+        />
+        <Button size="sm" onClick={saveCourse} disabled={saving} className="bg-gradient-to-r from-pink-500 to-violet-500 text-white h-7 text-xs shrink-0">
+          {saving ? "Saving..." : "Save"}
+        </Button>
+        <Button variant="ghost" size="icon" className="w-7 h-7 text-gray-400 shrink-0" onClick={onClose}><X className="w-4 h-4" /></Button>
       </div>
 
-      <div className="p-5 grid md:grid-cols-2 gap-6">
-        {/* Course details */}
-        <div className="space-y-3">
-          <p className="text-sm font-semibold text-gray-700">Course Details</p>
-
-          <Input placeholder="Course title..." value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="border-gray-200" />
-          <Textarea placeholder="Course description..." value={form.description || ""} onChange={e => setForm({ ...form, description: e.target.value })} className="border-gray-200 min-h-[80px]" />
-
-          <div className="grid grid-cols-3 gap-3">
-            <div>
-              <label className="text-xs text-gray-500 mb-1 block">Category</label>
-              <Select value={form.category} onValueChange={v => setForm({ ...form, category: v })}>
-                <SelectTrigger className="border-gray-200 h-9 text-sm"><SelectValue /></SelectTrigger>
-                <SelectContent>{CATEGORIES.map(c => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}</SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label className="text-xs text-gray-500 mb-1 block">Level</label>
-              <Select value={String(form.level || 1)} onValueChange={v => setForm({ ...form, level: +v })}>
-                <SelectTrigger className="border-gray-200 h-9 text-sm"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {[1, 2, 3, 4].map(l => <SelectItem key={l} value={String(l)}>Level {l}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label className="text-xs text-gray-500 mb-1 block">Difficulty</label>
-              <Select value={form.difficulty} onValueChange={v => setForm({ ...form, difficulty: v })}>
-                <SelectTrigger className="border-gray-200 h-9 text-sm"><SelectValue /></SelectTrigger>
-                <SelectContent>{DIFFICULTIES.map(d => <SelectItem key={d} value={d} className="capitalize">{d}</SelectItem>)}</SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label className="text-xs text-gray-500 mb-1 block">XP Reward</label>
-              <Input type="number" value={form.xp_reward || 100} onChange={e => setForm({ ...form, xp_reward: +e.target.value })} className="border-gray-200 h-9" />
-            </div>
-            <div>
-              <label className="text-xs text-gray-500 mb-1 block">Unlock at Level (0 = always open)</label>
-              <Input type="number" min={0} value={form.unlock_at_level || 0} onChange={e => setForm({ ...form, unlock_at_level: +e.target.value })} className="border-gray-200 h-9" />
-            </div>
-          </div>
-
-          {/* Thumbnail */}
-          <div>
-            <label className="text-xs text-gray-500 mb-1 block">Thumbnail Image</label>
-            {form.thumbnail_url ? (
-              <div className="relative rounded-xl overflow-hidden aspect-video bg-gray-100">
-                <img src={form.thumbnail_url} className="w-full h-full object-cover" />
-                <button onClick={() => setForm({ ...form, thumbnail_url: "" })}
-                  className="absolute top-2 right-2 bg-black/50 text-white rounded-full p-1 hover:bg-red-500/80 transition-colors">
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            ) : (
-              <label className={`flex flex-col items-center gap-2 p-5 border-2 border-dashed rounded-xl cursor-pointer transition-colors ${uploadingThumb ? "border-violet-300 bg-violet-50" : "border-gray-200 hover:border-pink-300 hover:bg-pink-50"}`}>
-                {uploadingThumb ? (
-                  <div className="w-5 h-5 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <>
-                    <Upload className="w-6 h-6 text-gray-300" />
-                    <span className="text-xs text-gray-500">Upload thumbnail</span>
-                  </>
-                )}
-                <input type="file" accept="image/*" className="hidden" onChange={handleThumbUpload} disabled={uploadingThumb} />
-              </label>
-            )}
-            <Input placeholder="Or paste image URL..." value={form.thumbnail_url || ""} onChange={e => setForm({ ...form, thumbnail_url: e.target.value })}
-              className="border-gray-200 h-9 mt-2 text-xs" />
-          </div>
-
-          {/* PDF Upload */}
-          <div>
-            <label className="text-xs text-gray-500 mb-1 block">Course PDF / Resource (downloadable by members)</label>
-            {form.pdf_url ? (
-              <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                <span className="text-xs text-emerald-700 flex-1 truncate">PDF uploaded ✓</span>
-                <button onClick={() => setForm({ ...form, pdf_url: "" })} className="text-gray-400 hover:text-red-500">
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            ) : (
-              <label className={`flex items-center gap-2 p-3 border-2 border-dashed rounded-xl cursor-pointer transition-colors ${uploadingPdf ? "border-violet-300 bg-violet-50" : "border-gray-200 hover:border-pink-300 hover:bg-pink-50"}`}>
-                {uploadingPdf ? (
-                  <div className="w-4 h-4 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <Upload className="w-4 h-4 text-gray-400" />
-                )}
-                <span className="text-xs text-gray-500">{uploadingPdf ? "Uploading..." : "Upload PDF"}</span>
-                <input type="file" accept=".pdf" className="hidden" onChange={handlePdfUpload} disabled={uploadingPdf} />
-              </label>
-            )}
-          </div>
-
-          <Button onClick={saveCourse} disabled={saving} className="w-full bg-gradient-to-r from-pink-500 to-violet-500 text-white">
-            {saving ? "Saving..." : "Save Course Details"}
-          </Button>
-        </div>
-
-        {/* Lessons */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-semibold text-gray-700">Lessons ({sortedLessons.length})</p>
+      <div className="flex min-h-[520px]">
+        {/* Left: Module / Lesson List */}
+        <div className="flex-1 border-r border-gray-100 overflow-y-auto">
+          <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Lessons</span>
             <Button size="sm" onClick={() => addLesson.mutate()} disabled={addLesson.isPending}
-              className="bg-violet-100 text-violet-700 hover:bg-violet-200 gap-1 h-8">
-              <Plus className="w-3.5 h-3.5" /> Add Lesson
+              className="bg-pink-100 text-pink-700 hover:bg-pink-200 gap-1 h-7 text-xs">
+              <Plus className="w-3 h-3" /> Add Lesson
             </Button>
           </div>
+
           {sortedLessons.length === 0 ? (
-            <div className="text-center py-8 border-2 border-dashed border-gray-200 rounded-xl text-gray-400 text-sm">
-              No lessons yet — add your first one!
+            <div className="flex flex-col items-center justify-center py-12 text-gray-400 text-sm gap-2">
+              <BookOpen className="w-8 h-8 text-gray-200" />
+              <p>No lessons yet</p>
+              <Button size="sm" onClick={() => addLesson.mutate()} className="bg-violet-100 text-violet-700 hover:bg-violet-200 gap-1 h-7 text-xs mt-1">
+                <Plus className="w-3 h-3" /> Add First Lesson
+              </Button>
             </div>
           ) : (
-            <div className="space-y-2 max-h-[500px] overflow-y-auto pr-1">
+            <div className="divide-y divide-gray-50">
               {sortedLessons.map((lesson, i) => (
                 <LessonEditor key={lesson.id} lesson={lesson} courseId={course.id} onDelete={(id) => deleteLesson.mutate(id)} index={i} />
               ))}
             </div>
           )}
+        </div>
+
+        {/* Right: Settings Panel */}
+        <div className="w-64 shrink-0 bg-gray-50/50 flex flex-col">
+          {/* Side menu items */}
+          <div className="divide-y divide-gray-100">
+            {SIDE_MENU.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => setActivePanel(activePanel === item.id ? null : item.id)}
+                className={`w-full flex items-center gap-3 px-4 py-3.5 text-left hover:bg-white transition-colors ${activePanel === item.id ? "bg-white border-l-2 border-violet-400" : ""}`}
+              >
+                <item.icon className={`w-4 h-4 shrink-0 ${activePanel === item.id ? "text-violet-600" : "text-gray-400"}`} />
+                <div className="flex-1 min-w-0">
+                  <p className={`text-sm font-medium ${activePanel === item.id ? "text-violet-700" : "text-gray-700"}`}>{item.label}</p>
+                  <p className="text-[10px] text-gray-400 truncate">{item.sub}</p>
+                </div>
+                <ChevronRight className={`w-3.5 h-3.5 shrink-0 text-gray-300 transition-transform ${activePanel === item.id ? "rotate-90 text-violet-400" : ""}`} />
+              </button>
+            ))}
+          </div>
+
+          {/* Expanded panel content */}
+          <AnimatePresence>
+            {activePanel === "details" && (
+              <motion.div key="details" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="p-4 space-y-3 bg-white border-t border-gray-100 flex-1 overflow-y-auto">
+                <Textarea placeholder="Course description..." value={form.description || ""} onChange={e => setForm({ ...form, description: e.target.value })} className="border-gray-200 min-h-[70px] text-sm" />
+                <div className="space-y-2">
+                  <label className="text-xs text-gray-500">Category</label>
+                  <Select value={form.category} onValueChange={v => setForm({ ...form, category: v })}>
+                    <SelectTrigger className="border-gray-200 h-8 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>{CATEGORIES.map(c => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-xs text-gray-500 block mb-1">Level</label>
+                    <Select value={String(form.level || 1)} onValueChange={v => setForm({ ...form, level: +v })}>
+                      <SelectTrigger className="border-gray-200 h-8 text-xs"><SelectValue /></SelectTrigger>
+                      <SelectContent>{[1, 2, 3, 4].map(l => <SelectItem key={l} value={String(l)}>Level {l}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500 block mb-1">Difficulty</label>
+                    <Select value={form.difficulty} onValueChange={v => setForm({ ...form, difficulty: v })}>
+                      <SelectTrigger className="border-gray-200 h-8 text-xs"><SelectValue /></SelectTrigger>
+                      <SelectContent>{DIFFICULTIES.map(d => <SelectItem key={d} value={d} className="capitalize">{d}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <Button onClick={saveCourse} disabled={saving} size="sm" className="w-full bg-gradient-to-r from-pink-500 to-violet-500 text-white text-xs">
+                  {saving ? "Saving..." : "Save Details"}
+                </Button>
+              </motion.div>
+            )}
+
+            {activePanel === "settings" && (
+              <motion.div key="settings" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="p-4 space-y-3 bg-white border-t border-gray-100 flex-1 overflow-y-auto">
+                <div>
+                  <label className="text-xs text-gray-500 block mb-1">XP Reward</label>
+                  <Input type="number" value={form.xp_reward || 100} onChange={e => setForm({ ...form, xp_reward: +e.target.value })} className="border-gray-200 h-8 text-sm" />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500 block mb-1">Unlock at Level (0 = always open)</label>
+                  <Input type="number" min={0} value={form.unlock_at_level || 0} onChange={e => setForm({ ...form, unlock_at_level: +e.target.value })} className="border-gray-200 h-8 text-sm" />
+                </div>
+                <div className="flex items-center justify-between py-2">
+                  <span className="text-sm text-gray-700">Published</span>
+                  <button
+                    onClick={() => setForm(f => ({ ...f, is_published: !f.is_published }))}
+                    className={`w-10 h-5 rounded-full transition-colors relative ${form.is_published ? "bg-emerald-400" : "bg-gray-200"}`}>
+                    <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${form.is_published ? "translate-x-5" : "translate-x-0.5"}`} />
+                  </button>
+                </div>
+                <Button onClick={saveCourse} disabled={saving} size="sm" className="w-full bg-gradient-to-r from-pink-500 to-violet-500 text-white text-xs">
+                  {saving ? "Saving..." : "Save Settings"}
+                </Button>
+              </motion.div>
+            )}
+
+            {activePanel === "materials" && (
+              <motion.div key="materials" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="p-4 space-y-3 bg-white border-t border-gray-100 flex-1 overflow-y-auto">
+                <p className="text-xs text-gray-500 font-medium">Course PDF / Resource</p>
+                {form.pdf_url ? (
+                  <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                    <span className="text-xs text-emerald-700 flex-1 truncate">PDF uploaded ✓</span>
+                    <button onClick={() => setForm({ ...form, pdf_url: "" })} className="text-gray-400 hover:text-red-500">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ) : (
+                  <label className={`flex items-center gap-2 p-3 border-2 border-dashed rounded-xl cursor-pointer transition-colors ${uploadingPdf ? "border-violet-300 bg-violet-50" : "border-gray-200 hover:border-pink-300 hover:bg-pink-50"}`}>
+                    {uploadingPdf ? <div className="w-4 h-4 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" /> : <Upload className="w-4 h-4 text-gray-400" />}
+                    <span className="text-xs text-gray-500">{uploadingPdf ? "Uploading..." : "Upload PDF"}</span>
+                    <input type="file" accept=".pdf" className="hidden" onChange={handlePdfUpload} disabled={uploadingPdf} />
+                  </label>
+                )}
+              </motion.div>
+            )}
+
+            {activePanel === "styling" && (
+              <motion.div key="styling" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="p-4 space-y-3 bg-white border-t border-gray-100 flex-1 overflow-y-auto">
+                <p className="text-xs text-gray-500 font-medium">Thumbnail Image</p>
+                {form.thumbnail_url ? (
+                  <div className="relative rounded-xl overflow-hidden aspect-video bg-gray-100">
+                    <img src={form.thumbnail_url} className="w-full h-full object-cover" />
+                    <button onClick={() => setForm({ ...form, thumbnail_url: "" })}
+                      className="absolute top-2 right-2 bg-black/50 text-white rounded-full p-1 hover:bg-red-500/80 transition-colors">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ) : (
+                  <label className={`flex flex-col items-center gap-2 p-5 border-2 border-dashed rounded-xl cursor-pointer transition-colors ${uploadingThumb ? "border-violet-300 bg-violet-50" : "border-gray-200 hover:border-pink-300 hover:bg-pink-50"}`}>
+                    {uploadingThumb ? <div className="w-5 h-5 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" /> : <><Upload className="w-5 h-5 text-gray-300" /><span className="text-xs text-gray-500">Upload thumbnail</span></>}
+                    <input type="file" accept="image/*" className="hidden" onChange={handleThumbUpload} disabled={uploadingThumb} />
+                  </label>
+                )}
+                <Input placeholder="Or paste image URL..." value={form.thumbnail_url || ""} onChange={e => setForm({ ...form, thumbnail_url: e.target.value })} className="border-gray-200 h-8 text-xs" />
+                <Button onClick={saveCourse} disabled={saving} size="sm" className="w-full bg-gradient-to-r from-pink-500 to-violet-500 text-white text-xs">
+                  {saving ? "Saving..." : "Save Styling"}
+                </Button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </div>
