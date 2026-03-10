@@ -28,6 +28,10 @@ function QuestionEditor({ question, quizId, onDelete, index }) {
   const [expanded, setExpanded] = useState(false);
   const [form, setForm] = useState(question);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setForm(question);
+  }, [question.points, question.time_limit, question.question_text]);
   const queryClient = useQueryClient();
 
   const save = async () => {
