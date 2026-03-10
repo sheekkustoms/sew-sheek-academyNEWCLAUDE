@@ -223,48 +223,44 @@ export default function CourseDetail() {
             </div>
           </div>
 
-          {/* Lessons list */}
+          {/* Lessons list — grouped by module */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="px-4 py-3 border-b border-gray-100 text-sm font-semibold text-gray-700">
-              Lessons
+              Course Content
             </div>
             <div className="divide-y divide-gray-50">
-              {sortedLessons.map((lesson, i) => {
+              {sortedModules.length > 0 ? (
+                sortedModules.map((mod) => {
+                  const modLessons = sortedLessons.filter(l => l.module_id === mod.id);
+                  return (
+                    <ModuleSection
+                      key={mod.id}
+                      module={mod}
+                      lessons={modLessons}
+                      enrollment={enrollment}
+                      activeLesson={activeLesson}
+                      setActiveLesson={setActiveLesson}
+                      isLessonCompleted={isLessonCompleted}
+                      allLessons={sortedLessons}
+                    />
+                  );
+                })
+              ) : null}
+              {/* Standalone lessons (no module) */}
+              {sortedLessons.filter(l => !l.module_id).map((lesson, i) => {
                 const completed = isLessonCompleted(lesson.id);
                 const isActive = activeLesson?.id === lesson.id;
+                const globalIdx = sortedLessons.indexOf(lesson);
                 return (
-                  <motion.button
+                  <LessonRow
                     key={lesson.id}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => {
-                      if (enrollment || i === 0) setActiveLesson(lesson);
-                    }}
-                    className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
-                      isActive ? "bg-violet-50" : "hover:bg-gray-50"
-                    } ${!enrollment && i > 0 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
-                  >
-                    <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
-                      completed ? "bg-emerald-100 text-emerald-600" : isActive ? "bg-violet-100 text-violet-600" : "bg-gray-100 text-gray-500"
-                    }`}>
-                      {completed ? <CheckCircle2 className="w-4 h-4" /> : !enrollment && i > 0 ? <Lock className="w-3.5 h-3.5" /> : i + 1}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-sm font-medium truncate ${isActive ? "text-violet-700" : "text-gray-700"}`}>
-                        {lesson.title}
-                      </p>
-                      <div className="flex items-center gap-2 text-xs text-gray-400 mt-0.5">
-                        {lesson.duration_minutes > 0 && (
-                          <span className="flex items-center gap-0.5">
-                            <Clock className="w-3 h-3" />{lesson.duration_minutes}m
-                          </span>
-                        )}
-                        <span className="flex items-center gap-0.5 text-fuchsia-400">
-                          <Zap className="w-3 h-3" />+{lesson.xp_reward || 20}
-                        </span>
-                      </div>
-                    </div>
-                    {isActive && <ChevronRight className="w-4 h-4 text-violet-400 shrink-0" />}
-                  </motion.button>
+                    lesson={lesson}
+                    index={globalIdx}
+                    completed={completed}
+                    isActive={isActive}
+                    enrollment={enrollment}
+                    onClick={() => { if (enrollment || globalIdx === 0) setActiveLesson(lesson); }}
+                  />
                 );
               })}
               {sortedLessons.length === 0 && (
