@@ -186,9 +186,9 @@ export default function Layout({ children, currentPageName }) {
   useEffect(() => { loadThresholds(true).then(setThresholds); }, []);
 
   const myPoints = userPoints?.[0];
+  const isAdmin = user?.role === "admin";
   const level = isAdmin ? 10 : (thresholds ? getLevelFromXP(myPoints?.total_xp || 0, thresholds) : getLevelFromXP(myPoints?.total_xp || 0));
   const unreadCount = notifications.length;
-  const isAdmin = user?.role === "admin";
 
   const navItems = isAdmin
     ? [...NAV_ITEMS, { name: "Admin", icon: Shield, page: "AdminDashboard", admin: true }]
