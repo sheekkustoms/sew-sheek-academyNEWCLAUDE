@@ -88,7 +88,7 @@ export default function CourseDetail() {
 
   const { data: course } = useQuery({
     queryKey: ["course", courseId],
-    queryFn: () => base44.entities.Course.filter({ id: courseId }).then(r => r[0]),
+    queryFn: () => base44.entities.Course.list().then(r => r.find(c => c.id === courseId)),
     enabled: !!courseId,
   });
 
