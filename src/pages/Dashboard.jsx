@@ -51,6 +51,8 @@ export default function Dashboard() {
     refetchInterval: 5000,
   });
 
+  const isAdmin = user?.role === "admin";
+
   const { data: userPoints } = useQuery({
     queryKey: ["myPoints", user?.email],
     queryFn: () => base44.entities.UserPoints.filter({ user_email: user.email }),
