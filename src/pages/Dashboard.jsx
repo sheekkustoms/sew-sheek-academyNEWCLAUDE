@@ -298,7 +298,24 @@ export default function Dashboard() {
 
         {/* Leaderboard Snapshot */}
         <DashboardCard title="Top Members" action="Leaderboard" actionLabel="View Full Leaderboard">
-          <p className="text-gray-500 py-8 text-center text-lg font-semibold">Coming Soon</p>
+          {topMembers.length > 0 ? (
+            <div className="space-y-3">
+              {topMembers.map((member, idx) => (
+                <div key={member.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <span className="text-lg font-bold text-yellow-600 w-6">{idx + 1}</span>
+                    <div>
+                      <p className="font-semibold text-gray-900 text-sm">{member.user_name || member.user_email}</p>
+                      <p className="text-xs text-gray-500">{member.total_xp} XP</p>
+                    </div>
+                  </div>
+                  <Zap className="w-4 h-4 text-yellow-500" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500 py-8 text-center">Leaderboard coming soon</p>
+          )}
         </DashboardCard>
 
         {/* Upcoming Live Session */}
