@@ -61,6 +61,14 @@ export default function QuizGame() {
     enabled: !!user?.email,
   });
 
+  const { data: existingSession } = useQuery({
+    queryKey: ["quizSession", quizId, user?.email],
+    queryFn: () => base44.entities.QuizSession.filter({ quiz_id: quizId, player_email: user.email }),
+    enabled: !!user?.email && !!quizId,
+  });
+
+  const alreadyCompleted = existingSession?.some(s => s.is_finished);
+
   const currentQ = questions[currentQIndex];
   const totalQ = questions.length;
 
