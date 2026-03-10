@@ -64,17 +64,18 @@ export default function Leaderboard() {
   const questionCount = weeklyChallengeQuestions?.length || 0;
 
   // Calculate rankings with avatar data
-   const rankings = allPoints.map((p, idx) => {
-     const userProfile = userMap[p.user_email];
-     return {
-       ...p,
-       rank: idx + 1,
-       isCurrentUser: user?.email === p.user_email,
-       avatar_url: userProfile?.avatar_url || null,
-     };
-   });
+    const rankings = allPoints.map((p, idx) => {
+      const userProfile = userMap[p.user_email];
+      return {
+        ...p,
+        rank: idx + 1,
+        isCurrentUser: user?.email === p.user_email,
+        avatar_url: userProfile?.avatar_url || null,
+      };
+    });
 
-  const currentUserRank = rankings.find(r => r.isCurrentUser);
+   const currentUserRank = rankings.find(r => r.isCurrentUser);
+   const currentUserLevel = user?.role === "admin" ? 10 : (currentUserRank ? getLevelFromXP(currentUserRank.total_xp) : 0);
   const topMembers = rankings.filter(r => !r.isCurrentUser).slice(0, 10);
 
   return (
@@ -98,10 +99,10 @@ export default function Leaderboard() {
               </div>
             </div>
             <div className="text-right">
-              <p className="text-sm text-gray-600 font-medium mb-1">TOTAL XP</p>
-              <div className="flex items-center gap-2">
-                <Zap className="w-6 h-6 text-yellow-600" />
-                <p className="text-3xl font-bold text-gray-900">{currentUserRank.total_xp}</p>
+              <p className="text-sm text-gray-600 font-medium mb-1">YOUR LEVEL</p>
+              <div className="flex items-center justify-end gap-2">
+                <Award className="w-6 h-6 text-yellow-600" />
+                <p className="text-3xl font-bold text-gray-900">Level {currentUserLevel}</p>
               </div>
             </div>
           </div>
