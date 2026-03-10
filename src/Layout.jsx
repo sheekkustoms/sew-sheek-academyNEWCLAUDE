@@ -60,7 +60,7 @@ const urlBase64ToUint8Array = (base64String) => {
 };
 import {
   LayoutDashboard, BookOpen, Users, Trophy, Menu, X, LogOut,
-  Zap, ChevronRight, Brain, Bell, Shield, Download, Gamepad2, Video, Mail, User
+  Zap, ChevronRight, Brain, Bell, Shield, Download, Gamepad2, Video, Mail, User, Home
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getLevelFromXP } from "./components/shared/XPBar";
