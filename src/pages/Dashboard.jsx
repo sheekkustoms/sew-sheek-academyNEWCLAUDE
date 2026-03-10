@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import PullToRefresh from "../components/shared/PullToRefresh";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { 
@@ -159,8 +158,7 @@ export default function Dashboard() {
   }
 
   return (
-    <PullToRefresh onRefresh={handleRefresh}>
-      <div className="max-w-7xl mx-auto space-y-10">
+    <div className="max-w-7xl mx-auto space-y-10">
       {/* Welcome Header */}
        <div className="flex items-start justify-between">
          <div>
@@ -411,7 +409,6 @@ export default function Dashboard() {
           </div>
         </DashboardCard>
       </div>
-      </div>
-    </PullToRefresh>
+    </div>
   );
 }
