@@ -99,6 +99,15 @@ export default function Dashboard() {
     queryFn: () => base44.entities.Quiz.filter({ is_published: true }),
   });
 
+  const isAdmin = user?.role === "admin";
+
+  const { data: pendingPosts = [], refetch: refetchPending } = useQuery({
+    queryKey: ["pendingPosts"],
+    queryFn: () => base44.entities.CommunityPost.filter({ is_approved: false }, "-created_date", 20),
+    enabled: isAdmin,
+    refetchInterval: 30000,
+  });
+
   const queryClient = useQueryClient();
 
   const markAllRead = useMutation({
