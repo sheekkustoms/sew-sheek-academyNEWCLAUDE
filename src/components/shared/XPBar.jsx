@@ -41,8 +41,14 @@ export function getXPForNextLevel(xp, thresholds = _cachedThresholds) {
 }
 
 export default function XPBar({ xp = 0, showLevel = true, compact = false }) {
-  const level = getLevelFromXP(xp);
-  const { current, needed, percent } = getXPForNextLevel(xp);
+  const [thresholds, setThresholds] = React.useState(_cachedThresholds);
+
+  React.useEffect(() => {
+    loadThresholds(true).then(t => setThresholds(t));
+  }, []);
+
+  const level = getLevelFromXP(xp, thresholds);
+  const { current, needed, percent } = getXPForNextLevel(xp, thresholds);
 
   if (compact) {
     return (
