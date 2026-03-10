@@ -287,7 +287,10 @@ export default function Layout({ children, currentPageName }) {
       )}
 
       {/* Mobile top bar */}
-      <div className={`md:hidden fixed left-0 right-0 z-50 bg-[#F1EDE9] border-b border-pink-300 px-4 h-14 flex items-center justify-between shadow-sm select-none ${showPWA ? "top-10" : "top-0"}`}>
+      <div
+        className={`md:hidden fixed left-0 right-0 z-50 bg-[#F1EDE9] border-b border-pink-300 px-4 flex items-center justify-between shadow-sm select-none ${showPWA ? "top-10" : "top-0"}`}
+        style={{ paddingTop: "env(safe-area-inset-top, 0px)", height: "calc(3.5rem + env(safe-area-inset-top, 0px))" }}
+      >
         {ROOT_PAGES.includes(currentPageName) ? (
           <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)} className="text-gray-600">
             <Menu className="w-5 h-5" />
