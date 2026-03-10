@@ -188,6 +188,7 @@ export default function Layout({ children, currentPageName }) {
   const myPoints = userPoints?.[0];
   const isAdmin = user?.role === "admin";
   const level = isAdmin ? 10 : (thresholds ? getLevelFromXP(myPoints?.total_xp || 0, thresholds) : getLevelFromXP(myPoints?.total_xp || 0));
+  const displayXP = isAdmin && thresholds && thresholds[9] ? thresholds[9] : (myPoints?.total_xp || 0);
   const unreadCount = notifications.length;
 
   const navItems = isAdmin
@@ -312,7 +313,7 @@ export default function Layout({ children, currentPageName }) {
             )}
           </Link>
           <div className="flex items-center gap-1 text-gray-700 text-sm font-bold">
-            <Zap className="w-4 h-4" /> {myPoints?.total_xp || 0}
+            <Zap className="w-4 h-4" /> {displayXP}
           </div>
         </div>
       </div>
@@ -351,7 +352,7 @@ export default function Layout({ children, currentPageName }) {
                   <div className="flex items-center gap-1.5 mt-0.5">
                     <span className="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-semibold">LVL {level}</span>
                     <span className="text-green-700 text-[10px] font-semibold flex items-center gap-0.5">
-                      <Zap className="w-2.5 h-2.5" /> {myPoints?.total_xp || 0}
+                      <Zap className="w-2.5 h-2.5" /> {displayXP}
                     </span>
                   </div>
                 </div>
