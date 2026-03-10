@@ -178,7 +178,7 @@ export default function QuizBuilder() {
       options: ["Option A", "Option B", "Option C", "Option D"],
       correct_answer_index: 0,
       time_limit: 20,
-      points: 100,
+      points: 0,
       order: sortedQuestions.length,
     }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["adminQuizQuestions", editingQuizId] }),
