@@ -253,7 +253,7 @@ export default function QuizGame() {
         >
           {currentQ.image_url && <img src={currentQ.image_url} className="w-full max-h-48 object-cover rounded-xl mb-4" />}
           <h2 className="text-xl font-extrabold text-gray-900">{currentQ.question_text}</h2>
-          <div className="text-xs text-gray-400 mt-1">{currentQ.points} pts</div>
+          <div className="text-xs text-gray-400 mt-1">{currentQ.points} pts + up to 15 speed bonus</div>
         </motion.div>
 
         {/* Answer options */}
