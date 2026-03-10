@@ -6,7 +6,7 @@ import { createPageUrl } from "@/utils";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft, BookOpen, Clock, Zap, CheckCircle2, Lock, Play,
-  ChevronRight, ChevronDown, Star, Users, FileDown
+  ChevronRight, ChevronDown, Star, Users, FileDown, Eye
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
