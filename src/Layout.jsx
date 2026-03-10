@@ -63,7 +63,7 @@ import {
   Zap, ChevronRight, Brain, Bell, Shield, Download, Gamepad2, Video, Mail, User, Home
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getLevelFromXP } from "./components/shared/XPBar";
+import { getLevelFromXP, loadThresholds } from "./components/shared/XPBar";
 import { getDisplayName } from "@/components/shared/useDisplayName";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
