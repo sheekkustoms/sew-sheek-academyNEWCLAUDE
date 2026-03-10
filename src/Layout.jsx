@@ -79,6 +79,16 @@ const NAV_ITEMS = [
   { name: "Profile", icon: User, page: "ProfileSettings" },
 ];
 
+const BOTTOM_NAV_ITEMS = [
+  { name: "Home", icon: Home, page: "Dashboard" },
+  { name: "Courses", icon: BookOpen, page: "Courses" },
+  { name: "Community", icon: Users, page: "Community" },
+  { name: "Profile", icon: User, page: "ProfileSettings" },
+];
+
+// Pages that are "root" screens — show logo on mobile top bar; others show back button
+const ROOT_PAGES = ["Dashboard", "Courses", "Community", "Leaderboard", "LiveClasses", "ProfileSettings", "QuizHome", "AdminDashboard"];
+
 export default function Layout({ children, currentPageName }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showPWA, setShowPWA] = useState(false);
