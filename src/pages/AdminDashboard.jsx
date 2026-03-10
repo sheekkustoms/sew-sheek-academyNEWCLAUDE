@@ -73,6 +73,21 @@ export default function AdminDashboard() {
     queryFn: () => base44.entities.InvitedEmail.list("-created_date", 200),
   });
 
+  const { data: allEnrollments = [] } = useQuery({
+    queryKey: ["adminEnrollments"],
+    queryFn: () => base44.entities.Enrollment.list("-updated_date", 500),
+  });
+
+  const { data: allComments = [] } = useQuery({
+    queryKey: ["adminComments"],
+    queryFn: () => base44.entities.Comment.list("-created_date", 500),
+  });
+
+  const { data: allCommunityPosts = [] } = useQuery({
+    queryKey: ["adminCommunityPosts"],
+    queryFn: () => base44.entities.CommunityPost.list("-created_date", 500),
+  });
+
   const userPointsMap = useMemo(() => {
     const map = {};
     allUserPoints.forEach(p => { map[p.user_email] = p; });
@@ -276,9 +291,12 @@ export default function AdminDashboard() {
              <Mail className="w-3.5 h-3.5" /> Messages
            </TabsTrigger>
            <TabsTrigger value="points" className="flex items-center gap-1">
-             <Star className="w-3.5 h-3.5" /> Manage Points
-           </TabsTrigger>
-          </TabsList>
+              <Star className="w-3.5 h-3.5" /> Manage Points
+            </TabsTrigger>
+            <TabsTrigger value="activity" className="flex items-center gap-1">
+              <BarChart2 className="w-3.5 h-3.5" /> Activity Log
+            </TabsTrigger>
+           </TabsList>
 
         {/* Posts moderation */}
         <TabsContent value="posts" className="space-y-3 mt-4">
@@ -576,6 +594,65 @@ export default function AdminDashboard() {
         {/* Messaging */}
         <TabsContent value="messaging" className="mt-4">
           <MessagingPanel />
+        </TabsContent>
+
+        {/* Activity Log */}
+        <TabsContent value="activity" className="mt-4 space-y-4">
+          <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">User Activity Records</h3>
+            <p className="text-sm text-gray-500 mb-4">Complete activity metrics for all members</p>
+
+            <div className="space-y-2 max-h-[600px] overflow-y-auto">
+              {allUserPoints.map((userPoint) => {
+                const courses = allEnrollments.filter(e => e.user_email === userPoint.user_email);
+                const uniqueCourses = [...new Set(courses.map(e => e.course_id))].length;
+                const comments = allComments.filter(c => c.author_email === userPoint.user_email).length;
+                const posts = allCommunityPosts.filter(p => p.author_email === userPoint.user_email).length;
+                const lastActive = userPoint.last_activity_date ? new Date(userPoint.last_activity_date) : null;
+                const daysSinceActive = lastActive ? Math.floor((Date.now() - lastActive.getTime()) / (1000 * 60 * 60 * 24)) : null;
+
+                return (
+                  <div key={userPoint.id} className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-gray-900">{userPoint.user_name || userPoint.user_email}</p>
+                        <p className="text-xs text-gray-500">{userPoint.user_email}</p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className="text-sm font-bold text-purple-600">{userPoint.total_xp || 0} XP</p>
+                        <p className="text-xs text-gray-500">Level {userPoint.level || 1}</p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-4 gap-2 text-center pt-2 border-t border-gray-200">
+                      <div>
+                        <p className="text-lg font-bold text-blue-600">{uniqueCourses}</p>
+                        <p className="text-[11px] text-gray-600">Courses</p>
+                      </div>
+                      <div>
+                        <p className="text-lg font-bold text-green-600">{posts}</p>
+                        <p className="text-[11px] text-gray-600">Posts</p>
+                      </div>
+                      <div>
+                        <p className="text-lg font-bold text-orange-600">{comments}</p>
+                        <p className="text-[11px] text-gray-600">Comments</p>
+                      </div>
+                      <div>
+                        <p className="text-lg font-bold text-pink-600">{daysSinceActive !== null ? daysSinceActive : "—"}</p>
+                        <p className="text-[11px] text-gray-600">{daysSinceActive === 0 ? "Today" : "Days ago"}</p>
+                      </div>
+                    </div>
+
+                    {userPoint.badges && userPoint.badges.length > 0 && (
+                      <div className="pt-2 border-t border-gray-200">
+                        <p className="text-[11px] font-semibold text-gray-700 mb-1">Badges: {userPoint.badges.join(", ")}</p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </TabsContent>
 
         {/* Manage Points */}
