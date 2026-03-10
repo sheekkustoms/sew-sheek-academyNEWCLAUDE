@@ -19,6 +19,7 @@ export default function Community() {
   const [section, setSection] = useState("all");
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
+  const [showLatestPostModal, setShowLatestPostModal] = useState(false);
   const [newPost, setNewPost] = useState({ title: "", content: "", category: "discussion" });
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
