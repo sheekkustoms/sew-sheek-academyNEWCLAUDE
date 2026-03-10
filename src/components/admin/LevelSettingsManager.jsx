@@ -81,12 +81,12 @@ export default function LevelSettingsManager() {
         ))}
       </div>
       <div className="flex gap-3 flex-wrap">
-      <Button variant="outline" onClick={handleEvenDistribution} className="gap-2 border-violet-300 text-violet-700 hover:bg-violet-50">
-        ⚖️ Even Distribution
-      </Button>
-      <Button onClick={handleSave} disabled={saving} className="bg-gradient-to-r from-pink-500 to-violet-500 text-white gap-2">
-        <Save className="w-4 h-4" /> {saving ? "Saving..." : saved ? "Saved ✓" : "Save Thresholds"}
-      </Button>
+        <Button variant="outline" onClick={handleEvenDistribution} className="gap-2 border-violet-300 text-violet-700 hover:bg-violet-50">
+          ⚖️ Even Distribution
+        </Button>
+        <Button onClick={handleSave} disabled={saving} className="bg-gradient-to-r from-pink-500 to-violet-500 text-white gap-2">
+          <Save className="w-4 h-4" /> {saving ? "Saving..." : saved ? "Saved ✓" : "Save Thresholds"}
+        </Button>
       </div>
     </div>
   );
