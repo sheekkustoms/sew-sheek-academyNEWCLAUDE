@@ -365,6 +365,65 @@ export default function Community() {
         </DialogContent>
       </Dialog>
 
+      {/* Latest post modal (first visit) */}
+      <Dialog open={showLatestPostModal} onOpenChange={(open) => {
+        if (!open && filteredAndSorted.length > 0) {
+          const latestPost = filteredAndSorted[0];
+          const dismissed = JSON.parse(localStorage.getItem("dismissedPosts") || "[]");
+          if (!dismissed.includes(latestPost.id)) {
+            dismissed.push(latestPost.id);
+            localStorage.setItem("dismissedPosts", JSON.stringify(dismissed));
+          }
+        }
+        setShowLatestPostModal(false);
+      }}>
+        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-2xl max-h-[85vh] overflow-y-auto">
+          {filteredAndSorted.length > 0 && (
+            <>
+              <DialogHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <DialogTitle className="text-lg font-semibold text-gray-900">Latest Post</DialogTitle>
+                    <p className="text-xs text-gray-500 mt-1">Check what you missed while you were away</p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      const latestPost = filteredAndSorted[0];
+                      const dismissed = JSON.parse(localStorage.getItem("dismissedPosts") || "[]");
+                      if (!dismissed.includes(latestPost.id)) {
+                        dismissed.push(latestPost.id);
+                        localStorage.setItem("dismissedPosts", JSON.stringify(dismissed));
+                      }
+                      setShowLatestPostModal(false);
+                    }}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="w-5 h-5" />
+                  </Button>
+                </div>
+              </DialogHeader>
+              {filteredAndSorted[0] && (
+                <>
+                  {filteredAndSorted[0].image_url && (
+                    <img src={filteredAndSorted[0].image_url} className="w-full rounded-lg object-cover max-h-60 mb-4" />
+                  )}
+                  <p className="text-base text-gray-700 mb-4">{filteredAndSorted[0].content}</p>
+                  <div className="flex items-center justify-between pb-4 border-b border-gray-100">
+                    <p className="text-xs text-gray-500">
+                      by {filteredAndSorted[0].author_name || filteredAndSorted[0].author_email} · {new Date(filteredAndSorted[0].created_date).toLocaleDateString()}
+                      {filteredAndSorted[0].is_pinned && <span className="ml-2 text-yellow-600">📌 Pinned</span>}
+                    </p>
+                  </div>
+                  <CommentSection postId={filteredAndSorted[0].id} user={user} myPoints={myPoints} isAdmin={user?.role === "admin"} adminEmails={adminEmails} />
+                </>
+              )}
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
       {/* Post detail */}
       <Dialog open={!!selectedPost} onOpenChange={() => setSelectedPost(null)}>
         <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-2xl max-h-[85vh] overflow-y-auto">
