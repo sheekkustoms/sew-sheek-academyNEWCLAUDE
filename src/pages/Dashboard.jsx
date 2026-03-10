@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { 
   Loader2, Play, MessageSquare, Trophy, Calendar, TrendingUp,
-  ChevronRight, BookOpen, Zap, Bell, CheckCheck, Gamepad2
+  ChevronRight, BookOpen, Zap, Bell, CheckCheck, Gamepad2, Clock, CheckCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getDisplayName } from "@/components/shared/useDisplayName";
