@@ -134,7 +134,7 @@ export default function Dashboard() {
   useEffect(() => { loadThresholds(true).then(setThresholds); }, []);
 
   const myPoints = userPoints?.[0];
-  const level = thresholds ? getLevelFromXP(myPoints?.total_xp || 0, thresholds) : getLevelFromXP(myPoints?.total_xp || 0);
+  const level = isAdmin ? 10 : (thresholds ? getLevelFromXP(myPoints?.total_xp || 0, thresholds) : getLevelFromXP(myPoints?.total_xp || 0));
   const lastEnrollment = enrollments?.[0];
   const lastCourse = courses?.find(c => c.id === lastEnrollment?.course_id);
   const lastLesson = lessons?.sort((a, b) => new Date(b.created_date) - new Date(a.created_date))?.[0];
