@@ -74,10 +74,17 @@ export default function Leaderboard() {
       };
     });
 
-   const memberRankings = rankings.filter(r => r.isCurrentUser === false && !allPoints.find((p, idx) => p.user_email === r.user_email && base44.entities.User.filter({ email: r.user_email }).then(users => users[0]?.role === "admin")));
+   // Filter out admins from leaderboard
+   const memberRankings = rankings
+     .filter(r => {
+       const userProfile = userMap[r.user_email];
+       return userProfile?.role !== "admin";
+     })
+     .map((r, idx) => ({ ...r, rank: idx + 1 }));
+   
    const currentUserRank = memberRankings.find(r => r.isCurrentUser);
    const currentUserLevel = user?.role === "admin" ? 10 : (currentUserRank ? getLevelFromXP(currentUserRank.total_xp) : 0);
-  const topMembers = memberRankings.slice(0, 10);
+   const topMembers = memberRankings.slice(0, 10);
 
   return (
     <div className="max-w-5xl mx-auto space-y-10">
