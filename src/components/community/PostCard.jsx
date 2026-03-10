@@ -105,7 +105,7 @@ export default function PostCard({ post, currentUserEmail, onLike, onClick, inde
        }`}
      >
        {post.image_url && (
-         <img src={post.image_url} alt="" className="w-full h-48 object-cover" />
+         <img src={post.image_url} alt="" className="w-full object-contain bg-black" />
        )}
        <div className="p-6 space-y-4">
          {/* Header with author and pinned badge */}
