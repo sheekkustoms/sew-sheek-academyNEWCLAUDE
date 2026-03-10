@@ -194,6 +194,29 @@ export default function QuizGame() {
 
   const progressPct = totalQ > 0 ? Math.round(((currentQIndex) / totalQ) * 100) : 0;
 
+  // ── ALREADY COMPLETED ──
+  if (phase === "lobby" && alreadyCompleted && mode === "practice") return (
+    <div className="max-w-md mx-auto text-center space-y-6 py-8">
+      <Link to={createPageUrl("QuizHome")} className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-pink-500">
+        <ArrowLeft className="w-4 h-4" /> Back to Quizzes
+      </Link>
+      <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+        className="bg-white rounded-3xl border border-gray-200 shadow-md p-8 space-y-4"
+      >
+        <div className="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto">
+          <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+        </div>
+        <h2 className="text-2xl font-extrabold text-gray-900">Already Completed!</h2>
+        <p className="text-gray-500 text-sm">You've already taken this quiz. Each quiz can only be completed once to keep scoring fair.</p>
+        <Link to={createPageUrl("QuizHome")}>
+          <Button className="w-full bg-gradient-to-r from-pink-500 to-violet-500 text-white font-bold">
+            Browse Other Quizzes
+          </Button>
+        </Link>
+      </motion.div>
+    </div>
+  );
+
   // ── LOBBY ──
   if (phase === "lobby") return (
     <div className="max-w-md mx-auto text-center space-y-6 py-8">
