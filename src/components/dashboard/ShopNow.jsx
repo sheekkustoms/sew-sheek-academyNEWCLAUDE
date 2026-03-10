@@ -163,8 +163,8 @@ export default function ShopNow() {
       )}
 
       {/* Payment Info */}
-      <div className="border-t border-amber-200 pt-4">
-        <p className="text-xs font-medium text-gray-700 mb-2">Payment Methods</p>
+      <div className="border-t border-amber-200 pt-2">
+        <p className="text-xs font-medium text-gray-700 mb-1">Payment Methods</p>
         <a 
           href="https://cash.app/$SIMPLISUNDAE" 
           target="_blank" 
