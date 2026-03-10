@@ -263,6 +263,7 @@ export default function Community() {
                 onLike={(p) => likeMutation.mutate(p)}
                 onClick={() => setSelectedPost(post)}
                 index={i}
+                isAdminPost={adminEmails.has(post.author_email)}
               />
             ))
           )}
