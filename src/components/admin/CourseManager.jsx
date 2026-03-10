@@ -122,15 +122,115 @@ function LessonEditor({ lesson, courseId, onDelete, index }) {
   );
 }
 
+// ─── Module Row ────────────────────────────────────────────────────────────────
+function ModuleRow({ module, courseId, onDelete }) {
+  const [expanded, setExpanded] = useState(true);
+  const [editingTitle, setEditingTitle] = useState(false);
+  const [title, setTitle] = useState(module.title);
+  const queryClient = useQueryClient();
+
+  const { data: lessons = [] } = useQuery({
+    queryKey: ["moduleLessons", module.id],
+    queryFn: () => base44.entities.Lesson.filter({ module_id: module.id }),
+  });
+  const sortedLessons = [...lessons].sort((a, b) => (a.order || 0) - (b.order || 0));
+
+  const saveTitle = async () => {
+    await base44.entities.Module.update(module.id, { title });
+    queryClient.invalidateQueries({ queryKey: ["adminModules", courseId] });
+    setEditingTitle(false);
+  };
+
+  const addLesson = async () => {
+    await base44.entities.Lesson.create({
+      course_id: courseId,
+      module_id: module.id,
+      title: `Lesson ${sortedLessons.length + 1}`,
+      description: "",
+      video_url: "",
+      duration_minutes: 0,
+      xp_reward: 20,
+      order: sortedLessons.length,
+    });
+    queryClient.invalidateQueries({ queryKey: ["moduleLessons", module.id] });
+  };
+
+  const deleteLesson = async (id) => {
+    await base44.entities.Lesson.delete(id);
+    queryClient.invalidateQueries({ queryKey: ["moduleLessons", module.id] });
+  };
+
+  return (
+    <div className="border border-gray-100 rounded-xl overflow-hidden mb-2">
+      {/* Module header */}
+      <div className="flex items-center gap-2 px-3 py-2.5 bg-gray-50 border-b border-gray-100">
+        <GripVertical className="w-3.5 h-3.5 text-gray-300 shrink-0" />
+        <BookOpen className="w-3.5 h-3.5 text-violet-400 shrink-0" />
+        {editingTitle ? (
+          <input
+            autoFocus
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            onBlur={saveTitle}
+            onKeyDown={e => e.key === "Enter" && saveTitle()}
+            className="flex-1 text-sm font-medium bg-white border border-violet-200 rounded px-2 py-0.5 focus:outline-none"
+          />
+        ) : (
+          <span
+            className="flex-1 text-sm font-semibold text-gray-700 cursor-pointer hover:text-violet-600"
+            onDoubleClick={() => setEditingTitle(true)}
+          >
+            {module.title}
+          </span>
+        )}
+        <span className="text-[10px] text-gray-400">{sortedLessons.length} lessons</span>
+        <button onClick={addLesson} className="text-violet-400 hover:text-violet-600 p-1">
+          <Plus className="w-3.5 h-3.5" />
+        </button>
+        <button onClick={() => onDelete(module.id)} className="text-red-300 hover:text-red-500 p-1">
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
+        <button onClick={() => setExpanded(!expanded)} className="text-gray-300 hover:text-gray-500 p-1">
+          {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+        </button>
+      </div>
+
+      {/* Lessons inside module */}
+      {expanded && (
+        <div className="bg-white">
+          {sortedLessons.length === 0 ? (
+            <div className="px-4 py-3 text-xs text-gray-400 text-center">
+              No lessons — click <Plus className="w-3 h-3 inline" /> to add
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-50">
+              {sortedLessons.map((lesson, i) => (
+                <LessonEditor key={lesson.id} lesson={lesson} courseId={courseId} onDelete={deleteLesson} index={i} />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Course Editor ────────────────────────────────────────────────────────────
 function CourseEditor({ course, onClose }) {
   const [form, setForm] = useState({ ...course });
   const [saving, setSaving] = useState(false);
   const [uploadingThumb, setUploadingThumb] = useState(false);
   const [uploadingPdf, setUploadingPdf] = useState(false);
-  const [activePanel, setActivePanel] = useState("lessons"); // lessons | details | settings | materials | styling
+  const [activePanel, setActivePanel] = useState(null);
   const queryClient = useQueryClient();
 
+  const { data: modules = [] } = useQuery({
+    queryKey: ["adminModules", course.id],
+    queryFn: () => base44.entities.Module.filter({ course_id: course.id }),
+  });
+  const sortedModules = [...modules].sort((a, b) => (a.order || 0) - (b.order || 0));
+
+  // Legacy: lessons not assigned to any module
   const { data: lessons = [] } = useQuery({
     queryKey: ["adminLessons", course.id],
     queryFn: () => base44.entities.Lesson.filter({ course_id: course.id }),
