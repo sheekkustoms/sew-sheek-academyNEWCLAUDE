@@ -43,6 +43,13 @@ export default function Community() {
     queryKey: ["communityPosts"],
     queryFn: () => base44.entities.CommunityPost.list("-created_date", 100),
   });
+
+  const { data: allUsers = [] } = useQuery({
+    queryKey: ["allUsersForAdminCheck"],
+    queryFn: () => base44.entities.User.list(),
+    staleTime: 60000,
+  });
+  const adminEmails = new Set(allUsers.filter(u => u.role === "admin").map(u => u.email));
   const { data: myPoints } = useQuery({
     queryKey: ["myPointsCommunity", user?.email],
     queryFn: () => getOrCreateUserPoints(user),
