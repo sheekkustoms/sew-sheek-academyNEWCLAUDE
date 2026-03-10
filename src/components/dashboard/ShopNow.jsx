@@ -71,7 +71,12 @@ export default function ShopNow() {
     setIsEditing(false);
   };
 
-  const isAdmin = base44.auth.isAuthenticated?.role === "admin";
+  const { data: user } = useQuery({
+    queryKey: ["currentUser"],
+    queryFn: () => base44.auth.me(),
+  });
+
+  const isAdmin = user?.role === "admin";
 
   return (
     <div className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200 rounded-xl p-6 space-y-4">
