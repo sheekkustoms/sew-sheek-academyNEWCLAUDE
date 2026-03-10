@@ -198,18 +198,25 @@ export default function Community() {
   });
 
   // Sort: pinned first, then by date
-  const filteredAndSorted = posts
-    .filter((p) => p.is_approved !== false)
-    .filter((p) => {
-      const matchSearch = !search || p.title?.toLowerCase().includes(search.toLowerCase()) || p.content?.toLowerCase().includes(search.toLowerCase());
-      const matchSection = section === "all" || p.category === section;
-      return matchSearch && matchSection;
-    })
-    .sort((a, b) => {
-      if (a.is_pinned && !b.is_pinned) return -1;
-      if (!a.is_pinned && b.is_pinned) return 1;
-      return new Date(b.created_date) - new Date(a.created_date);
-    });
+   const filteredAndSorted = posts
+     .filter((p) => p.is_approved !== false)
+     .filter((p) => {
+       const matchSearch = !search || p.title?.toLowerCase().includes(search.toLowerCase()) || p.content?.toLowerCase().includes(search.toLowerCase());
+       const matchSection = section === "all" || p.category === section;
+       return matchSearch && matchSection;
+     })
+     .sort((a, b) => {
+       if (a.is_pinned && !b.is_pinned) return -1;
+       if (!a.is_pinned && b.is_pinned) return 1;
+       return new Date(b.created_date) - new Date(a.created_date);
+     });
+
+   // Auto-select most recent post on load
+   React.useEffect(() => {
+     if (filteredAndSorted.length > 0 && !selectedPost) {
+       setSelectedPost(filteredAndSorted[0]);
+     }
+   }, []);
 
   const handleRefresh = useCallback(async () => {
     await queryClient.invalidateQueries({ queryKey: ["communityPosts"] });
