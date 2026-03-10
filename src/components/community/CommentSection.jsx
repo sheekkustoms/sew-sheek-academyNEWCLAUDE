@@ -169,11 +169,28 @@ export default function CommentSection({ postId, user, myPoints, isAdmin = false
     mutationFn: async (comment) => {
       const likes = [...(comment.likes || [])];
       const idx = likes.indexOf(user.email);
+      const isNewLike = idx === -1;
       if (idx > -1) likes.splice(idx, 1);
       else likes.push(user.email);
       await base44.entities.Comment.update(comment.id, { likes });
+
+      // Award 2 XP to liker if liking
+      if (isNewLike && myPoints) {
+        await awardXP(myPoints.id, myPoints, 2);
+      }
+
+      // Award 2 XP to comment author if being liked
+      if (isNewLike) {
+        const authorPoints = await base44.entities.UserPoints.filter({ user_email: comment.author_email });
+        if (authorPoints[0]) {
+          await awardXP(authorPoints[0].id, authorPoints[0], 2);
+        }
+      }
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["comments", postId] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["comments", postId] });
+      queryClient.invalidateQueries({ queryKey: ["myPoints"] });
+    },
   });
 
   const deleteCommentMutation = useMutation({
