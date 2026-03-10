@@ -287,10 +287,16 @@ export default function Layout({ children, currentPageName }) {
       )}
 
       {/* Mobile top bar */}
-      <div className={`md:hidden fixed left-0 right-0 z-50 bg-[#F1EDE9] border-b border-pink-300 px-4 h-14 flex items-center justify-between shadow-sm ${showPWA ? "top-10" : "top-0"}`}>
-        <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)} className="text-gray-600">
-          <Menu className="w-5 h-5" />
-        </Button>
+      <div className={`md:hidden fixed left-0 right-0 z-50 bg-[#F1EDE9] border-b border-pink-300 px-4 h-14 flex items-center justify-between shadow-sm select-none ${showPWA ? "top-10" : "top-0"}`}>
+        {ROOT_PAGES.includes(currentPageName) ? (
+          <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)} className="text-gray-600">
+            <Menu className="w-5 h-5" />
+          </Button>
+        ) : (
+          <Button variant="ghost" size="icon" onClick={() => window.history.back()} className="text-gray-600">
+            <ChevronRight className="w-5 h-5 rotate-180" />
+          </Button>
+        )}
         <span className="text-lg font-bold text-gray-900">Oh Sew Sheek</span>
         <div className="flex items-center gap-2">
           <Link to={createPageUrl("Notifications")} className="relative">
