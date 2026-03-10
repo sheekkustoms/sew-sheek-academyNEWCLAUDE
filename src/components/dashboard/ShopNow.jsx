@@ -156,9 +156,9 @@ export default function ShopNow() {
           </div>
         </div>
       ) : (
-        <div className="text-center py-12">
-          <p className="text-lg font-semibold text-gray-700">Coming Soon! 🎉</p>
-          <p className="text-sm text-gray-600 mt-2">Shop items will be available once activated</p>
+        <div className="text-center py-6">
+          <p className="text-base font-semibold text-gray-700">Coming Soon! 🎉</p>
+          <p className="text-xs text-gray-600 mt-1">Shop items will be available once activated</p>
         </div>
       )}
 
