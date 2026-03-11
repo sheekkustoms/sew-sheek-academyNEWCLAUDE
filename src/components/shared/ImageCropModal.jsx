@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -16,14 +16,14 @@ export default function ImageCropModal({ imageUrl, onCrop, onCancel }) {
 
   const CANVAS_SIZE = 300;
 
-  React.useEffect(() => {
+  useEffect(() => {
     const img = imageRef.current;
     img.crossOrigin = "anonymous";
     img.onload = () => setImageLoaded(true);
     img.src = imageUrl;
   }, [imageUrl]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!imageLoaded) return;
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
