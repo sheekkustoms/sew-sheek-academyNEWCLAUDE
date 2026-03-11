@@ -51,7 +51,7 @@ const categoryEmoji = {
   question: "❓", showcase: "✨", resource: "📚",
 };
 
-export default function PostCard({ post, currentUserEmail, onLike, onClick, index = 0, isAdminPost = false, isAdmin = false, currentUserPoints = null }) {
+export default function PostCard({ post, currentUserEmail, onLike, onClick, index = 0, isAdminPost = false, adminAvatarUrl = null, isAdmin = false, currentUserPoints = null }) {
    const isLiked = post.likes?.includes(currentUserEmail);
    const likeCount = post.likes?.length || 0;
    const queryClient = useQueryClient();
