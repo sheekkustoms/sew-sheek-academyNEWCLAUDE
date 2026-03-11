@@ -113,7 +113,7 @@ export default function PostCard({ post, currentUserEmail, onLike, onClick, inde
          <div className="flex items-start justify-between">
            <div className="flex items-start gap-3">
              <AvatarWithFallback
-               imageUrl={post.author_avatar}
+               imageUrl={adminAvatarUrl || post.author_avatar}
                name={post.author_name}
                email={post.author_email}
                size="md"
