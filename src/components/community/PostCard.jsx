@@ -120,7 +120,7 @@ export default function PostCard({ post, currentUserEmail, onLike, onClick, inde
                size="md"
              />
              <div>
-               <h3 className="font-bold text-gray-900 text-base">{isAdminPost ? "👑 " : ""}{post.author_name || post.author_email}</h3>
+               <h3 className="font-bold text-gray-900 text-base">{isAdminPostFinal ? "👑 " : ""}{post.author_name || post.author_email}</h3>
                <div className="flex items-center gap-1.5 text-xs text-gray-500">
                  <span>{moment.utc(post.created_date).local().fromNow()}</span>
                  <span>•</span>
