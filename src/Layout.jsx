@@ -348,7 +348,7 @@ export default function Layout({ children, currentPageName }) {
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-900 truncate">{user.role === "admin" ? "Coach" : displayName}</p>
+                  <p className="text-sm font-semibold text-gray-900 truncate">{displayName}</p>
                   <div className="flex items-center gap-1.5 mt-0.5">
                     <span className="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-semibold">LVL {level}</span>
                     <span className="text-green-700 text-[10px] font-semibold flex items-center gap-0.5">

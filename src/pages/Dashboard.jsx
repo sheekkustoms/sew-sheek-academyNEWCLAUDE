@@ -163,7 +163,7 @@ export default function Dashboard() {
        <div className="flex items-start justify-between">
          <div>
           <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-2">
-            Welcome back, {user.role === "admin" ? "Coach" : (getDisplayName(user)?.split(" ")[0] || "Member")}
+            Welcome back, {getDisplayName(user)?.split(" ")[0] || "Member"}
           </h1>
          <p className="text-lg text-gray-600">
            {moment().hour() < 12 ? "Good morning" : moment().hour() < 18 ? "Good afternoon" : "Good evening"}. Continue your learning journey.
