@@ -48,7 +48,7 @@ export default function Community() {
   const { data: allUsers = [] } = useQuery({
     queryKey: ["allUsersForAdminCheck"],
     queryFn: () => base44.entities.User.list(),
-    staleTime: 60000,
+    staleTime: 0,
   });
   const adminEmails = new Set(allUsers.filter(u => u.role === "admin").map(u => u.email));
   const { data: myPoints } = useQuery({
