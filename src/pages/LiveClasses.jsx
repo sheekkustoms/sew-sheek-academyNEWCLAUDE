@@ -216,7 +216,7 @@ export default function LiveClasses() {
   const sorted = [...classes].sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at));
   const upcoming = sorted.filter(c => new Date(c.scheduled_at) > new Date());
   const past = sorted.filter(c => new Date(c.scheduled_at) <= new Date());
-  const publishedQuizzes = quizzes.filter(q => q.is_published);
+  const publishedQuizzes = quizzes.filter(q => q.is_published && q.quiz_type === "live");
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">

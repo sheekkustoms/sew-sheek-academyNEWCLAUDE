@@ -295,8 +295,8 @@ export default function Community() {
                 onLike={(p) => likeMutation.mutate(p)}
                 onClick={() => setSelectedPost(post)}
                 index={i}
-                isAdminPost={adminEmails.has(post.author_email)}
-                adminAvatarUrl={adminEmails.has(post.author_email) ? (allUsers.find(u => u.email === post.author_email)?.avatar_url || null) : null}
+                isAdminPost={post.is_admin_post === true}
+                adminAvatarUrl={post.is_admin_post === true ? (allUsers.find(u => u.email === post.author_email)?.avatar_url || post.author_avatar || null) : null}
                 isAdmin={user?.role === "admin"}
               />
             ))
