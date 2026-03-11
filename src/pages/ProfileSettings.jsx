@@ -63,41 +63,29 @@ export default function ProfileSettings() {
   const hasChanges = displayName.trim() !== originalName.trim();
   const isDisabled = saving || !hasChanges || !displayName.trim();
 
-  const handlePhotoUpload = async (e) => {
+  const handlePhotoSelect = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (!file.type.startsWith('image/')) { toast.error("Please select a valid image file"); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.error("Image must be less than 5MB"); return; }
+    const url = URL.createObjectURL(file);
+    setCropImageUrl(url);
+    e.target.value = "";
+  };
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      toast.error("Please select a valid image file");
-      return;
-    }
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image must be less than 5MB");
-      return;
-    }
-
+  const handleCroppedPhoto = async (blob) => {
+    setCropImageUrl(null);
     setUploadingPhoto(true);
     try {
-      // Upload file to get URL
+      const file = new File([blob], "profile.jpg", { type: "image/jpeg" });
       const response = await base44.integrations.Core.UploadFile({ file });
-      const photoUrl = response.file_url;
-
-      // Update user's avatar_url
-      await base44.auth.updateMe({ avatar_url: photoUrl });
-
-      // Invalidate user query to refresh
+      await base44.auth.updateMe({ avatar_url: response.file_url });
       queryClient.invalidateQueries({ queryKey: ["currentUser"] });
-
       toast.success("Profile photo updated!");
     } catch (err) {
       toast.error("Failed to upload photo. Please try again.");
-      console.error("Photo upload error:", err);
     } finally {
       setUploadingPhoto(false);
-      e.target.value = "";
     }
   };
 
