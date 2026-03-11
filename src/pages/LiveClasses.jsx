@@ -261,7 +261,7 @@ export default function LiveClasses() {
             <div className="flex flex-col items-end gap-2 shrink-0">
               <RemindMeButton cls={cls} />
               {cls.pdf_url && (
-                <a href={cls.pdf_url} download target="_blank" rel="noopener noreferrer">
+                <a href={cls.pdf_url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
                   <Button className="bg-emerald-100 text-emerald-700 hover:bg-emerald-200 gap-2">
                     <Download className="w-4 h-4" /> Class Materials
                   </Button>
