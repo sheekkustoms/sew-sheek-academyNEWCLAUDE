@@ -45,6 +45,7 @@ export default function RewardPointsPanel({ adminUser }) {
 
     try {
       const names = selectedUsers.map(u => u.display_name || u.full_name || u.email.split("@")[0]).join(", ");
+      const tags = selectedUsers.map(u => `@${u.display_name || u.full_name || u.email.split("@")[0]}`).join(" ");
       const project = projectName.trim() || "a project";
 
       // 1. Award XP to each selected user
