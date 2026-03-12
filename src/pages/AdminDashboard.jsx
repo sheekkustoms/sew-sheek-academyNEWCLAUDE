@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Shield, Users, FileText, Pin, Trash2, CheckCircle, XCircle, Megaphone, BarChart2, Ban, Gamepad2, BookOpen, UserPlus, Copy, Check, Brain, Video, Zap, Tags, Mail, Bell, UserX, Star } from "lucide-react";
+import { Shield, Users, FileText, Pin, Trash2, CheckCircle, XCircle, Megaphone, BarChart2, Ban, Gamepad2, BookOpen, UserPlus, Copy, Check, Brain, Video, Zap, Tags, Mail, Bell, UserX, Star, Trophy } from "lucide-react";
 import QuizBuilder from "../components/admin/QuizBuilder";
 import CourseManager from "../components/admin/CourseManager";
 import WeeklyChallengeManager from "../components/admin/WeeklyChallengeManager";
