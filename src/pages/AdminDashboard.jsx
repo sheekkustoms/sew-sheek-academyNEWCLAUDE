@@ -297,6 +297,9 @@ export default function AdminDashboard() {
             <TabsTrigger value="activity" className="flex items-center gap-1">
               <BarChart2 className="w-3.5 h-3.5" /> Activity Log
             </TabsTrigger>
+            <TabsTrigger value="reward" className="flex items-center gap-1">
+              <Trophy className="w-3.5 h-3.5" /> Reward Students
+            </TabsTrigger>
            </TabsList>
 
         {/* Posts moderation */}
