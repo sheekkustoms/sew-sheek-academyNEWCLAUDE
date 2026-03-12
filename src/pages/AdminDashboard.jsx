@@ -297,7 +297,7 @@ export default function AdminDashboard() {
             <TabsTrigger value="activity" className="flex items-center gap-1">
               <BarChart2 className="w-3.5 h-3.5" /> Activity Log
             </TabsTrigger>
-            <TabsTrigger value="reward" className="flex items-center gap-1">
+          <TabsTrigger value="reward" className="flex items-center gap-1">
               <Trophy className="w-3.5 h-3.5" /> Reward Students
             </TabsTrigger>
            </TabsList>
@@ -741,11 +741,6 @@ export default function AdminDashboard() {
               ))}
             </div>
           </div>
-        </TabsContent>
-
-        {/* Reward Students */}
-        <TabsContent value="reward" className="mt-4">
-          <RewardPointsPanel />
         </TabsContent>
 
         {/* Top members */}
