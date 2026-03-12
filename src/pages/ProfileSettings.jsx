@@ -79,7 +79,19 @@ export default function ProfileSettings() {
     try {
       const file = new File([blob], "profile.jpg", { type: "image/jpeg" });
       const response = await base44.integrations.Core.UploadFile({ file });
-      await base44.auth.updateMe({ avatar_url: response.file_url });
+      const newAvatarUrl = response.file_url;
+      await base44.auth.updateMe({ avatar_url: newAvatarUrl });
+
+      // Sync avatar to all community posts and comments
+      const [userPosts, userComments] = await Promise.all([
+        base44.entities.CommunityPost.filter({ author_email: user.email }),
+        base44.entities.Comment.filter({ author_email: user.email }),
+      ]);
+      await Promise.all([
+        ...userPosts.map(p => base44.entities.CommunityPost.update(p.id, { author_avatar: newAvatarUrl })),
+        ...userComments.map(c => base44.entities.Comment.update(c.id, { author_avatar: newAvatarUrl })),
+      ]);
+
       queryClient.invalidateQueries({ queryKey: ["currentUser"] });
       toast.success("Profile photo updated!");
     } catch (err) {
