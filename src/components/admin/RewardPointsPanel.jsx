@@ -77,7 +77,7 @@ export default function RewardPointsPanel({ adminUser }) {
 
       // 3. Create a public community celebration post
       const postContent = customMessage.trim()
-        || `Huge shoutout to our amazing students who completed ${project}! 🎉 They each earned ${xpAmount} XP for their hard work!\n\n🏆 ${names}\n\nKeep sewing and showing up — you all inspire this community! 💪✨`;
+        || `Huge shoutout to our amazing students who completed ${project}! 🎉 They each earned ${xpAmount} XP for their hard work!\n\n🏆 ${names}\n\n${tags}\n\nKeep sewing and showing up — you all inspire this community! 💪✨`;
 
       await base44.entities.CommunityPost.create({
         title: `🏆 Project Completion Shoutout!`,
