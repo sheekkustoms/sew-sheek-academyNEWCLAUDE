@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Trash2, Plus, Video, Edit2, X, Upload, CheckCircle2 } from "lucide-react";
 import moment from "moment";
 
-const EMPTY = { title: "", description: "", scheduled_at: "", zoom_url: "", pdf_url: "", is_active: true };
+const EMPTY = { title: "", description: "", scheduled_at: "", zoom_url: "", pdf_url: "", recording_url: "", is_active: true };
 
 export default function LiveClassManager() {
   const queryClient = useQueryClient();
