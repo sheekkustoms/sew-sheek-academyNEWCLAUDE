@@ -143,6 +143,10 @@ export default function Dashboard() {
   const lastCourse = courses?.find(c => c.id === lastEnrollment?.course_id);
   const lastLesson = lessons?.sort((a, b) => new Date(b.created_date) - new Date(a.created_date))?.[0];
   const nextLiveClass = liveClasses?.find(lc => new Date(lc.scheduled_at) > new Date());
+  const oneHourMs = 60 * 60 * 1000;
+  const sewingPatterns = allLiveClasses.filter(
+    c => c.pdf_url && new Date(c.scheduled_at).getTime() + oneHourMs <= Date.now()
+  );
 
   const recentActivity = posts?.slice(0, 3) || [];
   const topMembers = leaderboard?.slice(0, 3) || [];
