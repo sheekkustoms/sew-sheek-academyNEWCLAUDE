@@ -310,7 +310,7 @@ function CourseEditor({ course, onClose }) {
   ];
 
   return (
-    <div className="bg-white border border-violet-200 rounded-2xl shadow-xl overflow-hidden">
+    <div className="bg-white flex flex-col h-full overflow-hidden">
       {/* Header */}
       <div className="flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-pink-50 to-violet-50 border-b border-violet-100">
         <BookOpen className="w-4 h-4 text-violet-600 shrink-0" />
