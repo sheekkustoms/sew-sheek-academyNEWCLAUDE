@@ -31,7 +31,7 @@ function LessonRow({ lesson, index, completed, isActive, enrollment, onClick }) 
         <p className={`text-sm font-medium truncate ${isActive ? "text-violet-700" : "text-gray-700"}`}>{lesson.title}</p>
         <div className="flex items-center gap-2 text-xs text-gray-400 mt-0.5">
           {lesson.duration_minutes > 0 && <span className="flex items-center gap-0.5"><Clock className="w-3 h-3" />{lesson.duration_minutes}m</span>}
-          <span className="flex items-center gap-0.5 text-fuchsia-400"><Zap className="w-3 h-3" />+{lesson.xp_reward || 20}</span>
+
         </div>
       </div>
       {isActive && <ChevronRight className="w-4 h-4 text-violet-400 shrink-0" />}
@@ -217,11 +217,7 @@ export default function CourseDetail() {
                     <p className="text-sm text-gray-500 mt-1">{activeLesson.description}</p>
                   )}
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <Badge className="bg-fuchsia-100 text-fuchsia-700 flex items-center gap-1">
-                    <Zap className="w-3 h-3" /> +{activeLesson.xp_reward || 20} XP
-                  </Badge>
-                </div>
+
               </div>
               {enrollment && !isLessonCompleted(activeLesson.id) && (
                 <Button
@@ -256,9 +252,7 @@ export default function CourseDetail() {
                 <Badge className={DIFFICULTY_COLORS[course.difficulty] || "bg-gray-100 text-gray-600"}>
                   {course.difficulty}
                 </Badge>
-                <Badge className="bg-fuchsia-100 text-fuchsia-700 flex items-center gap-1">
-                  <Zap className="w-3 h-3" /> {course.xp_reward || 100} XP
-                </Badge>
+
                 <Badge className="bg-blue-100 text-blue-700 flex items-center gap-1">
                   <BookOpen className="w-3 h-3" /> {lessons.length} lessons
                 </Badge>

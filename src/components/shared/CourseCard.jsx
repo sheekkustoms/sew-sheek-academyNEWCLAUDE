@@ -45,9 +45,7 @@ export default function CourseCard({ course, enrollment, index = 0, userLevel = 
             <div className="absolute top-3 right-3">
               <Badge className={`${difficultyColors[course.difficulty]} border text-[10px] uppercase tracking-wider`}>{course.difficulty}</Badge>
             </div>
-            <div className="absolute bottom-3 left-3 flex items-center gap-1 text-emerald-300 text-xs font-bold bg-black/30 rounded-full px-2 py-0.5">
-              <Zap className="w-3 h-3" /> +{course.xp_reward} XP
-            </div>
+
             {isLocked && (
               <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center gap-1">
                 <Lock className="w-7 h-7 text-white" />
