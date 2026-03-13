@@ -644,11 +644,24 @@ export default function CourseManager() {
         )}
       </AnimatePresence>
 
-      {/* Inline editor */}
+      {/* Full-screen editor modal */}
       <AnimatePresence>
         {editingId && courses.find(c => c.id === editingId) && (
-          <motion.div key={editingId} initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-            <CourseEditor course={courses.find(c => c.id === editingId)} onClose={() => setEditingId(null)} />
+          <motion.div
+            key={editingId}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-stretch justify-center p-0 md:p-6"
+          >
+            <motion.div
+              initial={{ scale: 0.97, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.97, y: 20 }}
+              className="w-full max-w-6xl bg-white rounded-none md:rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+            >
+              <CourseEditor course={courses.find(c => c.id === editingId)} onClose={() => setEditingId(null)} />
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
