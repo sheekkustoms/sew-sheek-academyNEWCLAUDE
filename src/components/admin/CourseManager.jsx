@@ -333,7 +333,7 @@ function CourseEditor({ course, onClose }) {
 
       <div className="flex flex-1 min-h-0 overflow-hidden">
         {/* Left: Module / Lesson List */}
-        <div className="flex-1 border-r border-gray-100 overflow-y-auto">
+        <div className="flex-1 border-r border-gray-100 overflow-y-auto flex flex-col">
           <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
             <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Modules & Lessons</span>
             <div className="flex gap-1">
