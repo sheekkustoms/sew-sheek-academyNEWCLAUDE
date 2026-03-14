@@ -45,22 +45,24 @@ export default function Classes() {
     .filter(c => new Date(c.scheduled_at).getTime() + oneHourMs <= Date.now())
     .sort((a, b) => new Date(b.scheduled_at) - new Date(a.scheduled_at));
 
-  // Returns { type: "iframe"|"video", url } or null
-  const getPlayerInfo = (url) => {
-    if (!url) return null;
-    // Vimeo — fully restricted embed: no title, byline, portrait, share, download, or external links
+  // Extract clean Vimeo embed URL from either a raw URL or a pasted <iframe> block
+  const getPlayerInfo = (raw) => {
+    if (!raw) return null;
+    // If it looks like HTML, pull the src attribute out first
+    const srcMatch = raw.match(/src=["']([^"']+)["']/);
+    const url = srcMatch ? srcMatch[1] : raw.trim();
+    // Match any Vimeo video ID from URLs like:
+    //   https://vimeo.com/123456789
+    //   https://player.vimeo.com/video/123456789
+    //   https://player.vimeo.com/video/123456789?h=abc&...
     const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
     if (vimeoMatch) return {
       type: "iframe",
       url: `https://player.vimeo.com/video/${vimeoMatch[1]}?dnt=1&title=0&byline=0&portrait=0&share=0&download=0&pip=0&transparent=0`
     };
-    // Google Drive — preview embed only
-    const driveMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-    if (driveMatch) return { type: "iframe", url: `https://drive.google.com/file/d/${driveMatch[1]}/preview` };
     // Direct video file
     if (/\.(mp4|webm|ogg|mov)(\?|$)/i.test(url)) return { type: "video", url };
-    // Fallback iframe
-    return { type: "iframe", url };
+    return null;
   };
 
   const publishedCourses = courses
