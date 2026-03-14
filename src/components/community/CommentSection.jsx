@@ -223,9 +223,10 @@ export default function CommentSection({ postId, user, myPoints, isAdmin = false
                <CommentAvatar email={comment.author_email} name={comment.author_name} avatarUrl={comment.author_avatar} fallbackAvatarMap={fallbackAvatarMap} />
                <div className="flex-1">
                  <div className="bg-gray-100 rounded-2xl p-4">
-                   <div className="flex items-center gap-2 mb-1">
-                     <span className="font-bold text-gray-900 text-sm">{adminEmails.has(comment.author_email) ? "👑 " : ""}{comment.author_name || comment.author_email}</span>
-                     <span className="text-gray-500 text-xs">•</span>
+                   <div className="flex items-center gap-1.5 flex-nowrap mb-1">
+                     <span className="font-bold text-gray-900 text-sm truncate min-w-0">{comment.author_name || comment.author_email}</span>
+                     {adminEmails.has(comment.author_email) && <RoleBadge role="moderator" />}
+                     <span className="text-gray-400 text-xs shrink-0">•</span>
                      <RelativeTime date={comment.created_date} />
                    </div>
                    <p className="text-gray-800 text-sm leading-relaxed">
