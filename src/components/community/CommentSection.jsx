@@ -291,7 +291,7 @@ export default function CommentSection({ postId, user, myPoints, isAdmin = false
                          <div className="bg-blue-50 rounded-2xl p-4 border border-blue-100">
                            <div className="flex items-center gap-1.5 flex-nowrap mb-2">
                              <span className="font-bold text-gray-900 text-sm truncate min-w-0">{reply.author_name || reply.author_email}</span>
-                             {adminEmails.has(reply.author_email) && <RoleBadge role="moderator" />}
+                             {adminEmails.has(reply.author_email) && <RoleBadge role={getRoleBadgeProps(true, reply.author_email, user?.email)} />}
                              <span className="text-gray-400 text-xs shrink-0">•</span>
                              <RelativeTime date={reply.created_date} />
                            </div>
