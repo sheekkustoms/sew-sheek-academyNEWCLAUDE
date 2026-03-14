@@ -144,53 +144,54 @@ export default function Classes() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {pastClasses.map(cls => {
-                const embedUrl = getEmbedUrl(cls.recording_url);
+                const player = getPlayerInfo(cls.recording_url);
                 return (
                   <div key={cls.id} className="bg-white border border-[#EEEEEE] rounded-2xl overflow-hidden shadow-sm hover:shadow-md hover:border-[#CFCFCF] transition-all">
-                    {embedUrl ? (
-                      <div className="aspect-video relative">
-                        <iframe
-                          src={embedUrl}
-                          className="w-full h-full"
-                          allow="autoplay"
-                          allowFullScreen
-                          title={cls.title}
-                          sandbox="allow-scripts allow-same-origin allow-forms"
-                        />
-                        <div
-                          className="absolute top-0 right-0 bg-[#111] flex items-center justify-center"
-                          style={{ width: "72px", height: "44px", zIndex: 20, pointerEvents: "all", cursor: "default" }}
-                          onClick={e => e.stopPropagation()}
-                        >
-                          <span className="text-[8px] font-extrabold text-[#D4AF37] leading-tight text-center">SEW<br/>SHEEK</span>
-                        </div>
+                    {/* Embedded player */}
+                    {player ? (
+                      <div className="aspect-video relative bg-black">
+                        {player.type === "video" ? (
+                          <video
+                            className="w-full h-full"
+                            controls
+                            controlsList="nodownload"
+                            disablePictureInPicture
+                            onContextMenu={e => e.preventDefault()}
+                          >
+                            <source src={player.url} />
+                          </video>
+                        ) : (
+                          <iframe
+                            src={player.url}
+                            className="w-full h-full"
+                            allow="autoplay; fullscreen"
+                            allowFullScreen
+                            title={cls.title}
+                            sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
+                            referrerPolicy="no-referrer"
+                          />
+                        )}
                       </div>
                     ) : (
                       <div className="aspect-video bg-[#F5F5F5] flex items-center justify-center">
                         <Video className="w-8 h-8 text-[#CFCFCF]" />
                       </div>
                     )}
+
+                    {/* Info */}
                     <div className="p-4 space-y-3">
                       <div>
                         <h3 className="font-bold text-[#111] text-sm leading-snug">{cls.title}</h3>
                         <p className="text-xs text-[#999] mt-0.5">{moment(cls.scheduled_at).format("MMM D, YYYY")}</p>
+                        {cls.description && <p className="text-xs text-[#666] mt-1 leading-relaxed">{cls.description}</p>}
                       </div>
-                      {(cls.recording_url || cls.pdf_url) && (
-                        <div className="flex items-center gap-2 flex-wrap pt-1 border-t border-[#F5F5F5]">
-                          {cls.recording_url && (
-                            <a href={cls.recording_url} target="_blank" rel="noopener noreferrer">
-                              <Button size="sm" className="bg-black hover:bg-[#222] text-[#D4AF37] gap-1.5 text-xs font-semibold rounded-xl h-8">
-                                <Video className="w-3.5 h-3.5" /> Open Recording
-                              </Button>
-                            </a>
-                          )}
-                          {cls.pdf_url && (
-                            <a href={cls.pdf_url} target="_blank" rel="noopener noreferrer">
-                              <Button size="sm" className="bg-[#D4AF37]/10 hover:bg-[#D4AF37]/20 text-[#B8960C] gap-1.5 text-xs font-semibold rounded-xl h-8">
-                                <Download className="w-3.5 h-3.5" /> Sewing Pattern
-                              </Button>
-                            </a>
-                          )}
+                      {cls.pdf_url && (
+                        <div className="pt-1 border-t border-[#F5F5F5]">
+                          <a href={cls.pdf_url} target="_blank" rel="noopener noreferrer">
+                            <Button size="sm" className="bg-[#D4AF37]/10 hover:bg-[#D4AF37]/20 text-[#B8960C] gap-1.5 text-xs font-semibold rounded-xl h-8">
+                              <Download className="w-3.5 h-3.5" /> Sewing Pattern
+                            </Button>
+                          </a>
                         </div>
                       )}
                     </div>
