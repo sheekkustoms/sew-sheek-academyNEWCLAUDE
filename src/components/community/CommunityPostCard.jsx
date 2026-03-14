@@ -67,7 +67,7 @@ export default function CommunityPostCard({ post, currentUser, adminEmails, onLi
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 flex-nowrap overflow-hidden">
                 <span className="font-bold text-[#111] text-sm truncate min-w-0">{post.author_name || post.author_email}</span>
-                <RoleBadge role={getRoleBadgeProps(isAdminPost, post.author_email, currentUser?.email)} />
+                <RoleBadge role={getRoleBadgeProps(isAdminPost, authorRole)} />
               </div>
               <p className="text-xs text-[#999] mt-0.5"><RelativeTime date={post.created_date} /></p>
             </div>
