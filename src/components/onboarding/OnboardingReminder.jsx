@@ -17,40 +17,31 @@ export default function OnboardingReminder({ completedSteps, onOpen, onDismiss }
     <motion.div
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm"
+      className="bg-white border border-[#D4AF37]/30 rounded-2xl p-5 shadow-sm"
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
-          <p className="font-semibold text-gray-900 text-sm">Finish setting up your Academy experience</p>
-          <p className="text-xs text-gray-400 mt-0.5">
-            {completedSteps.length} of {STEP_LABELS.length} steps complete
-          </p>
+          <p className="font-bold text-[#111] text-sm">Finish setting up your Academy experience</p>
+          <p className="text-xs text-[#999] mt-0.5">{completedSteps.length} of {STEP_LABELS.length} steps complete</p>
 
-          {/* Mini progress bar */}
-          <div className="w-full bg-gray-100 rounded-full h-1.5 mt-3">
+          <div className="w-full bg-[#F5F5F5] rounded-full h-1.5 mt-3">
             <div
-              className="bg-gray-800 h-1.5 rounded-full transition-all duration-500"
+              className="bg-[#D4AF37] h-1.5 rounded-full transition-all duration-500"
               style={{ width: `${(completedSteps.length / STEP_LABELS.length) * 100}%` }}
             />
           </div>
 
-          {/* Step pills */}
           <div className="flex flex-wrap gap-1.5 mt-3">
             {STEP_LABELS.map(s => {
               const done = completedSteps.includes(s.id);
               return (
                 <span
                   key={s.id}
-                  className={`flex items-center gap-1 text-xs px-2.5 py-1 rounded-full font-medium ${
-                    done
-                      ? "bg-gray-100 text-gray-400 line-through"
-                      : "bg-pink-50 text-pink-700 border border-pink-200"
+                  className={`flex items-center gap-1 text-xs px-2.5 py-1 rounded-full font-semibold ${
+                    done ? "bg-[#F5F5F5] text-[#CFCFCF] line-through" : "bg-[#D4AF37]/10 text-[#B8960C] border border-[#D4AF37]/30"
                   }`}
                 >
-                  {done
-                    ? <CheckCircle2 className="w-3 h-3" />
-                    : <Circle className="w-3 h-3" />
-                  }
+                  {done ? <CheckCircle2 className="w-3 h-3" /> : <Circle className="w-3 h-3" />}
                   {s.label}
                 </span>
               );
@@ -61,11 +52,11 @@ export default function OnboardingReminder({ completedSteps, onOpen, onDismiss }
         <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={onOpen}
-            className="flex items-center gap-1 text-xs font-semibold text-gray-700 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-lg transition-colors"
+            className="flex items-center gap-1 text-xs font-bold text-[#111] bg-black hover:bg-[#222] text-[#D4AF37] px-3 py-2 rounded-xl transition-all"
           >
             Continue <ChevronRight className="w-3.5 h-3.5" />
           </button>
-          <button onClick={onDismiss} className="text-gray-300 hover:text-gray-500 transition-colors">
+          <button onClick={onDismiss} className="text-[#CFCFCF] hover:text-[#666] transition-colors">
             <X className="w-4 h-4" />
           </button>
         </div>
