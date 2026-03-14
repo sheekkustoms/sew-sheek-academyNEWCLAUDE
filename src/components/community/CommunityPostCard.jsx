@@ -50,7 +50,7 @@ export default function CommunityPostCard({ post, currentUser, adminEmails, onLi
       onClick={() => onOpen?.(post)}
     >
       {post.image_url && (
-        <div className="w-full max-w-[420px] mx-auto rounded-xl overflow-hidden aspect-[3/4] mt-4 mx-4" style={{maxWidth:"420px",margin:"1rem auto 0"}}>
+        <div className="w-full max-w-[420px] mx-auto rounded-xl overflow-hidden aspect-[3/4] mt-4">
           <img src={post.image_url} alt="" className="w-full h-full object-cover" />
         </div>
       )}
