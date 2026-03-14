@@ -196,79 +196,23 @@ export default function Layout({ children, currentPageName }) {
     : NAV_ITEMS;
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
+    <div className="min-h-screen bg-[#F5F5F5] text-[#111]">
       <Toaster position="top-right" richColors />
       <style>{`
-        video, iframe {
-          -webkit-user-select: none;
-          user-select: none;
-        }
-        @media print {
-          video, iframe, .no-print { display: none !important; }
-        }
-        * { box-sizing: border-box; }
-        body {
-          background-color: #F1EDE9;
-          overscroll-behavior-y: none;
-        }
-        button, a, nav, [role="navigation"] {
-          -webkit-user-select: none;
-          user-select: none;
-        }
-        button:hover { background-color: rgba(139, 115, 85, 0.1); }
-        .btn-primary { background-color: #6B7A5C !important; }
-        .btn-primary:hover { background-color: #556347 !important; }
-        :root {
-          --app-bg: #F1EDE9;
-          --gold: #8B7355;
-          --gold-dark: #6B5344;
-          --pink: #E8C4D8;
-          --pink-dark: #D4A8C8;
-          --black: #1A1A1A;
-          --white: #FFFFFF;
-          --gray-light: #FFFEF8;
-          --gray-border: #F0EDE8;
-          --text-primary: #1A1A1A;
-          --text-secondary: #7A6F68;
-          --background: 0 0% 100%;
-          --foreground: 0 0% 10%;
-          --card: 0 0% 100%;
-          --card-foreground: 0 0% 10%;
-          --popover: 0 0% 100%;
-          --popover-foreground: 0 0% 10%;
-          --primary: 0 0% 10%;
-          --primary-foreground: 0 0% 100%;
-          --secondary: 0 0% 97%;
-          --secondary-foreground: 0 0% 10%;
-          --muted: 0 0% 94%;
-          --muted-foreground: 0 0% 45%;
-          --accent: 0 0% 97%;
-          --accent-foreground: 0 0% 10%;
-          --destructive: 0 84% 60%;
-          --destructive-foreground: 0 0% 100%;
-          --border: 0 0% 90%;
-          --input: 0 0% 97%;
-          --ring: 0 0% 10%;
-          --radius: 0.75rem;
-          --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
-        }
-        body { background-color: #F1EDE9; }
-        * { box-sizing: border-box; }
-        /* Bottom nav safe area padding */
-        .bottom-nav-safe {
-          padding-bottom: env(safe-area-inset-bottom, 0px);
-        }
+        video, iframe { -webkit-user-select: none; user-select: none; }
+        button, a, nav, [role="navigation"] { -webkit-user-select: none; user-select: none; }
+        .bottom-nav-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
       `}</style>
 
       {/* PWA install banner */}
       {showPWA && (
-        <div className="fixed top-0 left-0 right-0 z-[100] bg-gradient-to-r from-pink-500 via-fuchsia-500 to-violet-500 text-white px-4 py-2.5 flex items-center justify-between gap-3">
+        <div className="fixed top-0 left-0 right-0 z-[100] bg-black text-white px-4 py-2.5 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 text-sm font-medium">
-            <Download className="w-4 h-4 shrink-0" />
-            <span>Install this app on your phone for the best experience!</span>
+            <Download className="w-4 h-4 shrink-0 text-[#D4AF37]" />
+            <span>Install the SEW SHEEK app on your phone for the best experience!</span>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <Button size="sm" variant="secondary" className="h-7 text-xs bg-white/20 hover:bg-white/30 text-white border-0"
+            <Button size="sm" className="h-7 text-xs bg-[#D4AF37] hover:bg-[#B8960C] text-black font-semibold border-0"
               onClick={async () => {
                 if (deferredInstallPrompt) {
                   deferredInstallPrompt.prompt();
@@ -283,7 +227,7 @@ export default function Layout({ children, currentPageName }) {
             >
               Install
             </Button>
-            <button onClick={() => { setShowPWA(false); localStorage.setItem("pwa_dismissed", "1"); }} className="text-white/70 hover:text-white">
+            <button onClick={() => { setShowPWA(false); localStorage.setItem("pwa_dismissed", "1"); }} className="text-white/60 hover:text-white">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -292,67 +236,65 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Mobile top bar */}
       <div
-        className={`md:hidden fixed left-0 right-0 z-50 bg-[#F1EDE9] border-b border-pink-300 px-4 flex items-center justify-between shadow-sm select-none ${showPWA ? "top-10" : "top-0"}`}
+        className={`md:hidden fixed left-0 right-0 z-50 bg-black px-4 flex items-center justify-between select-none ${showPWA ? "top-10" : "top-0"}`}
         style={{ paddingTop: "env(safe-area-inset-top, 0px)", height: "calc(3.5rem + env(safe-area-inset-top, 0px))" }}
       >
         {ROOT_PAGES.includes(currentPageName) ? (
-          <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)} className="text-gray-600">
+          <button onClick={() => setSidebarOpen(true)} className="text-white p-1">
             <Menu className="w-5 h-5" />
-          </Button>
+          </button>
         ) : (
-          <Button variant="ghost" size="icon" onClick={() => window.history.back()} className="text-gray-600">
+          <button onClick={() => window.history.back()} className="text-white p-1">
             <ChevronRight className="w-5 h-5 rotate-180" />
-          </Button>
+          </button>
         )}
-        <span className="text-lg font-bold text-gray-900">Oh Sew Sheek</span>
-        <div className="flex items-center gap-2">
+        <span className="text-base font-bold text-white tracking-wide">SEW SHEEK</span>
+        <div className="flex items-center gap-3">
           <Link to={createPageUrl("Notifications")} className="relative">
-            <Bell className="w-5 h-5 text-gray-500" />
+            <Bell className="w-5 h-5 text-white/70" />
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-pink-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">{unreadCount}</span>
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#D4AF37] text-black text-[9px] font-bold rounded-full flex items-center justify-center">{unreadCount}</span>
             )}
           </Link>
-          <div className="flex items-center gap-1 text-gray-700 text-sm font-bold">
-            <Zap className="w-4 h-4" /> {displayXP}
+          <div className="flex items-center gap-1 text-[#D4AF37] text-sm font-bold">
+            <Zap className="w-3.5 h-3.5" /> {displayXP}
           </div>
         </div>
       </div>
 
       {/* Sidebar overlay */}
       {sidebarOpen && (
-        <div className="md:hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
+        <div className="md:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed top-0 left-0 z-50 h-full w-64 bg-white border-r border-gray-200 shadow-sm transform transition-transform duration-300 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}>
+      <aside className={`fixed top-0 left-0 z-50 h-full w-64 bg-black border-r border-white/10 shadow-2xl transform transition-transform duration-300 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}>
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="px-6 h-16 flex items-center justify-between border-b border-gray-200">
-            <span className="text-xl font-bold text-gray-900">
-              Oh Sew Sheek
-            </span>
-            <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(false)} className="lg:hidden text-gray-400">
+          <div className="px-6 h-16 flex items-center justify-between border-b border-white/10">
+            <span className="text-lg font-bold text-white tracking-widest uppercase">SEW SHEEK</span>
+            <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-white/40 hover:text-white p-1">
               <X className="w-4 h-4" />
-            </Button>
+            </button>
           </div>
 
           {/* User card */}
           {user && (
-            <div className="mx-4 mt-5 p-4 rounded-xl bg-pink-50 border border-pink-200">
+            <div className="mx-4 mt-5 p-4 rounded-xl bg-white/5 border border-white/10">
               <div className="flex items-center gap-3">
                 {user.avatar_url ? (
-                  <img src={user.avatar_url} className="w-10 h-10 rounded-full object-cover border border-pink-200" />
+                  <img src={user.avatar_url} className="w-10 h-10 rounded-full object-cover ring-2 ring-[#D4AF37]" />
                 ) : (
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-700 to-pink-400 flex items-center justify-center text-white font-bold text-sm">
+                  <div className="w-10 h-10 rounded-full bg-[#D4AF37] flex items-center justify-center text-black font-bold text-sm ring-2 ring-[#D4AF37]/50">
                     {(user.full_name || user.email)?.[0]?.toUpperCase()}
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-900 truncate">{displayName}</p>
+                  <p className="text-sm font-semibold text-white truncate">{displayName}</p>
                   <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-semibold">LVL {level}</span>
-                    <span className="text-green-700 text-[10px] font-semibold flex items-center gap-0.5">
-                      <Zap className="w-2.5 h-2.5" /> {displayXP}
+                    <span className="text-[10px] bg-[#D4AF37]/20 text-[#D4AF37] px-1.5 py-0.5 rounded-full font-semibold">LVL {level}</span>
+                    <span className="text-[#D4AF37] text-[10px] font-semibold flex items-center gap-0.5">
+                      <Zap className="w-2.5 h-2.5" /> {displayXP} XP
                     </span>
                   </div>
                 </div>
@@ -361,7 +303,7 @@ export default function Layout({ children, currentPageName }) {
           )}
 
           {/* Nav */}
-          <nav className="flex-1 px-3 mt-6 space-y-1">
+          <nav className="flex-1 px-3 mt-6 space-y-0.5">
             {navItems.map((item) => {
               const isActive = currentPageName === item.page;
               return (
@@ -371,23 +313,23 @@ export default function Layout({ children, currentPageName }) {
                   onClick={() => setSidebarOpen(false)}
                   className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
                     isActive
-                      ? "bg-green-50 text-gray-900 border border-green-200"
-                      : "text-gray-600 hover:text-gray-900 hover:bg-pink-50"
+                      ? "bg-[#D4AF37] text-black"
+                      : "text-white/60 hover:text-white hover:bg-white/5"
                   }`}
                 >
-                  <item.icon className={`w-4 h-4 ${isActive ? "text-green-700" : "text-gray-400"}`} />
+                  <item.icon className={`w-4 h-4 shrink-0 ${isActive ? "text-black" : "text-white/40"}`} />
                   <span>{item.name}</span>
-                  {isActive && <ChevronRight className="w-3.5 h-3.5 ml-auto text-green-700" />}
+                  {item.admin && !isActive && <span className="ml-auto text-[9px] bg-[#D4AF37]/20 text-[#D4AF37] px-1.5 py-0.5 rounded-full font-semibold">ADMIN</span>}
                 </Link>
               );
             })}
           </nav>
 
           {/* Logout */}
-          <div className="p-3 border-t border-gray-200">
+          <div className="p-3 border-t border-white/10">
             <button
               onClick={() => base44.auth.logout()}
-              className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all w-full"
+              className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-white/50 hover:text-white hover:bg-white/5 transition-all w-full"
             >
               <LogOut className="w-4 h-4" />
               Sign out
@@ -397,26 +339,25 @@ export default function Layout({ children, currentPageName }) {
       </aside>
 
       {/* Main content */}
-      <main className={`md:ml-64 min-h-screen bg-[#F1EDE9] flex flex-col md:block ${showPWA ? "pt-24 md:pt-10" : "pt-14 md:pt-0"}`}>
+      <main className={`md:ml-64 min-h-screen bg-[#F5F5F5] ${showPWA ? "pt-24 md:pt-10" : "pt-14 md:pt-0"}`}>
         {/* Desktop notification bell */}
-        <div className="hidden md:block fixed top-6 right-6 z-40">
+        <div className="hidden md:block fixed top-5 right-6 z-40">
           <Link to={createPageUrl("Notifications")} className="relative inline-block">
-            <div className="p-2 rounded-lg bg-[#F1EDE9] border border-pink-300 hover:bg-pink-300 transition-colors">
-              <Bell className="w-5 h-5 text-gray-600" />
+            <div className="p-2 rounded-lg bg-white border border-[#CFCFCF] hover:border-[#D4AF37] transition-colors shadow-sm">
+              <Bell className="w-5 h-5 text-[#333]" />
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-pink-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">{unreadCount}</span>
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#D4AF37] text-black text-[10px] font-bold rounded-full flex items-center justify-center">{unreadCount}</span>
               )}
             </div>
           </Link>
         </div>
-        {/* Extra bottom padding on mobile for the bottom nav */}
-        <div className="p-6 md:p-10 pb-24 md:pb-10 md:block overflow-y-auto">
+        <div className="p-5 md:p-8 lg:p-10 pb-24 md:pb-10">
           {children}
         </div>
       </main>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-pink-200 bottom-nav-safe select-none">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-black border-t border-white/10 bottom-nav-safe select-none">
         <div className="flex items-stretch">
           {BOTTOM_NAV_ITEMS.map((item) => {
             const isActive = currentPageName === item.page;
@@ -427,15 +368,14 @@ export default function Layout({ children, currentPageName }) {
                 onClick={(e) => {
                   if (isActive) {
                     e.preventDefault();
-                    window.history.replaceState(null, "", createPageUrl(item.page));
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }
                 }}
-                className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-medium transition-colors ${
-                  isActive ? "text-pink-600" : "text-gray-400"
+                className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2.5 text-[10px] font-semibold transition-colors ${
+                  isActive ? "text-[#D4AF37]" : "text-white/40"
                 }`}
               >
-                <item.icon className={`w-5 h-5 ${isActive ? "text-pink-600" : "text-gray-400"}`} />
+                <item.icon className={`w-5 h-5 ${isActive ? "text-[#D4AF37]" : "text-white/40"}`} />
                 <span>{item.name}</span>
               </Link>
             );
