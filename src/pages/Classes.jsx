@@ -34,6 +34,25 @@ export default function Classes() {
     enabled: !!user?.email,
   });
 
+  const { data: liveClasses = [] } = useQuery({
+    queryKey: ["liveClassesAll"],
+    queryFn: () => base44.entities.LiveClass.filter({ is_active: true }),
+  });
+
+  const oneHourMs = 60 * 60 * 1000;
+  const pastClasses = [...liveClasses]
+    .filter(c => new Date(c.scheduled_at).getTime() + oneHourMs <= Date.now())
+    .sort((a, b) => new Date(b.scheduled_at) - new Date(a.scheduled_at));
+
+  const getEmbedUrl = (url) => {
+    if (!url) return null;
+    const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    if (match) return `https://drive.google.com/file/d/${match[1]}/preview`;
+    const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+    if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}`;
+    return url;
+  };
+
   const publishedCourses = courses
     .filter(c => c.is_published)
     .sort((a, b) => (a.order || 0) - (b.order || 0));
