@@ -285,17 +285,19 @@ export default function LiveClasses() {
           <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">Past Classes & Sewing Patterns</h2>
           <div className="space-y-4">
             {past.slice().reverse().map(cls => {
-              // Convert Google Drive share link to embeddable preview link
-              const getEmbedUrl = (url) => {
+              const getPlayerInfo = (url) => {
                 if (!url) return null;
-                const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-                if (match) return `https://drive.google.com/file/d/${match[1]}/preview`;
-                // YouTube
-                const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
-                if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}`;
-                return url;
+                const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+                if (vimeoMatch) return {
+                  type: "iframe",
+                  url: `https://player.vimeo.com/video/${vimeoMatch[1]}?dnt=1&title=0&byline=0&portrait=0&share=0&download=0&pip=0&transparent=0`
+                };
+                const driveMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                if (driveMatch) return { type: "iframe", url: `https://drive.google.com/file/d/${driveMatch[1]}/preview` };
+                if (/\.(mp4|webm|ogg|mov)(\?|$)/i.test(url)) return { type: "video", url };
+                return { type: "iframe", url };
               };
-              const embedUrl = getEmbedUrl(cls.recording_url);
+              const player = getPlayerInfo(cls.recording_url);
 
               return (
                 <div key={cls.id} className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm space-y-3">
@@ -304,43 +306,17 @@ export default function LiveClasses() {
                       <span className="font-medium text-gray-700">{cls.title}</span>
                       <span className="block text-xs text-gray-400 mt-0.5">{moment(cls.scheduled_at).format("MMM D, YYYY [at] h:mm A")}</span>
                     </div>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      {cls.recording_url && (
-                        <a href={cls.recording_url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
-                          <Button size="sm" className="bg-gradient-to-r from-pink-500 to-violet-500 text-white gap-1.5 text-xs">
-                            <Video className="w-3.5 h-3.5" /> Open Recording
-                          </Button>
-                        </a>
-                      )}
-                      {cls.pdf_url && (
-                        <a href={cls.pdf_url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
-                          <Button size="sm" className="bg-emerald-100 text-emerald-700 hover:bg-emerald-200 gap-1.5 text-xs">
-                            <Download className="w-3.5 h-3.5" /> Sewing Pattern
-                          </Button>
-                        </a>
-                      )}
-                    </div>
+                    {cls.pdf_url && (
+                      <a href={cls.pdf_url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
+                        <Button size="sm" className="bg-emerald-100 text-emerald-700 hover:bg-emerald-200 gap-1.5 text-xs">
+                          <Download className="w-3.5 h-3.5" /> Sewing Pattern
+                        </Button>
+                      </a>
+                    )}
                   </div>
-                  {embedUrl && (
-                    <div className="rounded-xl overflow-hidden border border-gray-100 aspect-video relative">
-                      <iframe
-                        src={embedUrl}
-                        className="w-full h-full"
-                        allow="autoplay"
-                        allowFullScreen
-                        title={cls.title}
-                        sandbox="allow-scripts allow-same-origin allow-forms"
-                      />
-                      {/* Block the pop-out arrow — small square top-right with branding */}
-                      <div
-                        className="absolute top-0 right-0 bg-gray-900 flex items-center justify-center"
-                        style={{ width: "80px", height: "52px", zIndex: 20, pointerEvents: "all", cursor: "default" }}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <span className="text-[9px] font-extrabold bg-gradient-to-r from-pink-400 via-fuchsia-400 to-violet-400 bg-clip-text text-transparent leading-tight text-center">
-                          Oh Sew<br />Sheek
-                        </span>
-                      </div>
+                  {player && (
+                    <div className="rounded-xl overflow-hidden border border-gray-100">
+                      <ReplayPlayer player={player} title={cls.title} />
                     </div>
                   )}
                 </div>
