@@ -143,6 +143,11 @@ export default function AdminDashboard() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["adminUsers"] }),
   });
 
+  const toggleCoachMutation = useMutation({
+    mutationFn: ({ id, isCoach }) => base44.entities.User.update(id, { is_coach: !isCoach }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["adminUsers"] }),
+  });
+
   const toggleMessagingPermissionMutation = useMutation({
     mutationFn: ({ id, enabled }) => base44.entities.User.update(id, { can_message: !enabled }),
     onSuccess: () => {
