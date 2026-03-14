@@ -29,7 +29,6 @@ export default function CommunityPostCard({ post, currentUser, adminEmails, onLi
   const isOwner = post.author_email === currentUser?.email;
   const cat = categoryConfig[post.category] || { label: post.category?.replace(/_/g, " "), bg: "bg-gray-100 text-gray-600" };
 
-  const OWNER_EMAIL = "sheek24kustoms@gmail.com";
   const shouldFetchLiveUser = isAdminPost || post.author_email === OWNER_EMAIL;
 
   // Fetch live user data for admin/owner posts (avatar + real role)
