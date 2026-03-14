@@ -306,7 +306,7 @@ function PostDetailDrawer({ post, currentUser, isAdmin, onClose, onLike, onPin, 
 
           {/* Comments */}
           <div className="px-5 pb-6">
-            <CommentSection post={p} currentUser={currentUser} isAdmin={isAdmin} />
+            <CommentSection postId={p.id} user={currentUser} isAdmin={isAdmin} />
           </div>
         </div>
       </motion.div>
