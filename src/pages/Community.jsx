@@ -272,7 +272,11 @@ function PostDetailDrawer({ post, currentUser, isAdmin, onClose, onLike, onPin, 
         {/* Scrollable body */}
         <div className="flex-1 overflow-y-auto">
           <div className="px-5 pt-4 pb-3 space-y-3">
-            {p.image_url && <img src={p.image_url} className="w-full rounded-xl object-cover max-h-64" />}
+            {p.image_url && (
+              <div className="w-full max-w-[420px] mx-auto rounded-xl overflow-hidden aspect-[3/4]">
+                <img src={p.image_url} className="w-full h-full object-cover" />
+              </div>
+            )}}
             <h2 className="text-lg font-bold text-[#111] leading-snug">{p.title}</h2>
             <p className="text-sm text-[#444] leading-relaxed whitespace-pre-wrap">{p.content}</p>
 
