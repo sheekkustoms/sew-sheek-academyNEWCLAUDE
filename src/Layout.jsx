@@ -49,7 +49,6 @@ const NAV_ITEMS = [
   { label: "Home",      page: "Dashboard" },
   { label: "Community", page: "Community" },
   { label: "Classes",   page: "Classes" },
-  { label: "Patterns",  page: "LiveClasses" },
   { label: "Profile",   page: "MemberProfile" },
 ];
 

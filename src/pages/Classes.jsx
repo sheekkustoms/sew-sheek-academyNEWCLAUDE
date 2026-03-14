@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Settings } from "lucide-react";
+import { Settings, Video, Download } from "lucide-react";
 import CoursesSidebar from "../components/classes/CoursesSidebar";
 import CourseView from "../components/classes/CourseView";
 import AdminCourseEditor from "../components/admin/CourseManager";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import moment from "moment";
 
 const FILTERS = [
   { value: "all", label: "All" },
