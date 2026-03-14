@@ -77,7 +77,7 @@ const NAV_ITEMS = [
   { name: "Community", icon: Users, page: "Community" },
   { name: "Leaderboard", icon: Trophy, page: "Leaderboard" },
   { name: "Live Room", icon: Video, page: "LiveClasses" },
-  { name: "Profile", icon: User, page: "ProfileSettings" },
+  { name: "Profile", icon: User, page: "MemberProfile" },
 ];
 
 const BOTTOM_NAV_ITEMS = [
