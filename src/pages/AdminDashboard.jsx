@@ -233,7 +233,9 @@ export default function AdminDashboard() {
     },
   });
 
-  const ADMIN_EMAILS = ["sheek24kustoms@gmail.com"];
+  const OWNER_EMAIL = "sheek24kustoms@gmail.com";
+  const ADMIN_EMAILS = [OWNER_EMAIL];
+  const isOwner = user?.email === OWNER_EMAIL;
   const isAdminUser = user?.role === "admin" || ADMIN_EMAILS.includes(user?.email);
 
   if (!isAdminUser) {
