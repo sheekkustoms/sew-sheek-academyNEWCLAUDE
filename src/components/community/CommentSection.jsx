@@ -9,6 +9,7 @@ import RelativeTime from "@/components/shared/RelativeTime";
 import { awardXP } from "../shared/useUserPoints";
 import { getDisplayName } from "../shared/useDisplayName";
 import AvatarWithFallback from "../shared/AvatarWithFallback";
+import RoleBadge from "../shared/RoleBadge";
 
 function useCommentAuthorAvatars(comments) {
   const emailsNeedingAvatars = comments
