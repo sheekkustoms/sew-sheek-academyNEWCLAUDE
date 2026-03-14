@@ -336,127 +336,116 @@ export default function Dashboard() {
       {/* Dashboard Cards Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Continue Learning */}
-        <DashboardCard title="Continue Learning" action="Courses" actionLabel="Browse Courses">
+        <DashboardCard title="Continue Learning" action="Classes" actionLabel="Browse Classes">
           {lastCourse ? (
             <div className="space-y-4">
               {lastCourse.thumbnail_url && (
-                <img src={lastCourse.thumbnail_url} alt="" className="w-full h-40 object-cover rounded-lg" />
+                <img src={lastCourse.thumbnail_url} alt="" className="w-full h-40 object-cover rounded-xl" />
               )}
               <div>
-                <p className="text-sm text-gray-500 mb-1">Last Course</p>
-                <h4 className="text-lg font-semibold text-gray-900">{lastCourse.title}</h4>
-                <p className="text-sm text-gray-600 mt-2">
-                  {lastEnrollment?.progress_percent || 0}% Complete
-                </p>
-                <div className="w-full bg-gray-200 rounded-full h-2 mt-3">
-                  <div
-                    className="bg-yellow-500 h-2 rounded-full"
-                    style={{ width: `${lastEnrollment?.progress_percent || 0}%` }}
-                  />
+                <p className="text-[11px] font-semibold text-[#999] uppercase tracking-wide mb-1">Last Course</p>
+                <h4 className="text-base font-bold text-[#111]">{lastCourse.title}</h4>
+                <p className="text-sm text-[#666] mt-1">{lastEnrollment?.progress_percent || 0}% Complete</p>
+                <div className="w-full bg-[#EEEEEE] rounded-full h-2 mt-3">
+                  <div className="bg-[#D4AF37] h-2 rounded-full transition-all" style={{ width: `${lastEnrollment?.progress_percent || 0}%` }} />
                 </div>
               </div>
             </div>
           ) : (
-            <p className="text-gray-500 py-8 text-center">Start your first course to see progress here</p>
+            <p className="text-[#999] py-8 text-center text-sm">Start your first course to see progress here</p>
           )}
         </DashboardCard>
 
         {/* Latest Lesson */}
-        <DashboardCard title="Latest Lesson" action="Courses" actionLabel="View Courses">
+        <DashboardCard title="Latest Lesson" action="Classes" actionLabel="View Classes">
           {lastLesson ? (
             <div className="space-y-4">
-              <div className="bg-gray-100 rounded-lg p-6 text-center">
-                <Play className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                <p className="text-sm text-gray-500">New Lesson Available</p>
+              <div className="bg-[#F5F5F5] rounded-xl p-6 text-center border border-[#EEEEEE]">
+                <Play className="w-8 h-8 text-[#D4AF37] mx-auto mb-2" />
+                <p className="text-sm text-[#666] font-medium">New Lesson Available</p>
               </div>
               <div>
-                <h4 className="text-lg font-semibold text-gray-900">{lastLesson.title}</h4>
-                <p className="text-sm text-gray-600 mt-2">{lastLesson.description}</p>
-                <p className="text-xs text-gray-500 mt-3">
-                  {lastLesson.duration_minutes} minutes
-                </p>
+                <h4 className="text-base font-bold text-[#111]">{lastLesson.title}</h4>
+                <p className="text-sm text-[#666] mt-1">{lastLesson.description}</p>
+                <p className="text-xs text-[#999] mt-2">{lastLesson.duration_minutes} minutes</p>
               </div>
             </div>
           ) : (
-            <p className="text-gray-500 py-8 text-center">New lessons will appear here</p>
+            <p className="text-[#999] py-8 text-center text-sm">New lessons will appear here</p>
           )}
         </DashboardCard>
 
         {/* Community Activity */}
         <DashboardCard title="Community Activity" action="Community" actionLabel="View Community">
           {recentActivity.length > 0 ? (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {recentActivity.map(post => (
-                <div key={post.id} className="border-b border-gray-100 pb-4 last:border-b-0 last:pb-0">
-                  <div className="flex items-start justify-between mb-2">
-                    <h4 className="font-semibold text-gray-900 text-sm">{post.title}</h4>
-                    <span className="text-xs bg-pink-100 text-pink-700 px-2 py-1 rounded">
+                <div key={post.id} className="border-b border-[#F5F5F5] pb-3 last:border-b-0 last:pb-0">
+                  <div className="flex items-start justify-between gap-2 mb-1">
+                    <h4 className="font-semibold text-[#111] text-sm leading-snug">{post.title}</h4>
+                    <span className="text-[10px] bg-[#D4AF37]/10 text-[#B8960C] px-2 py-0.5 rounded-full font-semibold shrink-0 capitalize">
                       {post.category?.replace(/_/g, " ")}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600 line-clamp-2">{post.content}</p>
-                  <p className="text-xs text-gray-500 mt-2">
-                    by {post.author_name || post.author_email}
-                  </p>
+                  <p className="text-xs text-[#666] line-clamp-2">{post.content}</p>
+                  <p className="text-[11px] text-[#999] mt-1">by {post.author_name || post.author_email}</p>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-gray-500 py-8 text-center">No community posts yet</p>
+            <p className="text-[#999] py-8 text-center text-sm">No community posts yet</p>
           )}
         </DashboardCard>
 
         {/* Leaderboard Snapshot */}
         <DashboardCard title="Top Members" action="Leaderboard" actionLabel="View Full Leaderboard">
           {topMembers.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-2">
               {topMembers.map((member, idx) => (
-                <div key={member.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div key={member.id} className="flex items-center justify-between p-3 bg-[#F5F5F5] rounded-xl border border-[#EEEEEE]">
                   <div className="flex items-center gap-3">
-                    <span className="text-lg font-bold text-yellow-600 w-6">{idx + 1}</span>
+                    <span className={`text-sm font-bold w-6 ${idx === 0 ? "text-[#D4AF37]" : "text-[#999]"}`}>{idx + 1}</span>
                     <div>
-                      <p className="font-semibold text-gray-900 text-sm">{member.user_name || member.user_email}</p>
-                      <p className="text-xs text-gray-500">{member.total_xp} XP</p>
+                      <p className="font-semibold text-[#111] text-sm">{member.user_name || member.user_email}</p>
+                      <p className="text-xs text-[#999]">{member.total_xp} XP</p>
                     </div>
                   </div>
-                  <Zap className="w-4 h-4 text-yellow-500" />
+                  <Zap className={`w-4 h-4 ${idx === 0 ? "text-[#D4AF37]" : "text-[#CFCFCF]"}`} />
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-gray-500 py-8 text-center">Leaderboard coming soon</p>
+            <p className="text-[#999] py-8 text-center text-sm">Leaderboard coming soon</p>
           )}
         </DashboardCard>
 
         {/* Upcoming Live Session */}
         <DashboardCard title="Live Room" action="LiveClasses" actionLabel="Join Now">
           {nextLiveClass ? (
-            <div className="space-y-4">
-              <div className="bg-gradient-to-br from-yellow-50 to-pink-50 rounded-lg p-6 border border-yellow-200">
-                <h4 className="font-semibold text-gray-900 mb-2">{nextLiveClass.title}</h4>
-                <p className="text-sm text-gray-600 mb-4">{nextLiveClass.description}</p>
-                <div className="flex items-center gap-2 text-sm text-gray-700">
-                  <Calendar className="w-4 h-4 text-yellow-600" />
-                  {moment(nextLiveClass.scheduled_at).format("MMM D, h:mm A")}
-                </div>
+            <div className="bg-[#F5F5F5] rounded-xl p-5 border border-[#D4AF37]/30">
+              <h4 className="font-bold text-[#111] mb-1">{nextLiveClass.title}</h4>
+              <p className="text-sm text-[#666] mb-3">{nextLiveClass.description}</p>
+              <div className="flex items-center gap-2 text-sm text-[#333] font-medium">
+                <Calendar className="w-4 h-4 text-[#D4AF37]" />
+                {moment(nextLiveClass.scheduled_at).format("MMM D, h:mm A")}
               </div>
             </div>
           ) : (
-            <p className="text-gray-500 py-8 text-center">No live sessions scheduled yet</p>
+            <p className="text-[#999] py-8 text-center text-sm">No live sessions scheduled yet</p>
           )}
         </DashboardCard>
 
         {/* Quiz Games */}
         <DashboardCard title="Quiz Games" action="QuizHome" actionLabel="Play More Quizzes">
-          <div className="space-y-4">
+          <div className="space-y-3">
             {liveQuizzes.length > 0 && (
               <div>
-                <p className="text-xs font-semibold text-yellow-600 mb-2 uppercase">🔴 Live Games</p>
+                <p className="text-[10px] font-bold text-[#E74C3C] mb-2 uppercase tracking-widest">🔴 Live Games</p>
                 {liveQuizzes.map(quiz => (
                   <Link key={quiz.id} to={createPageUrl("QuizGame") + `?id=${quiz.id}&mode=live`}>
-                    <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg hover:bg-yellow-100 transition-colors mb-2">
-                      <p className="font-semibold text-gray-900 text-sm">{quiz.title}</p>
-                      <p className="text-xs text-gray-500 mt-0.5">Code: {quiz.game_code}</p>
+                    <div className="p-3 bg-[#E74C3C]/5 border border-[#E74C3C]/20 rounded-xl hover:border-[#E74C3C]/40 transition-all mb-2">
+                      <p className="font-semibold text-[#111] text-sm">{quiz.title}</p>
+                      <p className="text-xs text-[#999] mt-0.5">Code: {quiz.game_code}</p>
                     </div>
                   </Link>
                 ))}
@@ -464,58 +453,48 @@ export default function Dashboard() {
             )}
             {practiceQuizzes.length > 0 && (
               <div>
-                <p className="text-xs font-semibold text-violet-600 mb-2 uppercase">📋 Practice</p>
+                <p className="text-[10px] font-bold text-[#333] mb-2 uppercase tracking-widest">📋 Practice</p>
                 {practiceQuizzes.map(quiz => (
                   <Link key={quiz.id} to={createPageUrl("QuizGame") + `?id=${quiz.id}&mode=practice`}>
-                    <div className="p-3 bg-violet-50 border border-violet-200 rounded-lg hover:bg-violet-100 transition-colors mb-2">
-                      <p className="font-semibold text-gray-900 text-sm">{quiz.title}</p>
-                      <p className="text-xs text-gray-500 mt-0.5 capitalize">{quiz.category?.replace(/_/g, " ")}</p>
+                    <div className="p-3 bg-[#F5F5F5] border border-[#EEEEEE] rounded-xl hover:border-[#D4AF37] transition-all mb-2">
+                      <p className="font-semibold text-[#111] text-sm">{quiz.title}</p>
+                      <p className="text-xs text-[#999] mt-0.5 capitalize">{quiz.category?.replace(/_/g, " ")}</p>
                     </div>
                   </Link>
                 ))}
               </div>
             )}
             {liveQuizzes.length === 0 && practiceQuizzes.length === 0 && (
-              <p className="text-gray-500 text-center py-6 text-sm">No quizzes available yet</p>
+              <p className="text-[#999] text-center py-6 text-sm">No quizzes available yet</p>
             )}
           </div>
         </DashboardCard>
 
         {/* Progress Overview */}
         <DashboardCard title="Your Progress">
-          <div className="space-y-6">
+          <div className="space-y-5">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-700">Overall Progress</span>
-                <span className="text-sm font-semibold text-gray-900">
-                  {enrollments.length > 0
-                    ? Math.round(
-                        enrollments.reduce((sum, e) => sum + (e.progress_percent || 0), 0) / enrollments.length
-                      )
-                    : 0}%
+                <span className="text-sm font-semibold text-[#333]">Overall Progress</span>
+                <span className="text-sm font-bold text-[#111]">
+                  {enrollments.length > 0 ? Math.round(enrollments.reduce((sum, e) => sum + (e.progress_percent || 0), 0) / enrollments.length) : 0}%
                 </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-3">
+              <div className="w-full bg-[#EEEEEE] rounded-full h-2.5">
                 <div
-                  className="bg-gradient-to-r from-yellow-500 to-pink-400 h-3 rounded-full"
-                  style={{
-                    width: enrollments.length > 0
-                      ? Math.round(
-                          enrollments.reduce((sum, e) => sum + (e.progress_percent || 0), 0) / enrollments.length
-                        )
-                      : 0
-                  }}
+                  className="bg-[#D4AF37] h-2.5 rounded-full transition-all"
+                  style={{ width: `${enrollments.length > 0 ? Math.round(enrollments.reduce((sum, e) => sum + (e.progress_percent || 0), 0) / enrollments.length) : 0}%` }}
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
+            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[#F5F5F5]">
               <div>
-                <p className="text-xs text-gray-500 uppercase tracking-wide">Lessons Completed</p>
-                <p className="text-2xl font-bold text-gray-900">{myPoints?.lessons_completed || 0}</p>
+                <p className="text-[10px] text-[#999] uppercase tracking-widest font-semibold">Lessons Done</p>
+                <p className="text-2xl font-bold text-[#111]">{myPoints?.lessons_completed || 0}</p>
               </div>
               <div>
-                <p className="text-xs text-gray-500 uppercase tracking-wide">Badges Earned</p>
-                <p className="text-2xl font-bold text-gray-900">{myPoints?.badges?.length || 0}</p>
+                <p className="text-[10px] text-[#999] uppercase tracking-widest font-semibold">Badges</p>
+                <p className="text-2xl font-bold text-[#111]">{myPoints?.badges?.length || 0}</p>
               </div>
             </div>
           </div>
