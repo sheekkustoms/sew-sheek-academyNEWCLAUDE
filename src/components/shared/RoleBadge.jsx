@@ -7,11 +7,17 @@ import React from "react";
  * Pass isAdminPost + authorEmail + currentUserEmail to auto-resolve,
  * or pass role="coach"|"moderator" directly.
  */
-export function getRoleBadgeProps(isAdminPost, authorEmail, currentUserEmail) {
+/**
+ * Pass the author's actual role ("admin") and optionally a flag to force "coach".
+ * - authorRole === "admin" with no override → "coach"
+ * - explicitly passing forceCoach=false → "moderator"
+ * Legacy: if called with (isAdminPost, authorEmail, currentUserEmail) it falls back
+ * to the old viewer-relative logic only as a last resort.
+ */
+export function getRoleBadgeProps(isAdminPost, authorRole, _unused) {
   if (!isAdminPost) return null;
-  // If the post author is the currently logged-in admin, they're the Coach
-  if (currentUserEmail && authorEmail === currentUserEmail) return "coach";
-  // Any other admin is a Moderator
+  // authorRole here is the actual role string from the User entity
+  if (authorRole === "admin") return "coach";
   return "moderator";
 }
 
