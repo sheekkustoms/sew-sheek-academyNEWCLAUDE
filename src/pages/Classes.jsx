@@ -48,10 +48,13 @@ export default function Classes() {
   // Returns { type: "iframe"|"video", url } or null
   const getPlayerInfo = (url) => {
     if (!url) return null;
-    // Vimeo
+    // Vimeo — fully restricted embed: no title, byline, portrait, share, download, or external links
     const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
-    if (vimeoMatch) return { type: "iframe", url: `https://player.vimeo.com/video/${vimeoMatch[1]}?dnt=1&title=0&byline=0&portrait=0` };
-    // Google Drive — preview embed (no download button shown)
+    if (vimeoMatch) return {
+      type: "iframe",
+      url: `https://player.vimeo.com/video/${vimeoMatch[1]}?dnt=1&title=0&byline=0&portrait=0&share=0&download=0&pip=0&transparent=0`
+    };
+    // Google Drive — preview embed only
     const driveMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
     if (driveMatch) return { type: "iframe", url: `https://drive.google.com/file/d/${driveMatch[1]}/preview` };
     // Direct video file
