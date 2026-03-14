@@ -263,7 +263,7 @@ function PostDetailDrawer({ post, currentUser, isAdmin, onClose, onLike, onPin, 
             <div>
               <div className="flex items-center gap-1.5 flex-nowrap">
                 <p className="text-sm font-bold text-[#111] truncate min-w-0">{p.author_name || p.author_email}</p>
-                <RoleBadge role={getRoleBadgeProps(p.is_admin_post, p.author_email, user?.email)} />
+                <RoleBadge role={getRoleBadgeProps(p.is_admin_post, p.is_admin_post)} />
               </div>
               <p className="text-xs text-[#999]"><RelativeTime date={p.created_date} /></p>
             </div>
