@@ -225,7 +225,7 @@ export default function CommentSection({ postId, user, myPoints, isAdmin = false
                  <div className="bg-gray-100 rounded-2xl p-4">
                    <div className="flex items-center gap-1.5 flex-nowrap mb-1">
                      <span className="font-bold text-gray-900 text-sm truncate min-w-0">{comment.author_name || comment.author_email}</span>
-                     {adminEmails.has(comment.author_email) && <RoleBadge role="moderator" />}
+                     {adminEmails.has(comment.author_email) && <RoleBadge role={getRoleBadgeProps(true, comment.author_email, user?.email)} />}
                      <span className="text-gray-400 text-xs shrink-0">•</span>
                      <RelativeTime date={comment.created_date} />
                    </div>
