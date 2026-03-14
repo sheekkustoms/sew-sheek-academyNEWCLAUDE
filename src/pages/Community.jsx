@@ -273,7 +273,7 @@ function PostDetailDrawer({ post, currentUser, isAdmin, onClose, onLike, onPin, 
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[#F5F5F5]">
           <div className="flex items-center gap-3">
-            <AvatarWithFallback imageUrl={p.author_avatar} name={p.author_name} email={p.author_email} size="sm" />
+            <AvatarWithFallback imageUrl={drawerAvatarUrl} name={p.author_name} email={p.author_email} size="sm" />
             <div>
               <div className="flex items-center gap-1.5 flex-nowrap">
                 <p className="text-sm font-bold text-[#111] truncate min-w-0">{p.author_name || p.author_email}</p>
