@@ -1,0 +1,315 @@
+import React, { useState } from "react";
+import { base44 } from "@/api/base44Client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { AnimatePresence, motion } from "framer-motion";
+import { Plus, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import CommunityFeed from "../components/community/CommunityFeed";
+import CommunitySidebar from "../components/community/CommunitySidebar";
+import PostComposer from "../components/community/PostComposer";
+import { getOrCreateUserPoints, awardXP } from "../components/shared/useUserPoints";
+import { getDisplayName } from "../components/shared/useDisplayName";
+
+const FILTERS = [
+  { value: "all", label: "All" },
+  { value: "announcement", label: "📢 Announcements" },
+  { value: "student_projects", label: "🏆 Wins" },
+  { value: "question", label: "❓ Questions" },
+  { value: "discussion", label: "💬 Discussion" },
+  { value: "ask_the_coach", label: "🎽 Ask Coach" },
+];
+
+export default function Community() {
+  const queryClient = useQueryClient();
+  const [filter, setFilter] = useState("all");
+  const [showComposer, setShowComposer] = useState(false);
+  const [openPost, setOpenPost] = useState(null);
+
+  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
+  const isAdmin = user?.role === "admin";
+
+  const { data: posts = [], isLoading } = useQuery({
+    queryKey: ["communityPosts"],
+    queryFn: () => base44.entities.CommunityPost.list("-created_date", 100),
+  });
+
+  const { data: liveClasses = [] } = useQuery({
+    queryKey: ["upcomingClassesCommunity"],
+    queryFn: () => base44.entities.LiveClass.filter({ is_active: true }),
+  });
+
+  const { data: topPoints = [] } = useQuery({
+    queryKey: ["topContributors"],
+    queryFn: () => base44.entities.UserPoints.list("-total_xp", 5),
+  });
+
+  const { data: userPoints } = useQuery({
+    queryKey: ["myPoints", user?.email],
+    queryFn: () => base44.entities.UserPoints.filter({ user_email: user.email }),
+    enabled: !!user?.email,
+  });
+
+  const myPoints = userPoints?.[0];
+
+  // Filter
+  const approvedPosts = posts.filter(p => isAdmin || p.is_approved);
+  const pinnedPosts = approvedPosts.filter(p => p.is_pinned);
+  const filteredPosts = approvedPosts.filter(p => {
+    if (filter !== "all" && p.category !== filter) return false;
+    return true;
+  }).sort((a, b) => {
+    if (a.is_pinned && !b.is_pinned) return -1;
+    if (!a.is_pinned && b.is_pinned) return 1;
+    return new Date(b.created_date) - new Date(a.created_date);
+  });
+
+  const upcomingClasses = liveClasses
+    .filter(c => new Date(c.scheduled_at) > new Date())
+    .sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at))
+    .slice(0, 3);
+
+  const adminEmailSet = new Set(
+    posts.filter(p => p.is_admin_post).map(p => p.author_email)
+  );
+
+  // Mutations
+  const createPostMutation = useMutation({
+    mutationFn: async ({ title, content, category, imageFile, postAsCoach }) => {
+      let image_url = null;
+      if (imageFile) {
+        const res = await base44.integrations.Core.UploadFile({ file: imageFile });
+        image_url = res.file_url;
+      }
+      const displayName = getDisplayName(user);
+      const postData = {
+        title,
+        content,
+        category,
+        author_email: user.email,
+        author_name: postAsCoach ? "COACH" : displayName,
+        author_avatar: user.avatar_url || user.data?.avatar_url || null,
+        is_admin_post: postAsCoach || false,
+        is_approved: isAdmin ? true : false,
+        is_pinned: false,
+        likes: [],
+        comment_count: 0,
+        ...(image_url ? { image_url } : {}),
+      };
+      const created = await base44.entities.CommunityPost.create(postData);
+
+      // Award XP for posting
+      const pts = await getOrCreateUserPoints(user);
+      if (pts) {
+        await awardXP(pts.id, pts, 10, { posts_created: (pts.posts_created || 0) + 1 });
+      }
+      return created;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["communityPosts"] });
+      queryClient.invalidateQueries({ queryKey: ["myPoints", user?.email] });
+      setShowComposer(false);
+    },
+  });
+
+  const likeMutation = useMutation({
+    mutationFn: async (post) => {
+      const likes = post.likes || [];
+      const newLikes = likes.includes(user.email)
+        ? likes.filter(e => e !== user.email)
+        : [...likes, user.email];
+      await base44.entities.CommunityPost.update(post.id, { likes: newLikes });
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["communityPosts"] }),
+  });
+
+  const pinMutation = useMutation({
+    mutationFn: (post) => base44.entities.CommunityPost.update(post.id, { is_pinned: !post.is_pinned }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["communityPosts"] }),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (post) => base44.entities.CommunityPost.delete(post.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["communityPosts"] });
+      setOpenPost(null);
+    },
+  });
+
+  return (
+    <div className="max-w-7xl mx-auto">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Community</h1>
+          <p className="text-sm text-gray-500 mt-0.5">Connect, share, and grow together</p>
+        </div>
+        <Button
+          onClick={() => setShowComposer(true)}
+          className="bg-gray-900 hover:bg-gray-800 text-white gap-2"
+        >
+          <Plus className="w-4 h-4" /> New Post
+        </Button>
+      </div>
+
+      {/* Filter tabs */}
+      <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-xl p-1 shadow-sm mb-6 overflow-x-auto">
+        {FILTERS.map(f => (
+          <button
+            key={f.value}
+            onClick={() => setFilter(f.value)}
+            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+              filter === f.value
+                ? "bg-gray-900 text-white shadow-sm"
+                : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
+            }`}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Two-column layout */}
+      <div className="flex gap-6">
+        {/* Main feed */}
+        <div className="flex-1 min-w-0">
+          <CommunityFeed
+            posts={filteredPosts}
+            isLoading={isLoading}
+            currentUser={user}
+            adminEmails={adminEmailSet}
+            myPoints={myPoints}
+            onLike={(post) => likeMutation.mutate(post)}
+            onPin={(post) => pinMutation.mutate(post)}
+            onDelete={(post) => deleteMutation.mutate(post)}
+            onOpen={setOpenPost}
+            isAdmin={isAdmin}
+          />
+        </div>
+
+        {/* Right sidebar — hidden on mobile */}
+        <div className="hidden lg:block w-72 shrink-0">
+          <CommunitySidebar
+            pinnedPost={pinnedPosts[0] || null}
+            upcomingClasses={upcomingClasses}
+            topContributors={topPoints}
+            onOpenPost={setOpenPost}
+          />
+        </div>
+      </div>
+
+      {/* Post Composer Dialog */}
+      <Dialog open={showComposer} onOpenChange={setShowComposer}>
+        <DialogContent className="max-w-xl p-0 rounded-2xl overflow-hidden border border-gray-200">
+          <PostComposer
+            user={user}
+            isAdmin={isAdmin}
+            onSubmit={(data) => createPostMutation.mutate(data)}
+            isPending={createPostMutation.isPending}
+            onClose={() => setShowComposer(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Post detail / comments drawer */}
+      <AnimatePresence>
+        {openPost && (
+          <PostDetailDrawer
+            post={openPost}
+            currentUser={user}
+            isAdmin={isAdmin}
+            onClose={() => setOpenPost(null)}
+            onLike={(post) => likeMutation.mutate(post)}
+            onPin={(post) => pinMutation.mutate(post)}
+            onDelete={(post) => { deleteMutation.mutate(post); }}
+          />
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ─── Post Detail Drawer ────────────────────────────────────────────────────────
+import CommentSection from "../components/community/CommentSection";
+import AvatarWithFallback from "../components/shared/AvatarWithFallback";
+import RelativeTime from "../components/shared/RelativeTime";
+import { Heart, MessageCircle, Pin, Trash2 } from "lucide-react";
+
+function PostDetailDrawer({ post, currentUser, isAdmin, onClose, onLike, onPin, onDelete }) {
+  const isLiked = post.likes?.includes(currentUser?.email);
+  const queryClient = useQueryClient();
+
+  // Sync latest post data
+  const { data: latestPost } = useQuery({
+    queryKey: ["singlePost", post.id],
+    queryFn: () => base44.entities.CommunityPost.list("-created_date", 500).then(ps => ps.find(p => p.id === post.id) || post),
+    initialData: post,
+  });
+  const p = latestPost || post;
+
+  return (
+    <div className="fixed inset-0 z-[200] flex items-end md:items-center justify-center bg-black/50 backdrop-blur-sm p-0 md:p-6">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 40 }}
+        className="w-full max-w-2xl bg-white rounded-t-3xl md:rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden"
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+          <div className="flex items-center gap-3">
+            <AvatarWithFallback imageUrl={p.author_avatar} name={p.author_name} email={p.author_email} size="sm" />
+            <div>
+              <p className="text-sm font-semibold text-gray-900">{p.author_name || p.author_email}</p>
+              <p className="text-xs text-gray-400"><RelativeTime date={p.created_date} /></p>
+            </div>
+          </div>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-700 p-1">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Scrollable body */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="px-5 pt-4 pb-3 space-y-3">
+            {p.image_url && <img src={p.image_url} className="w-full rounded-xl object-cover max-h-64" />}
+            <h2 className="text-lg font-bold text-gray-900 leading-snug">{p.title}</h2>
+            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{p.content}</p>
+
+            {/* Actions */}
+            <div className="flex items-center gap-1 pt-2 border-t border-gray-100">
+              <Button
+                variant="ghost" size="sm"
+                className={`h-8 px-3 gap-1.5 text-xs rounded-lg ${isLiked ? "text-pink-600 bg-pink-50" : "text-gray-500 hover:text-pink-600 hover:bg-pink-50"}`}
+                onClick={() => { onLike(p); queryClient.invalidateQueries({ queryKey: ["singlePost", p.id] }); }}
+              >
+                <Heart className={`w-3.5 h-3.5 ${isLiked ? "fill-current" : ""}`} />
+                {p.likes?.length || 0}
+              </Button>
+
+              {isAdmin && (
+                <div className="ml-auto flex items-center gap-1">
+                  <Button variant="ghost" size="sm"
+                    className={`h-8 w-8 p-0 rounded-lg ${p.is_pinned ? "text-yellow-600 bg-yellow-50" : "text-gray-400 hover:text-yellow-600"}`}
+                    onClick={() => { onPin(p); queryClient.invalidateQueries({ queryKey: ["singlePost", p.id] }); }}>
+                    <Pin className="w-3.5 h-3.5" />
+                  </Button>
+                  <Button variant="ghost" size="sm"
+                    className="h-8 w-8 p-0 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50"
+                    onClick={() => { if (window.confirm("Delete this post?")) { onDelete(p); onClose(); } }}>
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Comments */}
+          <div className="px-5 pb-6">
+            <CommentSection post={p} currentUser={currentUser} isAdmin={isAdmin} />
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
