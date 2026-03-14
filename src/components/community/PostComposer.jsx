@@ -39,17 +39,17 @@ export default function PostComposer({ user, isAdmin, onSubmit, isPending, onClo
   return (
     <div className="flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-[#F5F5F5]">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-pink-400 to-violet-500 flex items-center justify-center text-white font-bold text-sm shrink-0">
+          <div className="w-9 h-9 rounded-full bg-black flex items-center justify-center text-[#D4AF37] font-bold text-sm shrink-0 ring-2 ring-[#D4AF37]/30">
             {(displayName)?.[0]?.toUpperCase()}
           </div>
           <div>
-            <p className="text-sm font-semibold text-gray-900">{postAsCoach ? "COACH" : displayName}</p>
-            <p className="text-xs text-gray-400">Posting to Community</p>
+            <p className="text-sm font-bold text-[#111]">{postAsCoach ? "COACH" : displayName}</p>
+            <p className="text-xs text-[#999]">Posting to Community</p>
           </div>
         </div>
-        <button onClick={onClose} className="text-gray-400 hover:text-gray-700 p-1">
+        <button onClick={onClose} className="text-[#CFCFCF] hover:text-[#111] p-1 transition-colors">
           <X className="w-5 h-5" />
         </button>
       </div>
@@ -58,7 +58,7 @@ export default function PostComposer({ user, isAdmin, onSubmit, isPending, onClo
       <div className="px-6 py-4 space-y-4">
         {/* Post type */}
         <Select value={category} onValueChange={setCategory}>
-          <SelectTrigger className="border-gray-200 h-9 text-sm bg-gray-50 w-48">
+          <SelectTrigger className="border-[#EEEEEE] h-9 text-sm bg-[#F5F5F5] w-52 rounded-xl">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -72,23 +72,23 @@ export default function PostComposer({ user, isAdmin, onSubmit, isPending, onClo
           placeholder="Post title..."
           value={title}
           onChange={e => setTitle(e.target.value)}
-          className="border-gray-200 font-semibold text-gray-900 text-base h-11"
+          className="border-[#EEEEEE] font-bold text-[#111] text-base h-11 rounded-xl"
         />
 
         <Textarea
           placeholder="What's on your mind? Share with the community..."
           value={content}
           onChange={e => setContent(e.target.value)}
-          className="border-gray-200 min-h-[120px] resize-none text-gray-700 text-sm"
+          className="border-[#EEEEEE] min-h-[120px] resize-none text-[#444] text-sm rounded-xl"
         />
 
         {/* Image preview */}
         {imagePreview && (
-          <div className="relative rounded-xl overflow-hidden border border-gray-200">
+          <div className="relative rounded-xl overflow-hidden border border-[#EEEEEE]">
             <img src={imagePreview} className="w-full max-h-48 object-cover" />
             <button
               onClick={() => { setImageFile(null); setImagePreview(null); }}
-              className="absolute top-2 right-2 w-7 h-7 bg-black/60 text-white rounded-full flex items-center justify-center hover:bg-black/80"
+              className="absolute top-2 right-2 w-7 h-7 bg-black/70 text-white rounded-full flex items-center justify-center hover:bg-black"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -97,34 +97,34 @@ export default function PostComposer({ user, isAdmin, onSubmit, isPending, onClo
 
         {/* Attachment row */}
         <div className="flex items-center gap-2">
-          <label className="flex items-center gap-2 text-xs text-gray-500 cursor-pointer hover:text-gray-800 px-3 py-2 rounded-lg border border-dashed border-gray-200 hover:border-gray-400 transition-colors">
-            <ImagePlus className="w-4 h-4" /> Photo
+          <label className="flex items-center gap-2 text-xs text-[#666] cursor-pointer hover:text-[#111] px-3 py-2 rounded-xl border border-dashed border-[#CFCFCF] hover:border-[#D4AF37] transition-colors">
+            <ImagePlus className="w-4 h-4" /> Add Photo
             <input type="file" accept="image/*" className="hidden" onChange={handleImageSelect} />
           </label>
         </div>
 
         {/* Admin: post as coach toggle */}
         {isAdmin && (
-          <div className="flex items-center gap-3 p-3 bg-amber-50 border border-amber-200 rounded-xl">
+          <div className="flex items-center gap-3 p-3 bg-[#D4AF37]/5 border border-[#D4AF37]/30 rounded-xl">
             <button
               onClick={() => setPostAsCoach(v => !v)}
-              className={`w-9 h-5 rounded-full transition-colors relative shrink-0 ${postAsCoach ? "bg-amber-500" : "bg-gray-200"}`}
+              className={`w-9 h-5 rounded-full transition-colors relative shrink-0 ${postAsCoach ? "bg-[#D4AF37]" : "bg-[#CFCFCF]"}`}
             >
               <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${postAsCoach ? "translate-x-4" : "translate-x-0.5"}`} />
             </button>
-            <span className="text-xs font-medium text-amber-800">Post as 👑 COACH</span>
+            <span className="text-xs font-semibold text-[#B8960C]">Post as 👑 COACH</span>
           </div>
         )}
       </div>
 
       {/* Footer */}
-      <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-end gap-3">
-        <Button variant="outline" size="sm" onClick={onClose} className="border-gray-200">Cancel</Button>
+      <div className="px-6 py-4 border-t border-[#F5F5F5] flex items-center justify-end gap-3">
+        <Button variant="outline" size="sm" onClick={onClose} className="border-[#CFCFCF] text-[#666] rounded-xl">Cancel</Button>
         <Button
           size="sm"
           onClick={handleSubmit}
           disabled={!title.trim() || !content.trim() || isPending}
-          className="bg-gray-900 hover:bg-gray-800 text-white px-6"
+          className="bg-black hover:bg-[#222] text-[#D4AF37] font-bold px-6 rounded-xl transition-all hover:scale-[1.02]"
         >
           {isPending ? "Posting..." : "Post to Community"}
         </Button>
