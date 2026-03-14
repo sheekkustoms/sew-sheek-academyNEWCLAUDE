@@ -236,9 +236,23 @@ import RelativeTime from "../components/shared/RelativeTime";
 import RoleBadge, { getRoleBadgeProps } from "../components/shared/RoleBadge";
 import { Heart, MessageCircle, Pin, Trash2 } from "lucide-react";
 
+const OWNER_EMAIL = "sheek24kustoms@gmail.com";
+
 function PostDetailDrawer({ post, currentUser, isAdmin, onClose, onLike, onPin, onDelete }) {
   const isLiked = post.likes?.includes(currentUser?.email);
   const queryClient = useQueryClient();
+
+  const isAdminPost = post.is_admin_post || post.author_email === OWNER_EMAIL;
+  const { data: liveAuthor } = useQuery({
+    queryKey: ["adminUser", post.author_email],
+    queryFn: async () => {
+      const users = await base44.entities.User.filter({ email: post.author_email });
+      return users[0] || null;
+    },
+    enabled: isAdminPost,
+    staleTime: 60000,
+  });
+  const drawerAvatarUrl = isAdminPost ? (liveAuthor?.avatar_url || post.author_avatar) : post.author_avatar;
 
   // Sync latest post data
   const { data: latestPost } = useQuery({
