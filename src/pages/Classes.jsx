@@ -150,29 +150,7 @@ export default function Classes() {
                   <div key={cls.id} className="bg-white border border-[#EEEEEE] rounded-2xl overflow-hidden shadow-sm hover:shadow-md hover:border-[#CFCFCF] transition-all">
                     {/* Embedded player */}
                     {player ? (
-                      <div className="aspect-video relative bg-black">
-                        {player.type === "video" ? (
-                          <video
-                            className="w-full h-full"
-                            controls
-                            controlsList="nodownload"
-                            disablePictureInPicture
-                            onContextMenu={e => e.preventDefault()}
-                          >
-                            <source src={player.url} />
-                          </video>
-                        ) : (
-                          <iframe
-                            src={player.url}
-                            className="w-full h-full"
-                            allow="autoplay; fullscreen"
-                            allowFullScreen
-                            title={cls.title}
-                            sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
-                            referrerPolicy="no-referrer"
-                          />
-                        )}
-                      </div>
+                      <ReplayPlayer player={player} title={cls.title} />
                     ) : (
                       <div className="aspect-video bg-[#F5F5F5] flex items-center justify-center">
                         <Video className="w-8 h-8 text-[#CFCFCF]" />
