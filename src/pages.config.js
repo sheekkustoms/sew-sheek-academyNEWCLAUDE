@@ -62,6 +62,7 @@ import QuizGame from './pages/QuizGame';
 import QuizHome from './pages/QuizHome';
 import UserProgress from './pages/UserProgress';
 import Classes from './pages/Classes';
+import MemberProfile from './pages/MemberProfile';
 import __Layout from './Layout.jsx';
 
 
@@ -81,6 +82,7 @@ export const PAGES = {
     "QuizHome": QuizHome,
     "UserProgress": UserProgress,
     "Classes": Classes,
+    "MemberProfile": MemberProfile,
 }
 
 export const pagesConfig = {
