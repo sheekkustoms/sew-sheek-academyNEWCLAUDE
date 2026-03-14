@@ -46,7 +46,7 @@ export default function CommunityPostCard({ post, currentUser, adminEmails, onLi
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.03 }}
-      className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-md transition-all cursor-pointer group"
+      className="bg-white border border-[#EEEEEE] rounded-2xl overflow-hidden hover:shadow-md hover:border-[#CFCFCF] transition-all cursor-pointer"
       onClick={() => onOpen?.(post)}
     >
       {post.image_url && (
@@ -57,36 +57,22 @@ export default function CommunityPostCard({ post, currentUser, adminEmails, onLi
         {/* Top row */}
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-3 min-w-0">
-            <AvatarWithFallback
-              imageUrl={avatarUrl}
-              name={post.author_name}
-              email={post.author_email}
-              size="md"
-            />
+            <AvatarWithFallback imageUrl={avatarUrl} name={post.author_name} email={post.author_email} size="md" />
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-semibold text-gray-900 text-sm truncate">
-                  {post.author_name || post.author_email}
-                </span>
+                <span className="font-bold text-[#111] text-sm truncate">{post.author_name || post.author_email}</span>
                 {isAdminPost && (
-                  <span className="text-[10px] px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full font-semibold shrink-0">Coach</span>
-                )}
-                {!isAdminPost && (
-                  <span className="text-[10px] px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full font-semibold shrink-0">Student</span>
+                  <span className="text-[10px] px-2 py-0.5 bg-[#D4AF37]/15 text-[#B8960C] rounded-full font-bold shrink-0">Coach</span>
                 )}
               </div>
-              <p className="text-xs text-gray-400 mt-0.5">
-                <RelativeTime date={post.created_date} />
-              </p>
+              <p className="text-xs text-[#999] mt-0.5"><RelativeTime date={post.created_date} /></p>
             </div>
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0">
-            <span className={`text-[11px] px-2.5 py-1 rounded-full font-medium capitalize ${cat.bg}`}>
-              {cat.label}
-            </span>
+            <span className={`text-[10px] px-2.5 py-1 rounded-full font-semibold capitalize ${cat.bg}`}>{cat.label}</span>
             {post.is_pinned && (
-              <span className="text-[11px] px-2 py-1 bg-yellow-50 text-yellow-600 rounded-full font-medium flex items-center gap-1">
+              <span className="text-[10px] px-2 py-1 bg-[#D4AF37]/10 text-[#D4AF37] rounded-full font-semibold flex items-center gap-1">
                 <Pin className="w-2.5 h-2.5" /> Pinned
               </span>
             )}
@@ -95,74 +81,55 @@ export default function CommunityPostCard({ post, currentUser, adminEmails, onLi
 
         {/* Body */}
         <div>
-          <h3 className="font-bold text-gray-900 text-base mb-1 leading-snug">{post.title}</h3>
-          <p className="text-sm text-gray-600 leading-relaxed line-clamp-3">{post.content}</p>
+          <h3 className="font-bold text-[#111] text-base mb-1 leading-snug">{post.title}</h3>
+          <p className="text-sm text-[#555] leading-relaxed line-clamp-3">{post.content}</p>
         </div>
 
         {/* Bottom row */}
-        <div className="flex items-center gap-1 pt-2 border-t border-gray-100" onClick={e => e.stopPropagation()}>
-          <Button
-            variant="ghost"
-            size="sm"
-            className={`h-8 px-3 gap-1.5 text-xs rounded-lg font-medium ${isLiked ? "text-pink-600 bg-pink-50" : "text-gray-500 hover:text-pink-600 hover:bg-pink-50"}`}
+        <div className="flex items-center gap-1 pt-2 border-t border-[#F5F5F5]" onClick={e => e.stopPropagation()}>
+          <button
+            className={`h-8 px-3 flex items-center gap-1.5 text-xs rounded-xl font-semibold transition-all ${isLiked ? "text-[#E74C3C] bg-[#E74C3C]/5" : "text-[#999] hover:text-[#E74C3C] hover:bg-[#E74C3C]/5"}`}
             onClick={(e) => { e.stopPropagation(); onLike?.(post); }}
           >
             <Heart className={`w-3.5 h-3.5 ${isLiked ? "fill-current" : ""}`} />
             {likeCount > 0 ? likeCount : "Like"}
-          </Button>
+          </button>
 
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 px-3 gap-1.5 text-xs rounded-lg font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-100"
+          <button
+            className="h-8 px-3 flex items-center gap-1.5 text-xs rounded-xl font-semibold text-[#999] hover:text-[#111] hover:bg-[#F5F5F5] transition-all"
             onClick={(e) => { e.stopPropagation(); onOpen?.(post); }}
           >
             <MessageCircle className="w-3.5 h-3.5" />
-            {post.comment_count > 0 ? `${post.comment_count} Comments` : "Comment"}
-          </Button>
+            {post.comment_count > 0 ? `${post.comment_count}` : "Comment"}
+          </button>
 
           {/* Admin actions */}
           {isAdmin && (
             <div className="ml-auto flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                className={`h-8 w-8 p-0 rounded-lg ${post.is_pinned ? "text-yellow-600 bg-yellow-50" : "text-gray-400 hover:text-yellow-600 hover:bg-yellow-50"}`}
+              <button
+                className={`h-8 w-8 flex items-center justify-center rounded-xl transition-all ${post.is_pinned ? "text-[#D4AF37] bg-[#D4AF37]/10" : "text-[#CFCFCF] hover:text-[#D4AF37] hover:bg-[#D4AF37]/10"}`}
                 title={post.is_pinned ? "Unpin" : "Pin to top"}
                 onClick={(e) => { e.stopPropagation(); onPin?.(post); }}
               >
                 <Pin className="w-3.5 h-3.5" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50"
+              </button>
+              <button
+                className="h-8 w-8 flex items-center justify-center rounded-xl text-[#CFCFCF] hover:text-[#E74C3C] hover:bg-[#E74C3C]/10 transition-all"
                 title="Delete post"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (window.confirm("Delete this post?")) onDelete?.(post);
-                }}
+                onClick={(e) => { e.stopPropagation(); if (window.confirm("Delete this post?")) onDelete?.(post); }}
               >
                 <Trash2 className="w-3.5 h-3.5" />
-              </Button>
+              </button>
             </div>
           )}
-
-          {/* Owner delete (non-admin) */}
           {!isAdmin && isOwner && (
             <div className="ml-auto">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50"
-                title="Delete post"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (window.confirm("Delete this post?")) onDelete?.(post);
-                }}
+              <button
+                className="h-8 w-8 flex items-center justify-center rounded-xl text-[#CFCFCF] hover:text-[#E74C3C] hover:bg-[#E74C3C]/10 transition-all"
+                onClick={(e) => { e.stopPropagation(); if (window.confirm("Delete this post?")) onDelete?.(post); }}
               >
                 <Trash2 className="w-3.5 h-3.5" />
-              </Button>
+              </button>
             </div>
           )}
         </div>
