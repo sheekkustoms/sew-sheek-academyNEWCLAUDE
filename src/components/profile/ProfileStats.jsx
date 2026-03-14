@@ -10,12 +10,12 @@ const stats = (enrollmentsCount, completedCount, totalXP, postsCount) => [
 
 export default function ProfileStats({ enrollmentsCount, completedCount, totalXP, postsCount }) {
   return (
-    <div className="grid grid-cols-4 gap-4">
-      {stats(enrollmentsCount, completedCount, totalXP, postsCount).map(s => (
-        <div key={s.label} className="bg-white border border-gray-200 rounded-2xl p-4 text-center shadow-sm">
-          <s.icon className="w-5 h-5 text-gray-400 mx-auto mb-1.5" />
-          <p className="text-2xl font-bold text-gray-900">{s.value}</p>
-          <p className="text-xs text-gray-400 mt-0.5">{s.label}</p>
+    <div className="grid grid-cols-4 gap-3">
+      {stats(enrollmentsCount, completedCount, totalXP, postsCount).map((s, i) => (
+        <div key={s.label} className="bg-white border border-[#EEEEEE] rounded-2xl p-4 text-center shadow-sm hover:shadow-md hover:border-[#D4AF37]/30 transition-all">
+          <s.icon className={`w-5 h-5 mx-auto mb-1.5 ${i === 2 ? "text-[#D4AF37]" : "text-[#CFCFCF]"}`} />
+          <p className="text-2xl font-extrabold text-[#111]">{s.value}</p>
+          <p className="text-[10px] text-[#999] font-semibold uppercase tracking-wide mt-0.5">{s.label}</p>
         </div>
       ))}
     </div>
