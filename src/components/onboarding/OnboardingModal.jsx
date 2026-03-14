@@ -4,6 +4,8 @@ import { createPageUrl } from "@/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, Circle, ArrowRight, X, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
 
 const STEPS = [
   {
@@ -38,6 +40,32 @@ const STEPS = [
 
 export default function OnboardingModal({ onClose, completedSteps, onMarkStep }) {
   const [phase, setPhase] = useState("welcome"); // "welcome" | "checklist"
+
+  const { data: onboardingSettings = [] } = useQuery({
+    queryKey: ["onboardingSettings"],
+    queryFn: () => base44.entities.OnboardingSettings.list(),
+  });
+  const settings = onboardingSettings[0];
+  const welcomeVideoUrl = settings?.welcome_video_url;
+
+  const getEmbedUrl = (url) => {
+    if (!url) return null;
+    if (url.includes("youtube.com/watch?v=")) {
+      const id = new URLSearchParams(url.split("?")[1]).get("v");
+      return `https://www.youtube.com/embed/${id}`;
+    }
+    if (url.includes("youtu.be/")) {
+      const id = url.split("youtu.be/")[1]?.split("?")[0];
+      return `https://www.youtube.com/embed/${id}`;
+    }
+    if (url.includes("vimeo.com/")) {
+      const id = url.split("vimeo.com/")[1]?.split("?")[0];
+      return `https://player.vimeo.com/video/${id}`;
+    }
+    return url;
+  };
+  const embedUrl = getEmbedUrl(welcomeVideoUrl);
+  const isDirectVideo = welcomeVideoUrl && !welcomeVideoUrl.includes("youtube") && !welcomeVideoUrl.includes("youtu.be") && !welcomeVideoUrl.includes("vimeo");
 
   return (
     <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
