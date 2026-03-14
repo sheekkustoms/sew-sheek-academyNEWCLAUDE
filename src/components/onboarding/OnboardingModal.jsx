@@ -161,6 +161,15 @@ export default function OnboardingModal({ onClose, completedSteps, onMarkStep })
                       <div className="flex-1 min-w-0">
                         <p className={`text-sm font-bold ${done ? "line-through text-[#999]" : "text-[#111]"}`}>{step.label}</p>
                         {!done && <p className="text-xs text-[#666] mt-0.5">{step.description}</p>}
+                        {!done && step.id === "welcome_video" && welcomeVideoUrl && (
+                          <div className="mt-3 rounded-xl overflow-hidden border border-[#EEEEEE] bg-black aspect-video">
+                            {isDirectVideo ? (
+                              <video src={welcomeVideoUrl} controls className="w-full h-full" />
+                            ) : embedUrl ? (
+                              <iframe src={embedUrl} className="w-full h-full" frameBorder="0" allowFullScreen allow="autoplay; encrypted-media" />
+                            ) : null}
+                          </div>
+                        )}
                       </div>
                       {!done && step.id !== "welcome_video" && (
                         <Link to={createPageUrl(step.page)} onClick={onClose}>
