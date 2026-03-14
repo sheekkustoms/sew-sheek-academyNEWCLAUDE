@@ -285,17 +285,17 @@ export default function LiveClasses() {
           <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">Past Classes & Sewing Patterns</h2>
           <div className="space-y-4">
             {past.slice().reverse().map(cls => {
-              const getPlayerInfo = (url) => {
-                if (!url) return null;
+              const getPlayerInfo = (raw) => {
+                if (!raw) return null;
+                const srcMatch = raw.match(/src=["']([^"']+)["']/);
+                const url = srcMatch ? srcMatch[1] : raw.trim();
                 const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
                 if (vimeoMatch) return {
                   type: "iframe",
                   url: `https://player.vimeo.com/video/${vimeoMatch[1]}?dnt=1&title=0&byline=0&portrait=0&share=0&download=0&pip=0&transparent=0`
                 };
-                const driveMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-                if (driveMatch) return { type: "iframe", url: `https://drive.google.com/file/d/${driveMatch[1]}/preview` };
                 if (/\.(mp4|webm|ogg|mov)(\?|$)/i.test(url)) return { type: "video", url };
-                return { type: "iframe", url };
+                return null;
               };
               const player = getPlayerInfo(cls.recording_url);
 
