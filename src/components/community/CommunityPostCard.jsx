@@ -42,10 +42,11 @@ export default function CommunityPostCard({ post, currentUser, adminEmails, onLi
     ? (liveAdminUser?.avatar_url || post.author_avatar || null)
     : post.author_avatar;
 
-  // Wait for liveAdminUser to load before showing any badge to avoid flashing "Moderator"
+  // Owner email is always Coach; other admins use is_coach flag from DB
+  const OWNER_EMAIL = "sheek24kustoms@gmail.com";
   const badgeRole = isAdminPost && liveAdminUser
-    ? getRoleBadgeProps(true, liveAdminUser.is_coach === true)
-    : null;
+    ? getRoleBadgeProps(true, liveAdminUser.is_coach === true || post.author_email === OWNER_EMAIL)
+    : (isAdminPost && post.author_email === OWNER_EMAIL ? "coach" : null);
 
   return (
     <motion.div
