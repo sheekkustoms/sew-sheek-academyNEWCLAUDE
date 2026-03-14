@@ -261,7 +261,10 @@ function PostDetailDrawer({ post, currentUser, isAdmin, onClose, onLike, onPin, 
           <div className="flex items-center gap-3">
             <AvatarWithFallback imageUrl={p.author_avatar} name={p.author_name} email={p.author_email} size="sm" />
             <div>
-              <p className="text-sm font-bold text-[#111]">{p.author_name || p.author_email}</p>
+              <div className="flex items-center gap-1.5 flex-nowrap">
+                <p className="text-sm font-bold text-[#111] truncate min-w-0">{p.author_name === "COACH" ? "Coach" : (p.author_name || p.author_email)}</p>
+                <RoleBadge role={getRoleBadgeProps(p.is_admin_post, p.author_name)} />
+              </div>
               <p className="text-xs text-[#999]"><RelativeTime date={p.created_date} /></p>
             </div>
           </div>
