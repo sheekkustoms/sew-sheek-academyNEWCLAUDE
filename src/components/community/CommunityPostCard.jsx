@@ -27,7 +27,7 @@ export default function CommunityPostCard({ post, currentUser, adminEmails, onLi
   const isOwner = post.author_email === currentUser?.email;
   const cat = categoryConfig[post.category] || { label: post.category?.replace(/_/g, " "), bg: "bg-gray-100 text-gray-600" };
 
-  // Fetch live avatar for admin posts
+  // Fetch live user data for admin posts (avatar + real role)
   const { data: liveAdminUser } = useQuery({
     queryKey: ["adminUser", post.author_email],
     queryFn: async () => {
@@ -41,6 +41,9 @@ export default function CommunityPostCard({ post, currentUser, adminEmails, onLi
   const avatarUrl = isAdminPost
     ? (liveAdminUser?.avatar_url || post.author_avatar || null)
     : post.author_avatar;
+
+  // Use the author's actual role from the DB, not viewer-relative logic
+  const authorRole = isAdminPost ? (liveAdminUser?.role || "admin") : null;
 
   return (
     <motion.div
