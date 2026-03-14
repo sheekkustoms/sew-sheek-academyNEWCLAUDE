@@ -2,15 +2,17 @@ import React from "react";
 
 /**
  * Unified role badge component.
- * - "coach"     → gold badge (owner/main account posting as COACH)
+ * - "coach"     → gold badge (the primary admin / owner)
  * - "moderator" → dark badge (any other admin user)
- * Pass isAdminPost + authorName to auto-resolve, or pass role="coach"|"moderator" directly.
+ * Pass isAdminPost + authorEmail + currentUserEmail to auto-resolve,
+ * or pass role="coach"|"moderator" directly.
  */
-export function getRoleBadgeProps(isAdminPost, authorName) {
+export function getRoleBadgeProps(isAdminPost, authorEmail, currentUserEmail) {
   if (!isAdminPost) return null;
-  // The owner explicitly posts as "COACH" — all others are Moderators
-  const isCoach = authorName === "COACH";
-  return isCoach ? "coach" : "moderator";
+  // If the post author is the currently logged-in admin, they're the Coach
+  if (currentUserEmail && authorEmail === currentUserEmail) return "coach";
+  // Any other admin is a Moderator
+  return "moderator";
 }
 
 const CONFIG = {
