@@ -248,23 +248,23 @@ function PostDetailDrawer({ post, currentUser, isAdmin, onClose, onLike, onPin, 
   const p = latestPost || post;
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-end md:items-center justify-center bg-black/50 backdrop-blur-sm p-0 md:p-6">
+    <div className="fixed inset-0 z-[200] flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-6">
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 40 }}
-        className="w-full max-w-2xl bg-white rounded-t-3xl md:rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden"
+        className="w-full max-w-2xl bg-white rounded-t-3xl md:rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden border border-[#EEEEEE]"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[#F5F5F5]">
           <div className="flex items-center gap-3">
             <AvatarWithFallback imageUrl={p.author_avatar} name={p.author_name} email={p.author_email} size="sm" />
             <div>
-              <p className="text-sm font-semibold text-gray-900">{p.author_name || p.author_email}</p>
-              <p className="text-xs text-gray-400"><RelativeTime date={p.created_date} /></p>
+              <p className="text-sm font-bold text-[#111]">{p.author_name || p.author_email}</p>
+              <p className="text-xs text-[#999]"><RelativeTime date={p.created_date} /></p>
             </div>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-700 p-1">
+          <button onClick={onClose} className="text-[#CFCFCF] hover:text-[#111] p-1 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -273,32 +273,31 @@ function PostDetailDrawer({ post, currentUser, isAdmin, onClose, onLike, onPin, 
         <div className="flex-1 overflow-y-auto">
           <div className="px-5 pt-4 pb-3 space-y-3">
             {p.image_url && <img src={p.image_url} className="w-full rounded-xl object-cover max-h-64" />}
-            <h2 className="text-lg font-bold text-gray-900 leading-snug">{p.title}</h2>
-            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{p.content}</p>
+            <h2 className="text-lg font-bold text-[#111] leading-snug">{p.title}</h2>
+            <p className="text-sm text-[#444] leading-relaxed whitespace-pre-wrap">{p.content}</p>
 
             {/* Actions */}
-            <div className="flex items-center gap-1 pt-2 border-t border-gray-100">
-              <Button
-                variant="ghost" size="sm"
-                className={`h-8 px-3 gap-1.5 text-xs rounded-lg ${isLiked ? "text-pink-600 bg-pink-50" : "text-gray-500 hover:text-pink-600 hover:bg-pink-50"}`}
+            <div className="flex items-center gap-1 pt-2 border-t border-[#F5F5F5]">
+              <button
+                className={`h-8 px-3 flex items-center gap-1.5 text-xs rounded-xl font-semibold transition-all ${isLiked ? "text-[#E74C3C] bg-[#E74C3C]/5" : "text-[#666] hover:text-[#E74C3C] hover:bg-[#E74C3C]/5"}`}
                 onClick={() => { onLike(p); queryClient.invalidateQueries({ queryKey: ["singlePost", p.id] }); }}
               >
                 <Heart className={`w-3.5 h-3.5 ${isLiked ? "fill-current" : ""}`} />
                 {p.likes?.length || 0}
-              </Button>
+              </button>
 
               {isAdmin && (
                 <div className="ml-auto flex items-center gap-1">
-                  <Button variant="ghost" size="sm"
-                    className={`h-8 w-8 p-0 rounded-lg ${p.is_pinned ? "text-yellow-600 bg-yellow-50" : "text-gray-400 hover:text-yellow-600"}`}
+                  <button
+                    className={`h-8 w-8 flex items-center justify-center rounded-xl transition-all ${p.is_pinned ? "text-[#D4AF37] bg-[#D4AF37]/10" : "text-[#CFCFCF] hover:text-[#D4AF37] hover:bg-[#D4AF37]/10"}`}
                     onClick={() => { onPin(p); queryClient.invalidateQueries({ queryKey: ["singlePost", p.id] }); }}>
                     <Pin className="w-3.5 h-3.5" />
-                  </Button>
-                  <Button variant="ghost" size="sm"
-                    className="h-8 w-8 p-0 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50"
+                  </button>
+                  <button
+                    className="h-8 w-8 flex items-center justify-center rounded-xl text-[#CFCFCF] hover:text-[#E74C3C] hover:bg-[#E74C3C]/10 transition-all"
                     onClick={() => { if (window.confirm("Delete this post?")) { onDelete(p); onClose(); } }}>
                     <Trash2 className="w-3.5 h-3.5" />
-                  </Button>
+                  </button>
                 </div>
               )}
             </div>
