@@ -377,8 +377,8 @@ export default function AdminDashboard() {
                 <div>
                   <div className="flex items-center gap-1.5">
                     <p className="text-sm font-semibold text-gray-800">{u.full_name || u.email}</p>
-                    {u.role === "admin" && u.is_coach && <span className="text-[10px] bg-[#D4AF37]/15 text-[#B8960C] px-2 py-0.5 rounded-full font-bold">👑 Coach</span>}
-                    {u.role === "admin" && !u.is_coach && <span className="text-[10px] bg-violet-100 text-violet-700 px-2 py-0.5 rounded-full font-bold">🛡 Moderator</span>}
+                    {u.role === "admin" && (u.is_coach || u.email === OWNER_EMAIL) && <span className="text-[10px] bg-[#D4AF37]/15 text-[#B8960C] px-2 py-0.5 rounded-full font-bold">👑 Admin</span>}
+                    {u.role === "admin" && !u.is_coach && u.email !== OWNER_EMAIL && <span className="text-[10px] bg-violet-100 text-violet-700 px-2 py-0.5 rounded-full font-bold">🛡 Moderator</span>}
                   </div>
                   <p className="text-xs text-gray-400">{u.email}</p>
                   {userPointsMap[u.email] && (
