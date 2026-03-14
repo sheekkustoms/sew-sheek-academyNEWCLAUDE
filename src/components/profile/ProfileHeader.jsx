@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import RoleBadge from "@/components/shared/RoleBadge";
 
 export default function ProfileHeader({ name, email, avatarUrl, role, isOwnProfile }) {
-  const cfg = ROLE_CONFIG[role] || ROLE_CONFIG.student;
+  // Map platform roles to badge types
+  const badgeRole = role === "admin" ? "moderator" : (role === "coach" ? "coach" : null);
   const handle = "@" + (email?.split("@")[0] || "");
 
   return (
