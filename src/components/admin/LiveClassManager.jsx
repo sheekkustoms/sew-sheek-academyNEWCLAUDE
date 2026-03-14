@@ -88,8 +88,8 @@ export default function LiveClassManager() {
           </div>
         </div>
         <div>
-          <label className="text-xs text-gray-400 mb-1 block">Recording Link (Google Drive / YouTube — paste after class)</label>
-          <Input placeholder="https://drive.google.com/file/d/..." value={form.recording_url || ""} onChange={e => setForm({ ...form, recording_url: e.target.value })} />
+          <label className="text-xs text-gray-400 mb-1 block">Recording — paste Vimeo URL or Vimeo &lt;iframe&gt; embed code</label>
+          <Input placeholder="https://vimeo.com/123456789  or  <iframe src=…>" value={form.recording_url || ""} onChange={e => setForm({ ...form, recording_url: e.target.value })} />
         </div>
         <div>
           <label className="text-xs text-gray-400 mb-1 block">Class Materials PDF</label>
