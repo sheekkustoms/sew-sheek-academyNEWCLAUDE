@@ -48,11 +48,9 @@ export default function ProfileHeader({ name, email, avatarUrl, role, isOwnProfi
         </div>
 
         <div className="space-y-1">
-          <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-xl font-extrabold text-[#111]">{name}</h1>
-            <span className={`text-xs px-2.5 py-1 rounded-full font-bold border ${cfg.bg}`}>
-              {cfg.label}
-            </span>
+          <div className="flex items-center gap-2 flex-nowrap">
+            <h1 className="text-xl font-extrabold text-[#111] truncate min-w-0">{name}</h1>
+            {badgeRole && <RoleBadge role={badgeRole} />}
           </div>
           <p className="text-sm text-[#999]">{handle}</p>
         </div>
