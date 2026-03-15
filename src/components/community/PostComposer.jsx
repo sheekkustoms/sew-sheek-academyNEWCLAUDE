@@ -9,9 +9,18 @@ import { ImagePlus, X } from "lucide-react";
 import { getDisplayName } from "../shared/useDisplayName";
 
 export default function PostComposer({ user, isAdmin, onSubmit, isPending, onClose }) {
+  const { data: categorySettings = [] } = useQuery({
+    queryKey: ["categorySettings"],
+    queryFn: () => base44.entities.CategorySettings.list(),
+  });
+  const postTypes = (categorySettings[0]?.categories || []).map(c => ({
+    value: c.id,
+    label: `${c.emoji || ""} ${c.label}`.trim(),
+  }));
+
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [category, setCategory] = useState("discussion");
+  const [category, setCategory] = useState("");
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [postAsCoach, setPostAsCoach] = useState(false);
