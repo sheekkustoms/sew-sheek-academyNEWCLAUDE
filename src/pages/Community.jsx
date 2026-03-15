@@ -330,7 +330,7 @@ function PostDetailDrawer({ post, currentUser, isAdmin, adminEmails, onClose, on
 
           {/* Comments */}
           <div className="px-5 pb-6">
-            <CommentSection postId={p.id} user={currentUser} isAdmin={isAdmin} />
+            <CommentSection postId={p.id} user={currentUser} isAdmin={isAdmin} adminEmails={adminEmails} />
           </div>
         </div>
       </motion.div>
