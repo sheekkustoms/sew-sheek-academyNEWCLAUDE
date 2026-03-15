@@ -61,10 +61,10 @@ export default function PostComposer({ user, isAdmin, onSubmit, isPending, onClo
         {/* Post type */}
         <Select value={category} onValueChange={setCategory}>
           <SelectTrigger className="border-[#EEEEEE] h-9 text-sm bg-[#F5F5F5] w-52 rounded-xl">
-            <SelectValue />
+            <SelectValue placeholder="Select category" />
           </SelectTrigger>
           <SelectContent>
-            {POST_TYPES.map(t => (
+            {postTypes.map(t => (
               <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
             ))}
           </SelectContent>
