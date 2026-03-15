@@ -56,7 +56,7 @@ export default function Community() {
   const myPoints = userPoints?.[0];
 
   // Filter
-  const approvedPosts = posts.filter(p => isAdmin || p.is_approved);
+  const approvedPosts = posts.filter(p => p.is_approved || isAdmin);
   const pinnedPosts = approvedPosts.filter(p => p.is_pinned);
   const filteredPosts = approvedPosts.filter(p => {
     if (filter !== "all" && p.category !== filter) return false;
