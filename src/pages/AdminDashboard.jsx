@@ -638,6 +638,11 @@ export default function AdminDashboard() {
           <OnboardingSettingsManager />
         </TabsContent>
 
+        {/* Push Notifications */}
+        <TabsContent value="push" className="mt-4">
+          <PushNotificationPanel />
+        </TabsContent>
+
         {/* Activity Log */}
         <TabsContent value="activity" className="mt-4 space-y-4">
           <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
