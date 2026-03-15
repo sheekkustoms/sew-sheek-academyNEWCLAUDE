@@ -1,19 +1,12 @@
 import React, { useState } from "react";
+import { base44 } from "@/api/base44Client";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ImagePlus, X, Paperclip } from "lucide-react";
+import { ImagePlus, X } from "lucide-react";
 import { getDisplayName } from "../shared/useDisplayName";
-
-const POST_TYPES = [
-  { value: "discussion", label: "💬 Discussion" },
-  { value: "announcement", label: "📢 Announcement" },
-  { value: "student_projects", label: "🏆 Win / Project" },
-  { value: "question", label: "❓ Question" },
-  { value: "resource", label: "📚 Resource" },
-  { value: "ask_the_coach", label: "🎽 Ask the Coach" },
-];
 
 export default function PostComposer({ user, isAdmin, onSubmit, isPending, onClose }) {
   const [title, setTitle] = useState("");
