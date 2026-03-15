@@ -45,8 +45,9 @@ export default function Notifications() {
     },
   });
 
-  const sorted = [...notifications].sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
-  const unreadCount = notifications.filter((n) => !n.is_read).length;
+  const unread = notifications.filter((n) => !n.is_read);
+  const sorted = [...unread].sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+  const unreadCount = unread.length;
 
   return (
     <div className="max-w-2xl mx-auto space-y-5">
