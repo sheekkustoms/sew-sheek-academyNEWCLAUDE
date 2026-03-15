@@ -331,7 +331,10 @@ export default function AdminDashboard() {
                   {!post.is_approved && <Badge className="bg-red-100 text-red-600 border-red-200 text-[10px]">Pending</Badge>}
                 </div>
                 <p className="text-xs text-gray-400">{post.author_name} · {moment(post.created_date).fromNow()} · {post.category}</p>
-                <p className="text-sm text-gray-500 mt-1 line-clamp-1">{post.content}</p>
+                <p className={`text-sm text-gray-500 mt-1 ${post.is_approved ? "line-clamp-1" : ""}`}>{post.content}</p>
+                {post.image_url && !post.is_approved && (
+                  <img src={post.image_url} className="mt-2 rounded-xl max-h-48 object-cover border border-gray-100" />
+                )}
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
                 <Button size="icon" variant="ghost" className="w-8 h-8 text-amber-500 hover:bg-amber-50" onClick={() => pinPostMutation.mutate({ id: post.id, pinned: post.is_pinned })} title={post.is_pinned ? "Unpin" : "Pin"}>
