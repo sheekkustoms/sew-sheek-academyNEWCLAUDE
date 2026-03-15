@@ -11,15 +11,6 @@ import PostComposer from "../components/community/PostComposer";
 import { getOrCreateUserPoints, awardXP } from "../components/shared/useUserPoints";
 import { getDisplayName } from "../components/shared/useDisplayName";
 
-const FILTERS = [
-  { value: "all", label: "All" },
-  { value: "announcement", label: "📢 Announcements" },
-  { value: "student_projects", label: "🏆 Wins" },
-  { value: "question", label: "❓ Questions" },
-  { value: "discussion", label: "💬 Discussion" },
-  { value: "ask_the_coach", label: "🎽 Ask Coach" },
-];
-
 export default function Community() {
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState("all");
