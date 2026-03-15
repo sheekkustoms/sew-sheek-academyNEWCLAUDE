@@ -1,8 +1,32 @@
 import React from "react";
 import { Users } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
 import CommunityPostCard from "./CommunityPostCard";
 
+function useLiveAvatars(posts) {
+  const uniqueEmails = [...new Set(posts.map(p => p.author_email).filter(Boolean))];
+  return useQuery({
+    queryKey: ["liveAvatars", uniqueEmails.sort().join(",")],
+    queryFn: async () => {
+      if (!uniqueEmails.length) return {};
+      const map = {};
+      await Promise.all(
+        uniqueEmails.map(async (email) => {
+          const result = await base44.functions.invoke('getUserAvatar', { email });
+          if (result.data?.avatar_url) map[email] = result.data.avatar_url;
+        })
+      );
+      return map;
+    },
+    enabled: uniqueEmails.length > 0,
+    staleTime: 30000,
+  });
+}
+
 export default function CommunityFeed({ posts, isLoading, currentUser, adminEmails, myPoints, onLike, onPin, onDelete, onOpen, isAdmin }) {
+  const { data: liveAvatarMap = {} } = useLiveAvatars(posts);
+
   if (isLoading) {
     return (
       <div className="space-y-4">
