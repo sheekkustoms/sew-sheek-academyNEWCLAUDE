@@ -40,16 +40,17 @@ function useCommentAuthorAvatars(comments, adminEmails = new Set()) {
 }
 
 function CommentAvatar({ email, name, avatarUrl, fallbackAvatarMap }) {
-   const displayUrl = avatarUrl || fallbackAvatarMap?.[email];
-   return (
-     <AvatarWithFallback
-       imageUrl={displayUrl}
-       name={name}
-       email={email}
-       size="sm"
-     />
-   );
- }
+  // Prefer live-fetched avatar (from fallbackAvatarMap) over stale stored avatar
+  const displayUrl = fallbackAvatarMap?.[email] || avatarUrl;
+  return (
+    <AvatarWithFallback
+      imageUrl={displayUrl}
+      name={name}
+      email={email}
+      size="sm"
+    />
+  );
+}
 
 export default function CommentSection({ postId, user, myPoints, isAdmin = false, adminEmails = new Set() }) {
   const [newComment, setNewComment] = useState("");
