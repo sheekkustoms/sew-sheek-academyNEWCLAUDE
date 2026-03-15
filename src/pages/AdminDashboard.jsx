@@ -315,6 +315,9 @@ export default function AdminDashboard() {
           <TabsTrigger value="onboarding" className="flex items-center gap-1">
               <Video className="w-3.5 h-3.5" /> Onboarding
             </TabsTrigger>
+          <TabsTrigger value="push" className="flex items-center gap-1">
+              <Bell className="w-3.5 h-3.5" /> Push Notifs
+            </TabsTrigger>
            </TabsList>
 
         {/* Posts moderation */}
