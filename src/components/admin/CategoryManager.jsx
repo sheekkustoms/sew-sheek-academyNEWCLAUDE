@@ -19,7 +19,6 @@ export default function CategoryManager() {
           categories: [
             { id: "announcement", label: "Announcements", emoji: "📢" },
             { id: "discussion", label: "Discussion", emoji: "💬" },
-            { id: "resource", label: "Resources", emoji: "📚" }
           ]
         };
         await base44.entities.CategorySettings.create(defaults);
