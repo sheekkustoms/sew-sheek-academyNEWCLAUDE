@@ -101,6 +101,15 @@ export default function Community() {
       };
       const created = await base44.entities.CommunityPost.create(postData);
 
+      // Auto-email all members when admin posts
+      if (isAdmin) {
+        await base44.functions.invoke('sendBroadcastAnnouncement', {
+          title: title,
+          message: content,
+          sendEmail: true,
+        });
+      }
+
       // Award XP for posting
       const pts = await getOrCreateUserPoints(user);
       if (pts) {
