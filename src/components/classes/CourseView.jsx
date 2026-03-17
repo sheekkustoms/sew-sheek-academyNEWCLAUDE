@@ -90,7 +90,7 @@ export default function CourseView({ course, user, enrollment: initialEnrollment
   return (
     <div className="flex flex-col gap-0 bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
       {/* Course header */}
-      <div className="flex items-start justify-between gap-4 px-6 py-5 border-b border-gray-100 bg-gray-50">
+      <div className="flex flex-col sm:flex-row items-start justify-between gap-4 px-4 md:px-6 py-5 border-b border-gray-100 bg-gray-50">
         <div className="flex items-start gap-4 min-w-0">
           {course.thumbnail_url && (
             <img src={course.thumbnail_url} className="w-16 h-16 rounded-xl object-cover shrink-0 border border-gray-200" />
