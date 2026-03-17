@@ -228,8 +228,10 @@ export default function Classes() {
     .filter(c => c.is_published)
     .sort((a, b) => (a.order || 0) - (b.order || 0));
 
+  // Auto-select first course only on desktop (md+); on mobile let user pick from list
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
   useEffect(() => {
-    if (publishedCourses.length > 0 && !selectedCourseId) {
+    if (publishedCourses.length > 0 && !selectedCourseId && !isMobile) {
       setSelectedCourseId(publishedCourses[0].id);
     }
   }, [publishedCourses.length]);
