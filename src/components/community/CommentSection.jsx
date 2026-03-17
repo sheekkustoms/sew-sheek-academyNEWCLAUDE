@@ -257,10 +257,9 @@ export default function CommentSection({ postId, user, myPoints, isAdmin = false
   const deleteCommentMutation = useMutation({
     mutationFn: async (comment) => {
       await base44.entities.Comment.delete(comment.id);
-      const posts = await base44.entities.CommunityPost.filter({ id: postId });
-      if (posts[0]) {
-        await base44.entities.CommunityPost.update(postId, { comment_count: Math.max((posts[0].comment_count || 1) - 1, 0) });
-      }
+      // Recount from DB after delete to stay accurate
+      const allComments = await base44.entities.Comment.filter({ post_id: postId }, "created_date", 500);
+      await base44.entities.CommunityPost.update(postId, { comment_count: allComments.length });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["comments", postId] });
