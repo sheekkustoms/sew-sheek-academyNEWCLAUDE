@@ -114,8 +114,9 @@ export default function Classes() {
 
       {/* Two-column layout — hidden when Replays tab is active */}
       {filter !== "replays" && (
-        <div className="flex gap-5 min-h-[75vh]">
-          <div className="w-72 shrink-0">
+        <div className="flex flex-col md:flex-row gap-5">
+          {/* On mobile: show course list, then when one is selected show the course view */}
+          <div className={`md:w-72 md:shrink-0 ${selectedCourseId ? "hidden md:block" : "block"}`}>
             <CoursesSidebar
               courses={publishedCourses}
               enrollments={userEnrollments}
@@ -124,19 +125,27 @@ export default function Classes() {
               isLoading={isLoading}
             />
           </div>
-          <div className="flex-1 min-w-0">
-            {selectedCourse ? (
+          {selectedCourse && (
+            <div className="flex-1 min-w-0">
+              {/* Back button on mobile */}
+              <button
+                className="md:hidden flex items-center gap-1.5 text-sm text-[#666] mb-3 hover:text-[#111]"
+                onClick={() => setSelectedCourseId(null)}
+              >
+                ← Back to courses
+              </button>
               <CourseView
                 course={selectedCourse}
                 user={user}
                 enrollment={userEnrollments.find(e => e.course_id === selectedCourseId) || null}
               />
-            ) : (
-              <div className="flex items-center justify-center h-full bg-white rounded-2xl border border-[#EEEEEE] text-[#999]">
-                <p className="text-sm">Select a course to get started</p>
-              </div>
-            )}
-          </div>
+            </div>
+          )}
+          {!selectedCourse && (
+            <div className="hidden md:flex flex-1 items-center justify-center bg-white rounded-2xl border border-[#EEEEEE] text-[#999]" style={{minHeight: "75vh"}}>
+              <p className="text-sm">Select a course to get started</p>
+            </div>
+          )}
         </div>
       )}
 
