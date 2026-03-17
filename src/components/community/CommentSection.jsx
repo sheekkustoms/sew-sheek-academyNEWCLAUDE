@@ -64,7 +64,8 @@ export default function CommentSection({ postId, user, myPoints, isAdmin = false
     queryKey: ["comments", postId],
     queryFn: () => base44.entities.Comment.filter({ post_id: postId }, "created_date", 500),
     enabled: !!postId,
-    refetchInterval: 5000, // poll every 5 seconds for real-time feel
+    staleTime: 10000,
+    refetchOnWindowFocus: true,
   });
 
   // Real-time subscription for instant updates
