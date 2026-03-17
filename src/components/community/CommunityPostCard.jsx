@@ -39,8 +39,8 @@ export default function CommunityPostCard({ post, currentUser, adminEmails, onLi
       const users = await base44.entities.User.filter({ email: post.author_email });
       return users[0] || null;
     },
-    enabled: isAdminPost || post.author_email === OWNER_EMAIL,
-    staleTime: 60000,
+    enabled: !!(isAdminPost || post.author_email === OWNER_EMAIL),
+    staleTime: 300000, // 5 min — role rarely changes
   });
 
   // Always prefer live avatar from map (fetched fresh for all authors)
