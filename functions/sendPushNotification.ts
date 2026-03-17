@@ -18,16 +18,24 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
     }
 
-    const { recipientEmail, title, body, type, postId, url } = await req.json();
+    const { recipientEmail, title, body, type, postId, url, sendToAll } = await req.json();
 
-    if (!recipientEmail || !title || !body) {
+    if (!title || !body) {
       return Response.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Get all subscriptions for the recipient
-    const subscriptions = await base44.asServiceRole.entities.NotificationSubscription.filter({
-      user_email: recipientEmail,
-    });
+    // Get subscriptions — all users or just one recipient
+    let subscriptions;
+    if (sendToAll) {
+      subscriptions = await base44.asServiceRole.entities.NotificationSubscription.list();
+    } else {
+      if (!recipientEmail) {
+        return Response.json({ error: 'recipientEmail is required when sendToAll is false' }, { status: 400 });
+      }
+      subscriptions = await base44.asServiceRole.entities.NotificationSubscription.filter({
+        user_email: recipientEmail,
+      });
+    }
 
     if (subscriptions.length === 0) {
       return Response.json({ sent: 0, message: 'No active subscriptions' });
