@@ -285,9 +285,17 @@ export default function CommentSection({ postId, user, myPoints, isAdmin = false
                      <span className="text-gray-400 text-xs shrink-0">•</span>
                      <RelativeTime date={comment.created_date} />
                    </div>
-                   <p className="text-gray-800 text-sm leading-relaxed">
-                     {comment.content}
-                   </p>
+                   {editingId === comment.id ? (
+                     <div className="space-y-2">
+                       <Textarea value={editContent} onChange={e => setEditContent(e.target.value)} className="text-sm bg-white rounded-xl min-h-[60px] resize-none" autoFocus />
+                       <div className="flex gap-2">
+                         <Button size="sm" onClick={() => editCommentMutation.mutate({ id: comment.id, content: editContent })} disabled={!editContent.trim() || editCommentMutation.isPending} className="bg-blue-600 hover:bg-blue-700 text-white h-7 text-xs gap-1"><Check className="w-3 h-3" /> Save</Button>
+                         <Button size="sm" variant="outline" onClick={() => setEditingId(null)} className="h-7 text-xs gap-1"><X className="w-3 h-3" /> Cancel</Button>
+                       </div>
+                     </div>
+                   ) : (
+                     <p className="text-gray-800 text-sm leading-relaxed">{comment.content}</p>
+                   )}
                  </div>
                  <div className="flex items-center gap-4 mt-2 ml-0 text-xs text-gray-600">
                    <button
@@ -311,16 +319,20 @@ export default function CommentSection({ postId, user, myPoints, isAdmin = false
                      Reply
                    </button>
                    {(comment.author_email === user?.email || isAdmin) && (
-                     <button
-                       onClick={() => {
-                         if (window.confirm(`Delete this comment${isAdmin && comment.author_email !== user?.email ? " (admin action)" : ""}?`)) deleteCommentMutation.mutate(comment);
-                       }}
-                       disabled={deleteCommentMutation.isPending}
-                       className="text-gray-400 hover:text-red-600 transition-colors font-medium ml-auto"
-                       title={isAdmin && comment.author_email !== user?.email ? "Admin: delete any comment" : "Delete"}
-                     >
-                       <Trash2 className="w-3.5 h-3.5" />
-                     </button>
+                     <div className="flex items-center gap-2 ml-auto">
+                       {comment.author_email === user?.email && (
+                         <button onClick={() => { setEditingId(comment.id); setEditContent(comment.content); }} className="text-gray-400 hover:text-blue-500 transition-colors">
+                           <Pencil className="w-3.5 h-3.5" />
+                         </button>
+                       )}
+                       <button
+                         onClick={() => { if (window.confirm("Delete this comment?")) deleteCommentMutation.mutate(comment); }}
+                         disabled={deleteCommentMutation.isPending}
+                         className="text-gray-400 hover:text-red-600 transition-colors"
+                       >
+                         <Trash2 className="w-3.5 h-3.5" />
+                       </button>
+                     </div>
                    )}
                  </div>
                </div>
