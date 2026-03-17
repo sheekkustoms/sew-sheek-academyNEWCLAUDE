@@ -224,17 +224,17 @@ export default function Leaderboard() {
       </Tabs>
 
       {/* Weekly Challenge Section */}
-      <div className="bg-gradient-to-br from-violet-50 to-pink-50 border border-violet-200 rounded-xl p-8">
-        <div className="flex items-start justify-between mb-6">
+      <div className="bg-gradient-to-br from-violet-50 to-pink-50 border border-violet-200 rounded-xl p-5 md:p-8">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6">
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Flame className="w-5 h-5 text-orange-500" />
-              <h2 className="text-2xl font-bold text-gray-900">Weekly Challenge</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900">Weekly Challenge</h2>
             </div>
             <p className="text-sm text-gray-600">{weeklyChallengeSettings_item?.week_label || "Answer daily sewing questions"}</p>
           </div>
-          <Link to={createPageUrl("DailyChallenges")}>
-            <Button className="bg-violet-600 hover:bg-violet-700 text-white gap-2">
+          <Link to={createPageUrl("DailyChallenges")} className="shrink-0">
+            <Button className="bg-violet-600 hover:bg-violet-700 text-white gap-2 w-full sm:w-auto">
               <Calendar className="w-4 h-4" /> Take Challenge
             </Button>
           </Link>
