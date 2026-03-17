@@ -239,6 +239,17 @@ export default function CommentSection({ postId, user, myPoints, isAdmin = false
     },
   });
 
+  const editCommentMutation = useMutation({
+    mutationFn: async ({ id, content }) => {
+      await base44.entities.Comment.update(id, { content });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["comments", postId] });
+      setEditingId(null);
+      setEditContent("");
+    },
+  });
+
   const deleteCommentMutation = useMutation({
     mutationFn: async (comment) => {
       await base44.entities.Comment.delete(comment.id);
