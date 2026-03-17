@@ -363,8 +363,42 @@ export default function CommentSection({ postId, user, myPoints, isAdmin = false
              )}
            </div>
          ))}
+       {/* Orphan replies that couldn't be matched to a parent */}
+       {orphanReplies.map((reply, j) => {
+         const mentionMatch = reply.content.match(/^@([^\s]+)\s?/);
+         const mentionedName = mentionMatch ? mentionMatch[1] : '';
+         const replyContent = reply.content.replace(/^@[^\s]+\s?/, "");
+         return (
+           <motion.div key={reply.id} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="flex gap-3">
+             <CommentAvatar email={reply.author_email} name={reply.author_name} avatarUrl={reply.author_avatar} fallbackAvatarMap={fallbackAvatarMap} />
+             <div className="flex-1">
+               <div className="bg-blue-50 rounded-2xl p-4 border border-blue-100">
+                 <div className="flex items-center gap-1.5 flex-nowrap mb-2">
+                   <span className="font-bold text-gray-900 text-sm truncate min-w-0">{reply.author_name || reply.author_email}</span>
+                   {adminEmails.has(reply.author_email) && <RoleBadge role={getRoleBadgeProps(true, reply.author_email, user?.email)} />}
+                   <span className="text-gray-400 text-xs shrink-0">•</span>
+                   <RelativeTime date={reply.created_date} />
+                 </div>
+                 {mentionedName && <span className="text-blue-600 font-semibold">@{mentionedName} </span>}
+                 <span className="text-gray-800 text-sm">{replyContent}</span>
+               </div>
+               <div className="flex items-center gap-4 mt-2 text-xs text-gray-600">
+                 <button onClick={() => likeCommentMutation.mutate(reply)} className={`flex items-center gap-1 transition-colors ${reply.likes?.includes(user?.email) ? "text-pink-500" : "text-gray-400 hover:text-pink-500"}`}>
+                   <Heart className={`w-3.5 h-3.5 ${reply.likes?.includes(user?.email) ? "fill-current" : ""}`} />
+                   {reply.likes?.length || 0}
+                 </button>
+                 {(reply.author_email === user?.email || isAdmin) && (
+                   <button onClick={() => { if (window.confirm("Delete this comment?")) deleteCommentMutation.mutate(reply); }} className="text-gray-400 hover:text-red-600 transition-colors ml-auto">
+                     <Trash2 className="w-3.5 h-3.5" />
+                   </button>
+                 )}
+               </div>
+             </div>
+           </motion.div>
+         );
+       })}
        </div>
-      <div className="flex gap-3 items-end mt-4 pt-4 border-t border-gray-200">
+       <div className="flex gap-3 items-end mt-4 pt-4 border-t border-gray-200">
         <AvatarWithFallback
           imageUrl={user?.avatar_url}
           name={user?.full_name}
