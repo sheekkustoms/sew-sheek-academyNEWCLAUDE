@@ -243,7 +243,7 @@ export default function Dashboard() {
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-2 md:gap-4">
         <StatCard icon={Zap} label="Total XP" value={myPoints?.total_xp || 0} color="bg-[#D4AF37]" />
         <StatCard icon={BookOpen} label="Courses Done" value={myPoints?.courses_completed || 0} color="bg-[#111]" />
         <StatCard icon={TrendingUp} label="Level" value={level} color="bg-[#333]" />
