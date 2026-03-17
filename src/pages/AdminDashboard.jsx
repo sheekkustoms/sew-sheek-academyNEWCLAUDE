@@ -37,8 +37,8 @@ function StatCard({ icon: Icon, label, value, color, onClick }) {
 
 export default function AdminDashboard() {
   const queryClient = useQueryClient();
-  const [announcement, setAnnouncement] = useState("");
-  const [announcementTitle, setAnnouncementTitle] = useState("");
+  const [announcement, setAnnouncement] = useState(""); // kept for compat
+  const [announcementTitle, setAnnouncementTitle] = useState(""); // kept for compat
   const [inviteEmails, setInviteEmails] = useState("");
   const [inviteSent, setInviteSent] = useState(false);
   const [inviteResults, setInviteResults] = useState(null);
@@ -446,32 +446,7 @@ export default function AdminDashboard() {
 
         {/* Announcement */}
         <TabsContent value="announce" className="mt-4">
-          <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm space-y-4">
-            <div className="flex items-center gap-2 text-violet-600 font-semibold mb-2">
-              <Megaphone className="w-5 h-5" /> Send Community Announcement
-            </div>
-            <p className="text-sm text-gray-500">This will create a pinned post AND send a notification to every member.</p>
-            <Input
-              placeholder="Announcement title..."
-              value={announcementTitle}
-              onChange={(e) => setAnnouncementTitle(e.target.value)}
-              className="border-gray-200"
-            />
-            <Textarea
-              placeholder="Write your announcement..."
-              value={announcement}
-              onChange={(e) => setAnnouncement(e.target.value)}
-              className="border-gray-200 min-h-[120px]"
-            />
-            <Button
-              onClick={() => sendAnnouncementMutation.mutate()}
-              disabled={!announcementTitle || !announcement || sendAnnouncementMutation.isPending}
-              className="bg-gradient-to-r from-pink-500 to-violet-500 hover:from-pink-600 hover:to-violet-600 text-white"
-            >
-              <Megaphone className="w-4 h-4 mr-2" />
-              {sendAnnouncementMutation.isPending ? "Sending..." : "Send to All Members"}
-            </Button>
-          </div>
+          <AnnouncementPanel adminUser={user} queryClient={queryClient} />
         </TabsContent>
 
         {/* Quiz Builder */}
