@@ -87,32 +87,43 @@ export default function CommentSection({ postId, user, myPoints, isAdmin = false
   // Sort comments by creation date ascending
   const sortedComments = [...comments].sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
 
-  // Group comments: replies start with @mention, top-level don't
-  const isReply = (c) => /^@\S/.test(c.content);
+  // A comment is a reply if it starts with @anything
+  const isReply = (c) => /^@/.test(c.content.trim());
   const topLevelComments = sortedComments.filter(c => !isReply(c));
   const replies = sortedComments.filter(c => isReply(c));
 
-  // Map replies to parent comments by matching the mentioned name to a top-level commenter
+  // Map replies under their parent by matching @mention against ALL possible name formats
   const replyMap = {};
-  const orphanReplies = []; // replies that couldn't be matched
+  const orphanReplies = [];
+
   replies.forEach(reply => {
-    const mentionMatch = reply.content.match(/^@([^\s]+)/);
-    if (mentionMatch) {
-      const mentionedName = mentionMatch[1];
-      // Try to find parent by author_name or the part of email before @
-      const parentComment = topLevelComments.find(c => {
-        const name = c.author_name || c.author_email?.split("@")[0] || "";
-        return name === mentionedName || name.replace(/\s/g, "") === mentionedName;
-      });
-      if (parentComment) {
-        if (!replyMap[parentComment.id]) replyMap[parentComment.id] = [];
-        replyMap[parentComment.id].push(reply);
+    // Grab everything after @ up to end of line or a double-space (handles "First Last" names)
+    const rawMention = reply.content.trim().slice(1); // remove leading @
+    
+    // Try to find a top-level comment whose author name/email matches the start of the mention
+    const parentComment = topLevelComments.find(c => {
+      const authorName = (c.author_name || "").trim();
+      const authorEmail = (c.author_email || "").split("@")[0];
+      // Check if the mention starts with this author's name (handles spaces in names)
+      return (
+        (authorName && rawMention.toLowerCase().startsWith(authorName.toLowerCase())) ||
+        (authorEmail && rawMention.toLowerCase().startsWith(authorEmail.toLowerCase()))
+      );
+    });
+
+    if (parentComment) {
+      if (!replyMap[parentComment.id]) replyMap[parentComment.id] = [];
+      replyMap[parentComment.id].push(reply);
+    } else {
+      // No match — attach to the most recent top-level comment before this reply
+      const precedingComments = topLevelComments.filter(c => new Date(c.created_date) <= new Date(reply.created_date));
+      const closestParent = precedingComments[precedingComments.length - 1];
+      if (closestParent) {
+        if (!replyMap[closestParent.id]) replyMap[closestParent.id] = [];
+        replyMap[closestParent.id].push(reply);
       } else {
-        // Couldn't match — append to last top-level comment or show as orphan
         orphanReplies.push(reply);
       }
-    } else {
-      orphanReplies.push(reply);
     }
   });
 
