@@ -115,7 +115,7 @@ export default function CommunityPostCard({ post, currentUser, adminEmails, onLi
             onClick={(e) => { e.stopPropagation(); onOpen?.(post); }}
           >
             <MessageCircle className="w-3.5 h-3.5" />
-            {post.comment_count > 0 ? `${post.comment_count}` : "Comment"}
+            {commentCount > 0 ? `${commentCount}` : "Comment"}
           </button>
 
           {/* Admin actions */}
