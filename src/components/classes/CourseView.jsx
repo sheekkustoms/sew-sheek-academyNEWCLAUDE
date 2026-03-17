@@ -146,10 +146,10 @@ export default function CourseView({ course, user, enrollment: initialEnrollment
         </div>
       </div>
 
-      {/* Two-column: lessons + content */}
-      <div className="flex min-h-[60vh]">
-        {/* Left: modules/lessons */}
-        <div className="w-72 shrink-0 border-r border-gray-100 overflow-y-auto max-h-[72vh]">
+      {/* Two-column: lessons + content — stacks on mobile */}
+      <div className="flex flex-col md:flex-row min-h-[60vh]">
+        {/* Lesson list — on mobile show only when no active lesson */}
+        <div className={`md:w-72 md:shrink-0 md:border-r border-gray-100 md:overflow-y-auto md:max-h-[72vh] ${activeLesson ? "hidden md:block" : "block"}`}>
           <LessonSidebar
             modules={sortedModules}
             lessons={sortedLessons}
@@ -164,9 +164,16 @@ export default function CourseView({ course, user, enrollment: initialEnrollment
           />
         </div>
 
-        {/* Right: lesson content */}
-        <div className="flex-1 min-w-0 overflow-y-auto max-h-[72vh]">
-          {activeLesson ? (
+        {/* Lesson content */}
+        {activeLesson && (
+          <div className="flex-1 min-w-0 overflow-y-auto md:max-h-[72vh]">
+            {/* Back to lessons on mobile */}
+            <button
+              className="md:hidden flex items-center gap-1.5 text-sm text-gray-500 px-4 pt-3 hover:text-gray-800"
+              onClick={() => setActiveLesson(null)}
+            >
+              ← Back to lessons
+            </button>
             <LessonViewer
               lesson={activeLesson}
               enrollment={enrollment}
@@ -175,16 +182,15 @@ export default function CourseView({ course, user, enrollment: initialEnrollment
               isCompletingPending={completeLessonMutation.isPending}
               user={user}
             />
-          ) : (
-            <div className="flex flex-col items-center justify-center h-full text-gray-400 gap-3 py-20">
-              <Play className="w-12 h-12 text-gray-200" />
-              <p className="text-sm">Select a lesson to begin</p>
-              {!enrollment && (
-                <p className="text-xs text-gray-300">Enroll to unlock all lessons</p>
-              )}
-            </div>
-          )}
-        </div>
+          </div>
+        )}
+        {!activeLesson && (
+          <div className="hidden md:flex flex-1 flex-col items-center justify-center text-gray-400 gap-3 py-20">
+            <Play className="w-12 h-12 text-gray-200" />
+            <p className="text-sm">Select a lesson to begin</p>
+            {!enrollment && <p className="text-xs text-gray-300">Enroll to unlock all lessons</p>}
+          </div>
+        )}
       </div>
     </div>
   );
