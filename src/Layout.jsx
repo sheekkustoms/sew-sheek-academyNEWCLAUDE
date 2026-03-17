@@ -77,13 +77,24 @@ export default function Layout({ children, currentPageName }) {
     if (!localStorage.getItem("pwa_dismissed")) setShowPWA(true);
     (async () => {
       try {
-        await registerServiceWorker();
+        const reg = await registerServiceWorker();
         if (!localStorage.getItem("notif_permission_asked")) {
-          await requestNotificationPermission();
+          const permission = await requestNotificationPermission();
           localStorage.setItem("notif_permission_asked", "1");
-          await registerServiceWorker();
+          // If granted now, subscribe immediately
+          if (permission === 'granted' && reg) {
+            await subscribeUserToPush(reg);
+          } else {
+            // Try again in case SW wasn't ready first time
+            await registerServiceWorker();
+          }
+        } else if (Notification.permission === 'granted') {
+          // Already granted — make sure subscription is stored
+          if (reg) await subscribeUserToPush(reg);
         }
-      } catch {}
+      } catch (e) {
+        console.error('[Push setup]', e);
+      }
     })();
   }, []);
 
