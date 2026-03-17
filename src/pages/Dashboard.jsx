@@ -16,7 +16,7 @@ import OnboardingModal from "../components/onboarding/OnboardingModal";
 import OnboardingReminder from "../components/onboarding/OnboardingReminder";
 
 const StatCard = ({ icon: Icon, label, value, color }) => (
-  <div className="bg-white border border-[#EEEEEE] rounded-2xl p-5 flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow">
+  <div className="bg-white border border-[#EEEEEE] rounded-2xl p-3 md:p-5 flex items-center gap-2 md:gap-4 shadow-sm hover:shadow-md transition-shadow">
     <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${color} shrink-0`}>
       <Icon className="w-6 h-6 text-white" />
     </div>
