@@ -17,12 +17,12 @@ import OnboardingReminder from "../components/onboarding/OnboardingReminder";
 
 const StatCard = ({ icon: Icon, label, value, color }) => (
   <div className="bg-white border border-[#EEEEEE] rounded-2xl p-3 md:p-5 flex items-center gap-2 md:gap-4 shadow-sm hover:shadow-md transition-shadow">
-    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${color} shrink-0`}>
-      <Icon className="w-6 h-6 text-white" />
+    <div className={`w-8 h-8 md:w-12 md:h-12 rounded-xl flex items-center justify-center ${color} shrink-0`}>
+      <Icon className="w-4 h-4 md:w-6 md:h-6 text-white" />
     </div>
-    <div>
-      <p className="text-[11px] font-semibold text-[#999] uppercase tracking-widest">{label}</p>
-      <p className="text-2xl font-bold text-[#111]">{value}</p>
+    <div className="min-w-0">
+      <p className="text-[9px] md:text-[11px] font-semibold text-[#999] uppercase tracking-widest truncate">{label}</p>
+      <p className="text-xl md:text-2xl font-bold text-[#111]">{value}</p>
     </div>
   </div>
 );
