@@ -8,9 +8,9 @@ function getVideoEmbed(url) {
   const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
   if (ytMatch) return { type: "iframe", src: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`, allowExtra: "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" };
 
-  // Vimeo
+  // Vimeo — handle both plain URL and full embed code HTML
   const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
-  if (vimeoMatch) return { type: "iframe", src: `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1`, allowExtra: "autoplay; fullscreen; picture-in-picture" };
+  if (vimeoMatch) return { type: "iframe", src: `https://player.vimeo.com/video/${vimeoMatch[1]}?badge=0&autopause=0&player_id=0&app_id=58479`, allowExtra: "autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" };
 
   // Google Drive — handle all share/open/uc formats with public viewing
   // Use /preview endpoint with proper params to prevent access prompts
