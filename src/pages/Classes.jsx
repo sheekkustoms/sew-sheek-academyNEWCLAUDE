@@ -288,7 +288,11 @@ export default function Classes() {
                 <Radio className="w-4 h-4 text-red-500" /> Live Classes
               </h2>
             )}
-            {sortedLive.length === 0 ? (
+            {classesLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                {Array(2).fill(0).map((_, i) => <div key={i} className="h-56 bg-white rounded-2xl border border-[#EEEEEE] animate-pulse" />)}
+              </div>
+            ) : sortedLive.length === 0 ? (
               filter !== "all" ? (
                 <div className="flex items-center justify-center py-16 bg-white rounded-2xl border border-[#EEEEEE] text-[#999]">
                   <p className="text-sm">No live classes yet</p>
@@ -310,7 +314,11 @@ export default function Classes() {
                 <PlayCircle className="w-4 h-4 text-violet-500" /> Prerecorded Classes
               </h2>
             )}
-            {sortedPrerecorded.length === 0 ? (
+            {classesLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                {Array(2).fill(0).map((_, i) => <div key={i} className="h-48 bg-white rounded-2xl border border-[#EEEEEE] animate-pulse" />)}
+              </div>
+            ) : sortedPrerecorded.length === 0 ? (
               filter !== "all" ? (
                 <div className="flex items-center justify-center py-16 bg-white rounded-2xl border border-[#EEEEEE] text-[#999]">
                   <p className="text-sm">No prerecorded classes yet</p>
