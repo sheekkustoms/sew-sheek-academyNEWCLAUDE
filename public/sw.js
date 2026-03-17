@@ -1,5 +1,7 @@
 // SEW SHEEK - Service Worker for Push Notifications
 
+const ICON_URL = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69ad18c269d65fade54e850d/fbce1e699_generated_image.png';
+
 self.addEventListener('install', (event) => {
   console.log('[SW] Installed');
   self.skipWaiting();
@@ -26,8 +28,8 @@ self.addEventListener('push', (event) => {
   const title = data.title || 'SEW SHEEK';
   const options = {
     body: data.body || 'You have a new notification',
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/icon-96x96.png',
+    icon: ICON_URL,
+    badge: ICON_URL,
     tag: data.id || 'sew-sheek-notif',
     data: {
       url: data.url || '/',
@@ -51,7 +53,6 @@ self.addEventListener('notificationclick', (event) => {
 
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-      // If app is already open, focus it
       for (const client of clientList) {
         if (client.url.includes(self.location.origin) && 'focus' in client) {
           client.focus();
@@ -59,7 +60,6 @@ self.addEventListener('notificationclick', (event) => {
           return;
         }
       }
-      // Otherwise open a new window
       if (self.clients.openWindow) {
         return self.clients.openWindow(targetUrl);
       }
