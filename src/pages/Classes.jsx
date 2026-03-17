@@ -332,42 +332,57 @@ export default function Classes() {
                 <Video className="w-4 h-4 text-[#D4AF37]" /> Courses
               </h2>
             )}
-            <div className="flex flex-col md:flex-row gap-5">
-              <div className={`md:w-72 md:shrink-0 ${selectedCourseId ? "hidden md:block" : "block"}`}>
-                <CoursesSidebar
-                  courses={publishedCourses}
-                  enrollments={userEnrollments}
-                  selectedCourseId={selectedCourseId}
-                  onSelect={setSelectedCourseId}
-                  isLoading={coursesLoading}
-                />
+
+            {coursesLoading ? (
+              /* Loading state — never show empty while fetching */
+              <div className="space-y-2">
+                {Array(3).fill(0).map((_, i) => (
+                  <div key={i} className="h-16 bg-white rounded-xl border border-[#EEEEEE] animate-pulse" />
+                ))}
               </div>
-              {selectedCourse && (
-                <div className="flex-1 min-w-0">
-                  <button
-                    className="md:hidden flex items-center gap-1.5 text-sm text-[#666] mb-3 hover:text-[#111]"
-                    onClick={() => setSelectedCourseId(null)}
-                  >
-                    ← Back to courses
-                  </button>
-                  <CourseView
-                    course={selectedCourse}
-                    user={user}
-                    enrollment={userEnrollments.find(e => e.course_id === selectedCourseId) || null}
-                  />
-                </div>
-              )}
-              {!selectedCourse && publishedCourses.length > 0 && (
-                <div className="hidden md:flex flex-1 items-center justify-center bg-white rounded-2xl border border-[#EEEEEE] text-[#999]" style={{ minHeight: "75vh" }}>
-                  <p className="text-sm">Select a course to get started</p>
-                </div>
-              )}
-              {publishedCourses.length === 0 && filter !== "all" && (
-                <div className="flex items-center justify-center py-16 bg-white rounded-2xl border border-[#EEEEEE] text-[#999] flex-1">
+            ) : publishedCourses.length === 0 ? (
+              /* Only show empty state after load confirms no data */
+              filter !== "all" && (
+                <div className="flex items-center justify-center py-16 bg-white rounded-2xl border border-[#EEEEEE] text-[#999]">
                   <p className="text-sm">No courses published yet</p>
                 </div>
-              )}
-            </div>
+              )
+            ) : (
+              <div className="flex flex-col md:flex-row gap-5">
+                {/* Sidebar: always show on desktop; on mobile only show when no course selected */}
+                <div className={`md:w-72 md:shrink-0 ${selectedCourseId ? "hidden md:block" : "block"}`}>
+                  <CoursesSidebar
+                    courses={publishedCourses}
+                    enrollments={userEnrollments}
+                    selectedCourseId={selectedCourseId}
+                    onSelect={setSelectedCourseId}
+                    isLoading={false}
+                  />
+                </div>
+
+                {/* Course detail: show when selected */}
+                {selectedCourse ? (
+                  <div className="flex-1 min-w-0">
+                    <button
+                      className="md:hidden flex items-center gap-1.5 text-sm text-[#666] mb-3 hover:text-[#111]"
+                      onClick={() => setSelectedCourseId(null)}
+                    >
+                      ← Back to courses
+                    </button>
+                    <CourseView
+                      course={selectedCourse}
+                      user={user}
+                      enrollment={userEnrollments.find(e => e.course_id === selectedCourseId) || null}
+                    />
+                  </div>
+                ) : (
+                  /* Desktop: prompt to select; mobile: this state shows the sidebar list above */
+                  <div className="hidden md:flex flex-1 items-center justify-center bg-white rounded-2xl border border-[#EEEEEE] text-[#999]" style={{ minHeight: "75vh" }}>
+                    <p className="text-sm">Select a course to get started</p>
+                  </div>
+                )}
+              </div>
+            )}
           </section>
         )}
 
