@@ -386,8 +386,8 @@ export default function Classes() {
           </section>
         )}
 
-        {/* Empty state for "all" tab */}
-        {filter === "all" && sortedLive.length === 0 && sortedPrerecorded.length === 0 && publishedCourses.length === 0 && !coursesLoading && (
+        {/* Empty state for "all" tab — only after ALL queries have finished */}
+        {filter === "all" && sortedLive.length === 0 && sortedPrerecorded.length === 0 && publishedCourses.length === 0 && !coursesLoading && !classesLoading && (
           <div className="flex items-center justify-center py-24 bg-white rounded-2xl border border-[#EEEEEE] text-[#999]">
             <p className="text-sm">No classes available yet</p>
           </div>
