@@ -84,21 +84,35 @@ export default function CommentSection({ postId, user, myPoints, isAdmin = false
 
 
 
-  // Group comments: separate top-level from replies
-  const topLevelComments = comments.filter(c => !c.content.match(/^@[^@\n]+\s/));
-  const replies = comments.filter(c => c.content.match(/^@[^@\n]+\s/));
-  
-  // Create a map of which comment each reply is responding to
+  // Sort comments by creation date ascending
+  const sortedComments = [...comments].sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
+
+  // Group comments: replies start with @mention, top-level don't
+  const isReply = (c) => /^@\S/.test(c.content);
+  const topLevelComments = sortedComments.filter(c => !isReply(c));
+  const replies = sortedComments.filter(c => isReply(c));
+
+  // Map replies to parent comments by matching the mentioned name to a top-level commenter
   const replyMap = {};
+  const orphanReplies = []; // replies that couldn't be matched
   replies.forEach(reply => {
-    const mentionMatch = reply.content.match(/^@([^@\n]+?)\s/);
+    const mentionMatch = reply.content.match(/^@([^\s]+)/);
     if (mentionMatch) {
       const mentionedName = mentionMatch[1];
-      const parentComment = comments.find(c => (c.author_name || c.author_email) === mentionedName && !c.content.match(/^@[^@\n]+\s/));
+      // Try to find parent by author_name or the part of email before @
+      const parentComment = topLevelComments.find(c => {
+        const name = c.author_name || c.author_email?.split("@")[0] || "";
+        return name === mentionedName || name.replace(/\s/g, "") === mentionedName;
+      });
       if (parentComment) {
         if (!replyMap[parentComment.id]) replyMap[parentComment.id] = [];
         replyMap[parentComment.id].push(reply);
+      } else {
+        // Couldn't match — append to last top-level comment or show as orphan
+        orphanReplies.push(reply);
       }
+    } else {
+      orphanReplies.push(reply);
     }
   });
 
