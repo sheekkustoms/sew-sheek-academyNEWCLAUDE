@@ -60,6 +60,35 @@ export default function ProfileSettings() {
      }
    }, [user]);
 
+  const [notifStatus, setNotifStatus] = useState(Notification.permission);
+  const [subscribing, setSubscribing] = useState(false);
+
+  const handleEnableNotifications = async () => {
+    setSubscribing(true);
+    try {
+      const permission = await Notification.requestPermission();
+      setNotifStatus(permission);
+      if (permission === 'granted') {
+        const reg = await navigator.serviceWorker.ready;
+        let subscription = await reg.pushManager.getSubscription();
+        if (!subscription) {
+          const keyResponse = await base44.functions.invoke('getVAPIDPublicKey', {});
+          const vapidPublicKey = keyResponse.data?.publicKey;
+          const padding = '='.repeat((4 - (vapidPublicKey.length % 4)) % 4);
+          const base64 = (vapidPublicKey + padding).replace(/-/g, '+').replace(/_/g, '/');
+          const rawData = window.atob(base64);
+          const applicationServerKey = new Uint8Array([...rawData].map(c => c.charCodeAt(0)));
+          subscription = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey });
+        }
+        await base44.functions.invoke('subscribeToNotifications', { subscription: subscription.toJSON() });
+        toast.success("Push notifications enabled!");
+      }
+    } catch (e) {
+      toast.error("Could not enable notifications.");
+    }
+    setSubscribing(false);
+  };
+
   const hasChanges = displayName.trim() !== originalName.trim();
   const isDisabled = saving || !hasChanges || !displayName.trim();
 
