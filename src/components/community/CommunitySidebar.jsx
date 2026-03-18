@@ -27,7 +27,7 @@ export default function CommunitySidebar({ pinnedPost, upcomingClasses, topContr
               {pinnedPost.title}
             </p>
             <p className="text-xs text-[#666] mt-1 line-clamp-2">{pinnedPost.content}</p>
-            <p className="text-[11px] text-[#999] mt-2">by {pinnedPost.author_name || pinnedPost.author_email}</p>
+            <p className="text-[11px] text-[#999] mt-2">by {pinnedPost.liveAuthorName || pinnedPost.author_name || pinnedPost.author_email}</p>
           </div>
         </SidebarCard>
       )}
