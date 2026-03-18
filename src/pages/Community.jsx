@@ -222,7 +222,7 @@ export default function Community() {
         {/* Right sidebar — hidden on mobile */}
         <div className="hidden lg:block w-72 shrink-0">
           <CommunitySidebar
-            pinnedPost={pinnedPosts[0] || null}
+            pinnedPost={pinnedPostWithLiveName}
             upcomingClasses={upcomingClasses}
             topContributors={topPoints}
             onOpenPost={setOpenPost}
