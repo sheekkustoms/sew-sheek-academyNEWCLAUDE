@@ -22,7 +22,7 @@ const categoryConfig = {
   showcase: { label: "Showcase", bg: "bg-[#D4AF37]/10 text-[#B8960C]" },
 };
 
-export default function CommunityPostCard({ post, currentUser, adminEmails, onLike, onPin, onDelete, onOpen, isAdmin, index = 0, liveAvatarMap = {} }) {
+export default function CommunityPostCard({ post, currentUser, adminEmails, onLike, onPin, onDelete, onOpen, isAdmin, index = 0, liveAvatarMap = {}, liveNameMap = {} }) {
   const isLiked = post.likes?.includes(currentUser?.email);
   const likeCount = post.likes?.length || 0;
   const isAdminPost = post.is_admin_post || adminEmails?.has(post.author_email);
