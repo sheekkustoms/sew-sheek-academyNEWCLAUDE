@@ -262,15 +262,16 @@ function PostDetailDrawer({ post, currentUser, isAdmin, adminEmails, onClose, on
 
   const isAdminPost = post.is_admin_post || post.author_email === OWNER_EMAIL;
   const { data: liveAuthor } = useQuery({
-    queryKey: ["adminUser", post.author_email],
+    queryKey: ["liveAuthorDrawer", post.author_email],
     queryFn: async () => {
-      const users = await base44.entities.User.filter({ email: post.author_email });
-      return users[0] || null;
+      const result = await base44.functions.invoke('getUserAvatar', { email: post.author_email });
+      return result.data || null;
     },
-    enabled: true,
+    enabled: !!post.author_email,
     staleTime: 30000,
   });
   const drawerAvatarUrl = liveAuthor?.avatar_url || post.author_avatar;
+  const drawerDisplayName = liveAuthor?.display_name || post.author_name || post.author_email;
 
   // Sync latest post data
   const { data: latestPost } = useQuery({
