@@ -27,7 +27,9 @@ function useLiveAuthorData(posts) {
 }
 
 export default function CommunityFeed({ posts, isLoading, currentUser, adminEmails, myPoints, onLike, onPin, onDelete, onOpen, isAdmin }) {
-  const { data: liveAvatarMap = {} } = useLiveAvatars(posts);
+  const { data: liveAuthorData = { avatars: {}, names: {} } } = useLiveAuthorData(posts);
+  const liveAvatarMap = liveAuthorData.avatars;
+  const liveNameMap = liveAuthorData.names;
 
   if (isLoading) {
     return (
