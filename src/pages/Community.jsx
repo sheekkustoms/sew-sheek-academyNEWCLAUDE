@@ -78,6 +78,21 @@ export default function Community() {
     posts.filter(p => p.is_admin_post).map(p => p.author_email)
   );
 
+  // Live name lookup for pinned post author (sidebar)
+  const pinnedPostEmail = pinnedPosts[0]?.author_email;
+  const { data: pinnedAuthorData } = useQuery({
+    queryKey: ["liveAuthorSidebar", pinnedPostEmail],
+    queryFn: async () => {
+      const result = await base44.functions.invoke('getUserAvatar', { email: pinnedPostEmail });
+      return result.data || null;
+    },
+    enabled: !!pinnedPostEmail,
+    staleTime: 60000,
+  });
+  const pinnedPostWithLiveName = pinnedPosts[0]
+    ? { ...pinnedPosts[0], liveAuthorName: pinnedAuthorData?.display_name }
+    : null;
+
   // Mutations
   const createPostMutation = useMutation({
     mutationFn: async ({ title, content, category, imageFile, postAsCoach }) => {
