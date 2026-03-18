@@ -4,20 +4,22 @@ import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import CommunityPostCard from "./CommunityPostCard";
 
-function useLiveAvatars(posts) {
+function useLiveAuthorData(posts) {
   const uniqueEmails = [...new Set(posts.map(p => p.author_email).filter(Boolean))];
   return useQuery({
-    queryKey: ["liveAvatars", uniqueEmails.sort().join(",")],
+    queryKey: ["liveAuthorData", uniqueEmails.sort().join(",")],
     queryFn: async () => {
-      if (!uniqueEmails.length) return {};
-      const map = {};
+      if (!uniqueEmails.length) return { avatars: {}, names: {} };
+      const avatars = {};
+      const names = {};
       await Promise.all(
         uniqueEmails.map(async (email) => {
           const result = await base44.functions.invoke('getUserAvatar', { email });
-          if (result.data?.avatar_url) map[email] = result.data.avatar_url;
+          if (result.data?.avatar_url) avatars[email] = result.data.avatar_url;
+          if (result.data?.display_name) names[email] = result.data.display_name;
         })
       );
-      return map;
+      return { avatars, names };
     },
     enabled: uniqueEmails.length > 0,
     staleTime: 30000,
