@@ -16,7 +16,10 @@ Deno.serve(async (req) => {
       return Response.json({ avatar_url: null });
     }
 
-    return Response.json({ avatar_url: users[0].avatar_url || null });
+    const u = users[0];
+    // Derive display name using same priority chain as the frontend
+    const displayName = u.display_name || u.nick_name || u.full_name || u.email?.split("@")[0] || null;
+    return Response.json({ avatar_url: u.avatar_url || null, display_name: displayName });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
