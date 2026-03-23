@@ -247,7 +247,6 @@ export default function Dashboard() {
       {/* Quick Nav Links */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
-          { page: "Community", label: "Community", emoji: "💬", desc: "Posts & discussions" },
           { page: "Classes", label: "Classes", emoji: "🎓", desc: "Watch & learn" },
           { page: "LiveClasses", label: "Patterns", emoji: "📄", desc: "Download PDFs" },
           { page: "MemberProfile", label: "My Profile", emoji: "👤", desc: "View your progress" },
