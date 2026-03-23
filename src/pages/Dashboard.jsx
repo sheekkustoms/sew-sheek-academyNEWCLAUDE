@@ -78,11 +78,6 @@ export default function Dashboard() {
     queryFn: () => base44.entities.Lesson.list(),
   });
 
-  const { data: posts = [] } = useQuery({
-    queryKey: ["communityPosts"],
-    queryFn: () => base44.entities.CommunityPost.filter({ is_approved: true }, "-created_date", 5),
-  });
-
   const { data: leaderboard = [] } = useQuery({
     queryKey: ["leaderboard"],
     queryFn: () => base44.entities.UserPoints.list("-total_xp", 3),
