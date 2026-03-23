@@ -238,7 +238,8 @@ export default function Classes() {
 
   const selectedCourse = courses.find(c => c.id === selectedCourseId) || null;
 
-  const showCourses = filter === "all" || filter === "courses";
+  // Members only see Live + Prerecorded (replays & PDFs). Courses are admin-only.
+  const showCourses = isAdmin && (filter === "all" || filter === "courses");
   const showLive = filter === "all" || filter === "live";
   const showPrerecorded = filter === "all" || filter === "prerecorded";
 
