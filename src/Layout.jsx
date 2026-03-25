@@ -50,9 +50,10 @@ const urlBase64ToUint8Array = (base64String) => {
 
 // Main nav items (visible to all)
 const NAV_ITEMS = [
-  { label: "Home",    page: "Dashboard" },
-  { label: "Classes", page: "Classes" },
-  { label: "Profile", page: "MemberProfile" },
+  { label: "Home",      page: "Dashboard" },
+  { label: "Classes",   page: "Classes" },
+  { label: "Community", page: "Community" },
+  { label: "Profile",   page: "MemberProfile" },
 ];
 
 // Admin-only dropdown items

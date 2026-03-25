@@ -11,12 +11,13 @@ import { createPageUrl } from "@/utils";
 import { useNavigate } from "react-router-dom";
 
 const typeConfig = {
-  like:         { icon: Heart,         color: "bg-pink-100 text-pink-500",   label: "liked your post" },
-  comment:      { icon: MessageCircle, color: "bg-blue-100 text-blue-500",   label: "commented on your post" },
-  reply:        { icon: MessageCircle, color: "bg-cyan-100 text-cyan-500",   label: "replied to your comment" },
-  badge:        { icon: Star,          color: "bg-amber-100 text-amber-500", label: "You earned a badge" },
+  like:         { icon: Heart,         color: "bg-pink-100 text-pink-500",     label: "liked your post" },
+  comment:      { icon: MessageCircle, color: "bg-blue-100 text-blue-500",     label: "commented on your post" },
+  reply:        { icon: MessageCircle, color: "bg-cyan-100 text-cyan-500",     label: "replied to your comment" },
+  message:      { icon: MessageCircle, color: "bg-emerald-100 text-emerald-600", label: "sent you a message" },
+  badge:        { icon: Star,          color: "bg-amber-100 text-amber-500",   label: "You earned a badge" },
   announcement: { icon: Megaphone,     color: "bg-violet-100 text-violet-500", label: "Announcement" },
-  lesson:       { icon: BookOpen,      color: "bg-green-100 text-green-600", label: "New lesson" },
+  lesson:       { icon: BookOpen,      color: "bg-green-100 text-green-600",   label: "New lesson" },
 };
 
 export default function Notifications() {
@@ -56,7 +57,9 @@ export default function Notifications() {
     if (!n.is_read) {
       markOne.mutate(n.id);
     }
-    if (n.post_id) {
+    if (n.type === "message") {
+      navigate(createPageUrl("Messages"));
+    } else if (n.post_id) {
       navigate(createPageUrl("Community") + `?postId=${n.post_id}`);
     }
   };
