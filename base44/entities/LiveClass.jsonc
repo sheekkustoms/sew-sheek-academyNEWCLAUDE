@@ -1,0 +1,69 @@
+{
+  "name": "LiveClass",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "class_type": {
+      "type": "string",
+      "enum": [
+        "live",
+        "replay",
+        "prerecorded",
+        "tutorial"
+      ],
+      "default": "live",
+      "description": "Type of class \u2014 live, replay, prerecorded, or tutorial"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published",
+        "archived"
+      ],
+      "default": "published",
+      "description": "Visibility status \u2014 only published classes appear for members"
+    },
+    "scheduled_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO datetime of the live class"
+    },
+    "zoom_url": {
+      "type": "string",
+      "description": "Zoom or meeting link"
+    },
+    "thumbnail_url": {
+      "type": "string",
+      "description": "Thumbnail image URL for the class card"
+    },
+    "pdf_url": {
+      "type": "string",
+      "description": "PDF document URL for class materials"
+    },
+    "recording_url": {
+      "type": "string",
+      "description": "Google Drive or video link for class recording"
+    },
+    "supply_list": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "List of supplies needed for the class"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "title"
+  ]
+}

@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Trash2, Plus, Video, Edit2, X, Upload, CheckCircle2, Bell, Radio, PlayCircle, Eye, EyeOff } from "lucide-react";
+import { Trash2, Plus, Video, Edit2, X, Upload, CheckCircle2, Bell, Radio, PlayCircle, Eye, EyeOff, BookOpen } from "lucide-react";
 import moment from "moment";
 
 const EMPTY = {
@@ -129,7 +129,7 @@ export default function LiveClassManager() {
     queryClient.invalidateQueries({ queryKey: ["memberClasses"] });
   };
 
-  const isLive = form.class_type === "live";
+  const isLive = form.class_type === "live" || form.class_type === "replay";
 
   return (
     <div className="space-y-6">
@@ -150,29 +150,24 @@ export default function LiveClassManager() {
         {/* Class Type Toggle */}
         <div>
           <label className="text-xs text-gray-400 mb-2 block font-semibold uppercase tracking-wide">Class Type</label>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => setForm(f => ({ ...f, class_type: "live" }))}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 text-sm font-semibold transition-all ${
-                form.class_type === "live"
-                  ? "border-red-400 bg-red-50 text-red-600"
-                  : "border-gray-200 text-gray-500 hover:border-gray-300"
-              }`}
-            >
-              <Radio className="w-4 h-4" /> LIVE
-            </button>
-            <button
-              type="button"
-              onClick={() => setForm(f => ({ ...f, class_type: "prerecorded" }))}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 text-sm font-semibold transition-all ${
-                form.class_type === "prerecorded"
-                  ? "border-violet-400 bg-violet-50 text-violet-600"
-                  : "border-gray-200 text-gray-500 hover:border-gray-300"
-              }`}
-            >
-              <PlayCircle className="w-4 h-4" /> PRERECORDED
-            </button>
+          <div className="flex flex-wrap gap-2">
+            {[
+              { value: "live",        label: "Live",        icon: <Radio className="w-4 h-4" />,       cls: "border-red-400 bg-red-50 text-red-600" },
+              { value: "replay",      label: "Replay",      icon: <Video className="w-4 h-4" />,       cls: "border-orange-400 bg-orange-50 text-orange-600" },
+              { value: "prerecorded", label: "Prerecorded", icon: <PlayCircle className="w-4 h-4" />,  cls: "border-violet-400 bg-violet-50 text-violet-600" },
+              { value: "tutorial",    label: "Tutorial",    icon: <BookOpen className="w-4 h-4" />,    cls: "border-blue-400 bg-blue-50 text-blue-600" },
+            ].map(t => (
+              <button
+                key={t.value}
+                type="button"
+                onClick={() => setForm(f => ({ ...f, class_type: t.value }))}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 text-sm font-semibold transition-all ${
+                  form.class_type === t.value ? t.cls : "border-gray-200 text-gray-500 hover:border-gray-300"
+                }`}
+              >
+                {t.icon} {t.label.toUpperCase()}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -315,8 +310,13 @@ export default function LiveClassManager() {
             <div onClick={() => handleEdit(cls)} className="flex-1 cursor-pointer min-w-0">
               <div className="flex items-center gap-2 flex-wrap mb-0.5">
                 <p className="text-sm font-semibold text-gray-800 truncate">{cls.title}</p>
-                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full uppercase ${cls.class_type === "live" ? "bg-red-100 text-red-600" : "bg-violet-100 text-violet-600"}`}>
-                  {cls.class_type === "live" ? "🔴 LIVE" : "▶ PRERECORDED"}
+                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full uppercase ${
+                  cls.class_type === "live" ? "bg-red-100 text-red-600" :
+                  cls.class_type === "replay" ? "bg-orange-100 text-orange-600" :
+                  cls.class_type === "tutorial" ? "bg-blue-100 text-blue-600" :
+                  "bg-violet-100 text-violet-600"
+                }`}>
+                  {cls.class_type === "live" ? "🔴 LIVE" : cls.class_type === "replay" ? "🔁 REPLAY" : cls.class_type === "tutorial" ? "📖 TUTORIAL" : "▶ PRERECORDED"}
                 </span>
                 <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full capitalize ${
                   cls.status === "published" ? "bg-green-100 text-green-700" :
