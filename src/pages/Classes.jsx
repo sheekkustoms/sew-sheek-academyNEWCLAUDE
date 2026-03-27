@@ -7,6 +7,7 @@ import ReplayPlayer from "../components/classes/ReplayPlayer";
 import CoursesSidebar from "../components/classes/CoursesSidebar";
 import CourseView from "../components/classes/CourseView";
 import AdminCourseEditor from "../components/admin/CourseManager";
+import LiveClassManager from "../components/admin/LiveClassManager";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import moment from "moment";
 
@@ -176,6 +177,34 @@ function PrerecordedCard({ cls }) {
             </ul>
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+function AdminManagerTabs() {
+  const [tab, setTab] = useState("live");
+  return (
+    <div className="flex flex-col h-full">
+      {/* Tab header */}
+      <div className="flex items-center gap-1 px-5 pt-4 pb-0 border-b border-[#EEEEEE] shrink-0">
+        {[{ value: "live", label: "Live Classes" }, { value: "courses", label: "Courses" }].map(t => (
+          <button
+            key={t.value}
+            onClick={() => setTab(t.value)}
+            className={`px-4 py-2 text-sm font-semibold border-b-2 transition-all -mb-px ${
+              tab === t.value
+                ? "border-[#D4AF37] text-[#111]"
+                : "border-transparent text-[#999] hover:text-[#333]"
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+      {/* Tab content */}
+      <div className="flex-1 overflow-y-auto p-5">
+        {tab === "live" ? <LiveClassManager /> : <AdminCourseEditor />}
       </div>
     </div>
   );
@@ -411,8 +440,8 @@ export default function Classes() {
 
       {isAdmin && (
         <Dialog open={showAdminEditor} onOpenChange={setShowAdminEditor}>
-          <DialogContent className="max-w-6xl w-full h-[90vh] p-0 overflow-hidden rounded-2xl border border-[#EEEEEE]">
-            <AdminCourseEditor />
+          <DialogContent className="max-w-6xl w-full h-[90vh] p-0 overflow-hidden rounded-2xl border border-[#EEEEEE] flex flex-col">
+            <AdminManagerTabs />
           </DialogContent>
         </Dialog>
       )}
