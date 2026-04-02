@@ -88,7 +88,7 @@ function LiveClassCard({ cls }) {
 
         <div className="flex flex-wrap gap-2 pt-1 border-t border-[#F5F5F5]">
           {(isUpcoming || (!isPast && cls.zoom_url)) && cls.zoom_url && (
-            <a href={cls.zoom_url} target="_blank" rel="noopener noreferrer" className="flex-1">
+            <a href={cls.zoom_url.startsWith("http") ? cls.zoom_url : `https://${cls.zoom_url}`} target="_blank" rel="noopener noreferrer" className="flex-1">
               <Button size="sm" className="w-full bg-red-500 hover:bg-red-600 text-white gap-1.5 text-xs font-semibold rounded-xl h-8">
                 <ExternalLink className="w-3.5 h-3.5" /> Join Live Class
               </Button>
