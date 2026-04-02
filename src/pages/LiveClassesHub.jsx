@@ -64,11 +64,19 @@ export default function LiveClassesHub() {
   const upcoming = liveClasses.filter(c => c.scheduled_at && new Date(c.scheduled_at).getTime() > now)
     .sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at));
 
+  // "ongoing" = no scheduled time, OR started within the last 4 hours
   const ongoing = liveClasses.filter(c => {
     if (!c.scheduled_at) return true;
     const ms = new Date(c.scheduled_at).getTime();
-    return ms <= now && ms + 2 * 60 * 60 * 1000 > now;
+    return ms <= now && ms + 4 * 60 * 60 * 1000 > now;
   });
+
+  // past classes that are outside the ongoing window but still have a zoom link
+  const past = liveClasses.filter(c => {
+    if (!c.scheduled_at) return false;
+    const ms = new Date(c.scheduled_at).getTime();
+    return ms + 4 * 60 * 60 * 1000 <= now;
+  }).sort((a, b) => new Date(b.scheduled_at) - new Date(a.scheduled_at));
 
   return (
     <div className="max-w-5xl mx-auto space-y-8">
@@ -106,6 +114,16 @@ export default function LiveClassesHub() {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {upcoming.map(cls => <LiveCard key={cls.id} cls={cls} />)}
+              </div>
+            </section>
+          )}
+          {past.length > 0 && (
+            <section>
+              <h2 className="text-base font-bold text-[#111] mb-3 flex items-center gap-2">
+                <Radio className="w-4 h-4 text-[#999]" /> Previous Sessions
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {past.map(cls => <LiveCard key={cls.id} cls={cls} />)}
               </div>
             </section>
           )}
