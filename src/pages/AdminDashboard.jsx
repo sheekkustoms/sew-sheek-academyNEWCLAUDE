@@ -14,6 +14,7 @@ import RewardPointsPanel from "../components/admin/RewardPointsPanel";
 import OnboardingSettingsManager from "../components/admin/OnboardingSettingsManager";
 import PushNotificationPanel from "../components/admin/PushNotificationPanel";
 import AnnouncementPanel from "../components/admin/AnnouncementPanel";
+import MembershipBillingPanel from "../components/admin/MembershipBillingPanel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -272,6 +273,9 @@ export default function AdminDashboard() {
           </TabsTrigger>
           <TabsTrigger value="push" className="flex items-center gap-1">
             <Bell className="w-3.5 h-3.5" /> Push Notifs
+          </TabsTrigger>
+          <TabsTrigger value="billing" className="flex items-center gap-1">
+            <Shield className="w-3.5 h-3.5" /> Billing
           </TabsTrigger>
         </TabsList>
 
@@ -547,6 +551,11 @@ export default function AdminDashboard() {
         {/* Push Notifications */}
         <TabsContent value="push" className="mt-4">
           <PushNotificationPanel />
+        </TabsContent>
+
+        {/* Billing */}
+        <TabsContent value="billing" className="mt-4">
+          <MembershipBillingPanel />
         </TabsContent>
 
         {/* Activity Log */}
