@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Camera, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,7 @@ export default function ProfileSetupModal({ user, onComplete }) {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    const file_url = await uploadFile(file);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
     setAvatarUrl(file_url);
     setUploading(false);
   };
@@ -27,7 +27,7 @@ export default function ProfileSetupModal({ user, onComplete }) {
     if (!fullName.trim()) { setError("Please enter your name."); return; }
     if (!avatarUrl) { setError("Please upload a profile photo."); return; }
     setSaving(true);
-    await updateMe({ full_name: fullName.trim(), avatar_url: avatarUrl });
+    await base44.auth.updateMe({ full_name: fullName.trim(), avatar_url: avatarUrl });
     queryClient.invalidateQueries({ queryKey: ["currentUser"] });
     onComplete();
   };

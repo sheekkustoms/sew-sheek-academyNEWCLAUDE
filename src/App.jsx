@@ -21,6 +21,7 @@ import QuizGame from './pages/QuizGame';
 import AdminDashboard from './pages/AdminDashboard';
 import Notifications from './pages/Notifications';
 import ProfileSettings from './pages/ProfileSettings';
+import Messages from './pages/Messages';
 import CourseDetail from './pages/CourseDetail';
 import DailyChallenges from './pages/DailyChallenges';
 import UserProgress from './pages/UserProgress';
@@ -63,6 +64,7 @@ const AuthenticatedApp = () => {
       <Route path="/AdminDashboard" element={<LayoutWrapper currentPageName="AdminDashboard"><AdminDashboard /></LayoutWrapper>} />
       <Route path="/Notifications" element={<LayoutWrapper currentPageName="Notifications"><Notifications /></LayoutWrapper>} />
       <Route path="/ProfileSettings" element={<LayoutWrapper currentPageName="ProfileSettings"><ProfileSettings /></LayoutWrapper>} />
+      <Route path="/Messages" element={<LayoutWrapper currentPageName="Messages"><Messages /></LayoutWrapper>} />
       <Route path="/CourseDetail" element={<LayoutWrapper currentPageName="CourseDetail"><CourseDetail /></LayoutWrapper>} />
       <Route path="/DailyChallenges" element={<LayoutWrapper currentPageName="DailyChallenges"><DailyChallenges /></LayoutWrapper>} />
       <Route path="/UserProgress" element={<LayoutWrapper currentPageName="UserProgress"><UserProgress /></LayoutWrapper>} />

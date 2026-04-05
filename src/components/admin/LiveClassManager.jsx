@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,11 +31,11 @@ export default function LiveClassManager() {
 
   const { data: classes = [] } = useQuery({
     queryKey: ["adminLiveClasses"],
-    queryFn: () => db.LiveClass.list("-scheduled_at", 50),
+    queryFn: () => base44.entities.LiveClass.list("-scheduled_at", 50),
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => db.LiveClass.delete(id),
+    mutationFn: (id) => base44.entities.LiveClass.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["adminLiveClasses"] });
       queryClient.invalidateQueries({ queryKey: ["liveClassesAll"] });
@@ -44,7 +44,7 @@ export default function LiveClassManager() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => db.LiveClass.update(id, data),
+    mutationFn: ({ id, data }) => base44.entities.LiveClass.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["adminLiveClasses"] });
       queryClient.invalidateQueries({ queryKey: ["liveClassesAll"] });
@@ -65,12 +65,17 @@ export default function LiveClassManager() {
     if (editingId) {
       await updateMutation.mutateAsync({ id: editingId, data: payload });
     } else {
-      await db.LiveClass.create(payload);
+      await base44.entities.LiveClass.create(payload);
       queryClient.invalidateQueries({ queryKey: ["adminLiveClasses"] });
       queryClient.invalidateQueries({ queryKey: ["liveClassesAll"] });
       queryClient.invalidateQueries({ queryKey: ["memberClasses"] });
       if (notifyMembers) {
-        /* edge function stubbed */
+        await base44.functions.invoke("notifyNewLiveClass", {
+          title: form.title,
+          scheduled_at: form.scheduled_at,
+          zoom_url: form.zoom_url,
+          description: form.description,
+        });
       }
     }
     setForm(EMPTY);
@@ -102,7 +107,7 @@ export default function LiveClassManager() {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploadingPdf(true);
-    const file_url = await uploadFile(file);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
     setForm(f => ({ ...f, pdf_url: file_url }));
     setUploadingPdf(false);
   };
@@ -111,14 +116,14 @@ export default function LiveClassManager() {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploadingThumb(true);
-    const file_url = await uploadFile(file);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
     setForm(f => ({ ...f, thumbnail_url: file_url }));
     setUploadingThumb(false);
   };
 
   const toggleStatus = async (cls) => {
     const newStatus = cls.status === "published" ? "draft" : "published";
-    await db.LiveClass.update(cls.id, { status: newStatus });
+    await base44.entities.LiveClass.update(cls.id, { status: newStatus });
     queryClient.invalidateQueries({ queryKey: ["adminLiveClasses"] });
     queryClient.invalidateQueries({ queryKey: ["liveClassesAll"] });
     queryClient.invalidateQueries({ queryKey: ["memberClasses"] });

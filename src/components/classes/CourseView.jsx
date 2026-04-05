@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Play, CheckCircle2, FileDown, Star, Lock } from "lucide-react";
@@ -13,17 +13,17 @@ export default function CourseView({ course, user, enrollment: initialEnrollment
 
   const { data: lessons = [] } = useQuery({
     queryKey: ["lessons", course.id],
-    queryFn: () => db.Lesson.filter({ course_id: course.id }),
+    queryFn: () => base44.entities.Lesson.filter({ course_id: course.id }),
   });
 
   const { data: modules = [] } = useQuery({
     queryKey: ["modules", course.id],
-    queryFn: () => db.Module.filter({ course_id: course.id }),
+    queryFn: () => base44.entities.Module.filter({ course_id: course.id }),
   });
 
   const { data: enrollments = [] } = useQuery({
     queryKey: ["enrollment", course.id, user?.email],
-    queryFn: () => db.Enrollment.filter({ user_email: user.email, course_id: course.id }),
+    queryFn: () => base44.entities.Enrollment.filter({ user_email: user.email, course_id: course.id }),
     enabled: !!user?.email,
   });
 
@@ -44,7 +44,7 @@ export default function CourseView({ course, user, enrollment: initialEnrollment
   }, [course.id]);
 
   const enrollMutation = useMutation({
-    mutationFn: () => db.Enrollment.create({
+    mutationFn: () => base44.entities.Enrollment.create({
       user_email: user.email,
       course_id: course.id,
       completed_lessons: [],
@@ -62,7 +62,7 @@ export default function CourseView({ course, user, enrollment: initialEnrollment
       const newCompleted = [...completed, lesson.id];
       const progress = Math.round((newCompleted.length / lessons.length) * 100);
       const isCourseComplete = progress === 100;
-      await db.Enrollment.update(enrollment.id, {
+      await base44.entities.Enrollment.update(enrollment.id, {
         completed_lessons: newCompleted,
         progress_percent: progress,
         is_completed: isCourseComplete,

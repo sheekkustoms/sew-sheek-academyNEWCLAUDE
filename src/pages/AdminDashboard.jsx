@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Shield, Users, FileText, Pin, Trash2, CheckCircle, XCircle, Megaphone, BarChart2, Ban, Gamepad2, BookOpen, UserPlus, Copy, Check, Brain, Video, Zap, Tags, Mail, Bell, UserX, Star, Trophy } from "lucide-react";
@@ -14,7 +14,6 @@ import RewardPointsPanel from "../components/admin/RewardPointsPanel";
 import OnboardingSettingsManager from "../components/admin/OnboardingSettingsManager";
 import PushNotificationPanel from "../components/admin/PushNotificationPanel";
 import AnnouncementPanel from "../components/admin/AnnouncementPanel";
-import MembershipBillingPanel from "../components/admin/MembershipBillingPanel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -51,46 +50,49 @@ export default function AdminDashboard() {
   const [editingPoints, setEditingPoints] = useState({});
   const [xpToAdd, setXpToAdd] = useState({});
 
-  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: getCurrentUser });
+  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
 
   const { data: allPosts = [] } = useQuery({
     queryKey: ["adminPosts"],
-    queryFn: () => db.CommunityPost.list("-created_date", 100),
+    queryFn: () => base44.entities.CommunityPost.list("-created_date", 100),
   });
 
   const { data: allUsers = [] } = useQuery({
     queryKey: ["adminUsers"],
-    queryFn: () => db.User.list("-created_date", 500),
+    queryFn: async () => {
+      const res = await base44.functions.invoke('getAllUsers', {});
+      return res.data?.users || [];
+    },
   });
 
   const { data: allPoints = [] } = useQuery({
     queryKey: ["adminPoints"],
-    queryFn: () => db.UserPoints.list("-total_xp", 10),
+    queryFn: () => base44.entities.UserPoints.list("-total_xp", 10),
   });
 
   const { data: allUserPoints = [] } = useQuery({
     queryKey: ["adminAllUserPoints"],
-    queryFn: () => db.UserPoints.list("-last_activity_date", 200),
+    queryFn: () => base44.entities.UserPoints.list("-last_activity_date", 200),
   });
 
   const { data: invitedEmails = [] } = useQuery({
     queryKey: ["invitedEmails"],
-    queryFn: () => db.InvitedEmail.list("-created_date", 200),
+    queryFn: () => base44.entities.InvitedEmail.list("-created_date", 200),
   });
 
   const { data: allEnrollments = [] } = useQuery({
     queryKey: ["adminEnrollments"],
-    queryFn: () => db.Enrollment.list("-updated_date", 500),
+    queryFn: () => base44.entities.Enrollment.list("-updated_date", 500),
   });
 
   const { data: allComments = [] } = useQuery({
     queryKey: ["adminComments"],
-    queryFn: () => db.Comment.list("-created_date", 500),
+    queryFn: () => base44.entities.Comment.list("-created_date", 500),
   });
 
   const { data: allCommunityPosts = [] } = useQuery({
     queryKey: ["adminCommunityPosts"],
-    queryFn: () => db.CommunityPost.list("-created_date", 500),
+    queryFn: () => base44.entities.CommunityPost.list("-created_date", 500),
   });
 
   const userPointsMap = useMemo(() => {
@@ -100,22 +102,22 @@ export default function AdminDashboard() {
   }, [allUserPoints]);
 
   const deletePostMutation = useMutation({
-    mutationFn: (id) => db.CommunityPost.delete(id),
+    mutationFn: (id) => base44.entities.CommunityPost.delete(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["adminPosts"] }),
   });
 
   const pinPostMutation = useMutation({
-    mutationFn: ({ id, pinned }) => db.CommunityPost.update(id, { is_pinned: !pinned }),
+    mutationFn: ({ id, pinned }) => base44.entities.CommunityPost.update(id, { is_pinned: !pinned }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["adminPosts"] }),
   });
 
   const approvePostMutation = useMutation({
-    mutationFn: ({ id, approved }) => db.CommunityPost.update(id, { is_approved: !approved }),
+    mutationFn: ({ id, approved }) => base44.entities.CommunityPost.update(id, { is_approved: !approved }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["adminPosts"] }),
   });
 
   const banUserMutation = useMutation({
-    mutationFn: ({ id, banned }) => db.User.update(id, { is_banned: !banned }),
+    mutationFn: ({ id, banned }) => base44.entities.User.update(id, { is_banned: !banned }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["adminUsers"] }),
   });
 
@@ -123,34 +125,34 @@ export default function AdminDashboard() {
     mutationFn: async (u) => {
       // Delete all user data across entities
       const [posts, comments, points, enrollments] = await Promise.all([
-        db.CommunityPost.filter({ author_email: u.email }),
-        db.Comment.filter({ author_email: u.email }),
-        db.UserPoints.filter({ user_email: u.email }),
-        db.Enrollment.filter({ user_email: u.email }),
+        base44.entities.CommunityPost.filter({ author_email: u.email }),
+        base44.entities.Comment.filter({ author_email: u.email }),
+        base44.entities.UserPoints.filter({ user_email: u.email }),
+        base44.entities.Enrollment.filter({ user_email: u.email }),
       ]);
       await Promise.all([
-        ...posts.map(p => db.CommunityPost.delete(p.id)),
-        ...comments.map(c => db.Comment.delete(c.id)),
-        ...points.map(p => db.UserPoints.delete(p.id)),
-        ...enrollments.map(e => db.Enrollment.delete(e.id)),
-        db.User.delete(u.id),
+        ...posts.map(p => base44.entities.CommunityPost.delete(p.id)),
+        ...comments.map(c => base44.entities.Comment.delete(c.id)),
+        ...points.map(p => base44.entities.UserPoints.delete(p.id)),
+        ...enrollments.map(e => base44.entities.Enrollment.delete(e.id)),
+        base44.entities.User.delete(u.id),
       ]);
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["adminUsers"] }),
   });
 
   const toggleAdminMutation = useMutation({
-    mutationFn: ({ id, currentRole }) => db.User.update(id, { role: currentRole === "admin" ? "user" : "admin" }),
+    mutationFn: ({ id, currentRole }) => base44.entities.User.update(id, { role: currentRole === "admin" ? "user" : "admin" }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["adminUsers"] }),
   });
 
   const toggleCoachMutation = useMutation({
-    mutationFn: ({ id, isCoach }) => db.User.update(id, { is_coach: !isCoach }),
+    mutationFn: ({ id, isCoach }) => base44.entities.User.update(id, { is_coach: !isCoach }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["adminUsers"] }),
   });
 
   const toggleMessagingPermissionMutation = useMutation({
-    mutationFn: ({ id, enabled }) => db.User.update(id, { can_message: !enabled }),
+    mutationFn: ({ id, enabled }) => base44.entities.User.update(id, { can_message: !enabled }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["adminUsers"] });
     },
@@ -158,7 +160,7 @@ export default function AdminDashboard() {
 
   const updatePointsMutation = useMutation({
     mutationFn: async ({ pointsId, newXP }) => {
-      await db.UserPoints.update(pointsId, { total_xp: newXP });
+      await base44.entities.UserPoints.update(pointsId, { total_xp: newXP });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["adminAllUserPoints"] });
@@ -175,7 +177,7 @@ export default function AdminDashboard() {
       
       // Calculate XP needed for level 10
       // Assume standard progression or get thresholds
-      const levelSettings = await db.LevelSettings.list();
+      const levelSettings = await base44.entities.LevelSettings.list();
       const thresholds = levelSettings[0]?.thresholds || [0, 100, 300, 600, 1000, 1500, 2100, 2800, 3600, 4500, 5500];
       const xpForLevel10 = thresholds[9] || 4500;
 
@@ -184,9 +186,9 @@ export default function AdminDashboard() {
         admins.map(async (admin) => {
           const existing = allUserPoints.find(p => p.user_email === admin.email);
           if (existing) {
-            await db.UserPoints.update(existing.id, { total_xp: xpForLevel10 });
+            await base44.entities.UserPoints.update(existing.id, { total_xp: xpForLevel10 });
           } else {
-            await db.UserPoints.create({
+            await base44.entities.UserPoints.create({
               user_email: admin.email,
               user_name: admin.full_name || admin.email,
               total_xp: xpForLevel10,
@@ -271,9 +273,6 @@ export default function AdminDashboard() {
           <TabsTrigger value="push" className="flex items-center gap-1">
             <Bell className="w-3.5 h-3.5" /> Push Notifs
           </TabsTrigger>
-          <TabsTrigger value="billing" className="flex items-center gap-1">
-            <Shield className="w-3.5 h-3.5" /> Billing
-          </TabsTrigger>
         </TabsList>
 
 
@@ -294,7 +293,7 @@ export default function AdminDashboard() {
               onClick={async () => {
                 setForceSubLoading(true);
                 try {
-                  // Push notification - requires edge function
+                  const result = await base44.functions.invoke('forceSubscribeAllUsers', {});
                   alert(`✓ Notified ${result.data.unsubscribed} members to enable push notifications.`);
                 } catch (err) {
                   alert('Error: ' + err.message);
@@ -453,9 +452,9 @@ export default function AdminDashboard() {
                    const emails = inviteEmails.split("\n").map(e => e.trim()).filter(e => e.includes("@"));
                    const results = await Promise.all(emails.map(async (email) => {
                      try {
-                       /* invite user - wire to Supabase Admin */
+                       await base44.users.inviteUser(email, "user");
                        // Log to InvitedEmail entity
-                       await db.InvitedEmail.create({ email, invited_by: user?.email });
+                       await base44.entities.InvitedEmail.create({ email, invited_by: user?.email });
                        return { email, ok: true };
                      } catch (err) {
                        return { email, ok: false, error: err.message || "Failed" };
@@ -548,11 +547,6 @@ export default function AdminDashboard() {
         {/* Push Notifications */}
         <TabsContent value="push" className="mt-4">
           <PushNotificationPanel />
-        </TabsContent>
-
-        {/* Billing */}
-        <TabsContent value="billing" className="mt-4">
-          <MembershipBillingPanel />
         </TabsContent>
 
         {/* Activity Log */}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, Zap, Clock, CheckCircle2, XCircle, Crown, Medal, ArrowLeft, Users } from "lucide-react";
@@ -33,11 +33,11 @@ export default function QuizGame() {
   const [allSessions, setAllSessions] = useState([]);
   const timerRef = useRef(null);
 
-  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: getCurrentUser });
+  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
   const { data: quiz } = useQuery({
     queryKey: ["quiz", quizId],
     queryFn: async () => {
-      const r = await db.Quiz.filter({ id: quizId });
+      const r = await base44.entities.Quiz.filter({ id: quizId });
       return r[0];
     },
     enabled: !!quizId,
@@ -48,7 +48,7 @@ export default function QuizGame() {
     queryKey: ["quizQuestions", quizId],
     queryFn: async () => {
       if (!quizId) return [];
-      const r = await db.QuizQuestion.filter({ quiz_id: quizId });
+      const r = await base44.entities.QuizQuestion.filter({ quiz_id: quizId });
       return r.sort((a, b) => (a.order || 0) - (b.order || 0));
     },
     enabled: !!quizId,
@@ -63,7 +63,7 @@ export default function QuizGame() {
 
   const { data: existingSession } = useQuery({
     queryKey: ["quizSession", quizId, user?.email],
-    queryFn: () => db.QuizSession.filter({ quiz_id: quizId, player_email: user.email }),
+    queryFn: () => base44.entities.QuizSession.filter({ quiz_id: quizId, player_email: user.email }),
     enabled: !!user?.email && !!quizId,
   });
 
@@ -98,7 +98,7 @@ export default function QuizGame() {
   useEffect(() => {
     if (mode !== "live") return;
     const interval = setInterval(async () => {
-      const r = await db.Quiz.filter({ id: quizId });
+      const r = await base44.entities.Quiz.filter({ id: quizId });
       const q = r[0];
       if (!q) return;
       if (q.status === "active" && phase === "lobby") setPhase("question");
@@ -113,7 +113,7 @@ export default function QuizGame() {
 
   // Load leaderboard
   const loadLeaderboard = async () => {
-    const sessions = await db.QuizSession.filter({ quiz_id: quizId });
+    const sessions = await base44.entities.QuizSession.filter({ quiz_id: quizId });
     const sorted = sessions.sort((a, b) => (b.total_score || 0) - (a.total_score || 0));
     setAllSessions(sorted);
   };
@@ -122,12 +122,12 @@ export default function QuizGame() {
     if (!quizId || !user) return;
     
     // Create or find session
-    const existing = await db.QuizSession.filter({ quiz_id: quizId, player_email: user.email });
+    const existing = await base44.entities.QuizSession.filter({ quiz_id: quizId, player_email: user.email });
     let sid;
     if (existing.length > 0) {
       sid = existing[0].id;
     } else {
-      const sess = await db.QuizSession.create({
+      const sess = await base44.entities.QuizSession.create({
         quiz_id: quizId,
         player_email: user.email,
         player_name: user.full_name || user.email,
@@ -159,7 +159,7 @@ export default function QuizGame() {
 
     // Update session
     if (sessionId) {
-      await db.QuizSession.update(sessionId, { total_score: newScore, answers: newAnswers });
+      await base44.entities.QuizSession.update(sessionId, { total_score: newScore, answers: newAnswers });
     }
 
     setPhase("feedback");
@@ -184,7 +184,7 @@ export default function QuizGame() {
 
   const finishGame = async (finalScore, finalAnswers) => {
     if (sessionId) {
-      await db.QuizSession.update(sessionId, { total_score: finalScore, answers: finalAnswers, is_finished: true });
+      await base44.entities.QuizSession.update(sessionId, { total_score: finalScore, answers: finalAnswers, is_finished: true });
     }
     // Award XP
     if (myPoints) {

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { BookOpen, Search, Download } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -31,7 +31,7 @@ export default function TutorialsHub() {
 
   const { data: allClasses = [], isLoading } = useQuery({
     queryKey: ["tutorialsHub"],
-    queryFn: () => db.LiveClass.list("-created_date", 200),
+    queryFn: () => base44.entities.LiveClass.list("-created_date", 200),
     staleTime: 30000,
   });
 

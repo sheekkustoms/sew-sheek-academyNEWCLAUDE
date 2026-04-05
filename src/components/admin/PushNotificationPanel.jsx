@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,7 @@ export default function PushNotificationPanel() {
 
   const { data: subscriptions = [] } = useQuery({
     queryKey: ["pushSubscriptions"],
-    queryFn: () => db.NotificationSubscription.list("-created_date", 500),
+    queryFn: () => base44.entities.NotificationSubscription.list("-created_date", 500),
   });
 
   const handleSend = async () => {
@@ -22,7 +22,12 @@ export default function PushNotificationPanel() {
     setSending(true);
     setResult(null);
     try {
-      setResult({ ok: true, count: subscriptions?.length || 0 });
+      const res = await base44.functions.invoke("sendPushNotification", {
+        title,
+        body,
+        sendToAll: true,
+      });
+      setResult({ ok: true, count: res.data?.sent || subscriptions.length });
       setTitle("");
       setBody("");
     } catch (err) {

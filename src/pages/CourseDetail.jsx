@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPageUrl } from "@/utils";
@@ -84,23 +84,23 @@ export default function CourseDetail() {
   const queryClient = useQueryClient();
   const [activeLesson, setActiveLesson] = useState(null);
 
-  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: getCurrentUser });
+  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
 
   const { data: course, isLoading: courseLoading } = useQuery({
     queryKey: ["course", courseId],
-    queryFn: () => db.Course.list("-created_date", 500).then(r => r.find(c => c.id === courseId) || null),
+    queryFn: () => base44.entities.Course.list("-created_date", 500).then(r => r.find(c => c.id === courseId) || null),
     enabled: !!courseId,
   });
 
   const { data: lessons = [] } = useQuery({
     queryKey: ["lessons", courseId],
-    queryFn: () => db.Lesson.filter({ course_id: courseId }),
+    queryFn: () => base44.entities.Lesson.filter({ course_id: courseId }),
     enabled: !!courseId,
   });
 
   const { data: modules = [] } = useQuery({
     queryKey: ["modules", courseId],
-    queryFn: () => db.Module.filter({ course_id: courseId }),
+    queryFn: () => base44.entities.Module.filter({ course_id: courseId }),
     enabled: !!courseId,
   });
 
@@ -116,14 +116,14 @@ export default function CourseDetail() {
 
   const { data: enrollments = [] } = useQuery({
     queryKey: ["enrollment", courseId, user?.email],
-    queryFn: () => db.Enrollment.filter({ user_email: user.email, course_id: courseId }),
+    queryFn: () => base44.entities.Enrollment.filter({ user_email: user.email, course_id: courseId }),
     enabled: !!user?.email && !!courseId,
   });
 
   const enrollment = isPreview ? { completed_lessons: [], progress_percent: 0, is_completed: false, _preview: true } : (enrollments[0] || null);
 
   const enrollMutation = useMutation({
-    mutationFn: () => db.Enrollment.create({
+    mutationFn: () => base44.entities.Enrollment.create({
       user_email: user.email,
       course_id: courseId,
       completed_lessons: [],
@@ -141,7 +141,7 @@ export default function CourseDetail() {
       const newCompleted = [...completed, lesson.id];
       const progress = Math.round((newCompleted.length / lessons.length) * 100);
       const isCourseComplete = progress === 100;
-      await db.Enrollment.update(enrollment.id, {
+      await base44.entities.Enrollment.update(enrollment.id, {
         completed_lessons: newCompleted,
         progress_percent: progress,
         is_completed: isCourseComplete,

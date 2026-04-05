@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { Radio, Play, Square, Copy, Check, Users, ChevronRight, X, Gamepad2 } from "lucide-react";
@@ -12,7 +12,7 @@ export default function LiveGameHost({ quiz, onClose }) {
 
   const { data: sessions = [] } = useQuery({
     queryKey: ["liveSessions", quiz.id],
-    queryFn: () => db.QuizSession.filter({ quiz_id: quiz.id }),
+    queryFn: () => base44.entities.QuizSession.filter({ quiz_id: quiz.id }),
     refetchInterval: 3000,
   });
 
@@ -25,17 +25,17 @@ export default function LiveGameHost({ quiz, onClose }) {
   };
 
   const startGame = useMutation({
-    mutationFn: () => db.Quiz.update(quiz.id, { status: "active", current_question_index: 0 }),
+    mutationFn: () => base44.entities.Quiz.update(quiz.id, { status: "active", current_question_index: 0 }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["adminQuizzes"] }),
   });
 
   const endGame = useMutation({
-    mutationFn: () => db.Quiz.update(quiz.id, { status: "finished", is_published: false }),
+    mutationFn: () => base44.entities.Quiz.update(quiz.id, { status: "finished", is_published: false }),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["adminQuizzes"] }); onClose(); },
   });
 
   const nextQuestion = useMutation({
-    mutationFn: () => db.Quiz.update(quiz.id, { current_question_index: (quiz.current_question_index || 0) + 1 }),
+    mutationFn: () => base44.entities.Quiz.update(quiz.id, { current_question_index: (quiz.current_question_index || 0) + 1 }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["adminQuizzes"] }),
   });
 

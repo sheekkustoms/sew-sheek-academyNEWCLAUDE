@@ -1,5 +1,53 @@
+/**
+ * pages.config.js - Page routing configuration
+ * 
+ * This file is AUTO-GENERATED. Do not add imports or modify PAGES manually.
+ * Pages are auto-registered when you create files in the ./pages/ folder.
+ * 
+ * THE ONLY EDITABLE VALUE: mainPage
+ * This controls which page is the landing page (shown when users visit the app).
+ * 
+ * Example file structure:
+ * 
+ *   import HomePage from './pages/HomePage';
+ *   import Dashboard from './pages/Dashboard';
+ *   import Settings from './pages/Settings';
+ *   
+ *   export const PAGES = {
+ *       "HomePage": HomePage,
+ *       "Dashboard": Dashboard,
+ *       "Settings": Settings,
+ *   }
+ *   
+ *   export const pagesConfig = {
+ *       mainPage: "HomePage",
+ *       Pages: PAGES,
+ *   };
+ * 
+ * Example with Layout (wraps all pages):
+ *
+ *   import Home from './pages/Home';
+ *   import Settings from './pages/Settings';
+ *   import __Layout from './Layout.jsx';
+ *
+ *   export const PAGES = {
+ *       "Home": Home,
+ *       "Settings": Settings,
+ *   }
+ *
+ *   export const pagesConfig = {
+ *       mainPage: "Home",
+ *       Pages: PAGES,
+ *       Layout: __Layout,
+ *   };
+ *
+ * To change the main page from HomePage to Dashboard, use find_replace:
+ *   Old: mainPage: "HomePage",
+ *   New: mainPage: "Dashboard",
+ *
+ * The mainPage value must match a key in the PAGES object exactly.
+ */
 import AdminDashboard from './pages/AdminDashboard';
-import Classes from './pages/Classes';
 import CourseDetail from './pages/CourseDetail';
 import Courses from './pages/Courses';
 import DailyChallenges from './pages/DailyChallenges';
@@ -7,42 +55,38 @@ import Dashboard from './pages/Dashboard';
 import Leaderboard from './pages/Leaderboard';
 import LiveClassDetail from './pages/LiveClassDetail';
 import LiveClasses from './pages/LiveClasses';
-import LiveClassesHub from './pages/LiveClassesHub';
-import MemberProfile from './pages/MemberProfile';
+import Messages from './pages/Messages';
 import Notifications from './pages/Notifications';
 import ProfileSettings from './pages/ProfileSettings';
 import QuizGame from './pages/QuizGame';
 import QuizHome from './pages/QuizHome';
-import ReplaysHub from './pages/ReplaysHub';
-import TutorialsHub from './pages/TutorialsHub';
 import UserProgress from './pages/UserProgress';
-import Login from './pages/Login';
+import Classes from './pages/Classes';
+import MemberProfile from './pages/MemberProfile';
 import __Layout from './Layout.jsx';
 
+
 export const PAGES = {
-  "AdminDashboard": AdminDashboard,
-  "Classes": Classes,
-  "CourseDetail": CourseDetail,
-  "Courses": Courses,
-  "DailyChallenges": DailyChallenges,
-  "Dashboard": Dashboard,
-  "Leaderboard": Leaderboard,
-  "LiveClassDetail": LiveClassDetail,
-  "LiveClasses": LiveClasses,
-  "LiveClassesHub": LiveClassesHub,
-  "MemberProfile": MemberProfile,
-  "Notifications": Notifications,
-  "ProfileSettings": ProfileSettings,
-  "QuizGame": QuizGame,
-  "QuizHome": QuizHome,
-  "ReplaysHub": ReplaysHub,
-  "TutorialsHub": TutorialsHub,
-  "UserProgress": UserProgress,
-  "Login": Login,
-};
+    "AdminDashboard": AdminDashboard,
+    "CourseDetail": CourseDetail,
+    "Courses": Courses,
+    "DailyChallenges": DailyChallenges,
+    "Dashboard": Dashboard,
+    "Leaderboard": Leaderboard,
+    "LiveClassDetail": LiveClassDetail,
+    "LiveClasses": LiveClasses,
+    "Messages": Messages,
+    "Notifications": Notifications,
+    "ProfileSettings": ProfileSettings,
+    "QuizGame": QuizGame,
+    "QuizHome": QuizHome,
+    "UserProgress": UserProgress,
+    "Classes": Classes,
+    "MemberProfile": MemberProfile,
+}
 
 export const pagesConfig = {
-  mainPage: "Dashboard",
-  Pages: PAGES,
-  Layout: __Layout,
+    mainPage: "AdminDashboard",
+    Pages: PAGES,
+    Layout: __Layout,
 };

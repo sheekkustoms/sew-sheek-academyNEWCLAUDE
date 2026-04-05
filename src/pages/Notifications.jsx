@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -25,17 +25,17 @@ export default function Notifications() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState("all"); // "all" | "unread"
 
-  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: getCurrentUser });
+  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
 
   const { data: notifications = [], isLoading } = useQuery({
     queryKey: ["allNotifications", user?.email],
-    queryFn: () => db.Notification.filter({ recipient_email: user.email }, "-created_date", 100),
+    queryFn: () => base44.entities.Notification.filter({ recipient_email: user.email }, "-created_date", 100),
     enabled: !!user?.email,
     refetchInterval: 30000,
   });
 
   const markOne = useMutation({
-    mutationFn: (id) => db.Notification.update(id, { is_read: true }),
+    mutationFn: (id) => base44.entities.Notification.update(id, { is_read: true }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["allNotifications"] });
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
@@ -45,7 +45,7 @@ export default function Notifications() {
   const markAllRead = useMutation({
     mutationFn: async () => {
       const unread = notifications.filter((n) => !n.is_read);
-      await Promise.all(unread.map((n) => db.Notification.update(n.id, { is_read: true })));
+      await Promise.all(unread.map((n) => base44.entities.Notification.update(n.id, { is_read: true })));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["allNotifications"] });

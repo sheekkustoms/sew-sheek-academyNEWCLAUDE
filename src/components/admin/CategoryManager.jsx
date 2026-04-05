@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +12,7 @@ export default function CategoryManager() {
   const { data: settings = [] } = useQuery({
     queryKey: ["categorySettings"],
     queryFn: async () => {
-      const list = await db.CategorySettings.list();
+      const list = await base44.entities.CategorySettings.list();
       // Initialize with default categories if none exist
       if (list.length === 0) {
         const defaults = {
@@ -21,7 +21,7 @@ export default function CategoryManager() {
             { id: "discussion", label: "Discussion", emoji: "💬" },
           ]
         };
-        await db.CategorySettings.create(defaults);
+        await base44.entities.CategorySettings.create(defaults);
         return [defaults];
       }
       return list;
@@ -31,7 +31,7 @@ export default function CategoryManager() {
   const config = settings[0] || { categories: [] };
 
   const updateMutation = useMutation({
-    mutationFn: (data) => db.CategorySettings.update(config.id, data),
+    mutationFn: (data) => base44.entities.CategorySettings.update(config.id, data),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["categorySettings"] }),
   });
 

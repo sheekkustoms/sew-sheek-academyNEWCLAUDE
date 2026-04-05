@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,7 @@ export default function LevelSettingsManager() {
 
   const { data: settings = [] } = useQuery({
     queryKey: ["levelSettings"],
-    queryFn: () => db.LevelSettings.filter({ label: "default" }),
+    queryFn: () => base44.entities.LevelSettings.filter({ label: "default" }),
   });
 
   useEffect(() => {
@@ -50,9 +50,9 @@ export default function LevelSettingsManager() {
     }
     setSaving(true);
     if (settings.length > 0) {
-      await db.LevelSettings.update(settings[0].id, { thresholds });
+      await base44.entities.LevelSettings.update(settings[0].id, { thresholds });
     } else {
-      await db.LevelSettings.create({ label: "default", thresholds });
+      await base44.entities.LevelSettings.create({ label: "default", thresholds });
     }
     queryClient.invalidateQueries({ queryKey: ["levelSettings"] });
     setSaving(false);

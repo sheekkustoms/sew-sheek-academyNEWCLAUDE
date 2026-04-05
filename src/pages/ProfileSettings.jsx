@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Check, AlertCircle, Upload, Trash2, Bell, BellOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,7 @@ export default function ProfileSettings() {
    const { data: user, isLoading: userLoading } = useQuery({
      queryKey: ["currentUser"],
      queryFn: async () => {
-       const u = await getCurrentUser();
+       const u = await base44.auth.me();
        console.log("[ProfileSettings] User fetched:", {
          userId: u.id,
          email: u.email,
@@ -73,7 +73,7 @@ export default function ProfileSettings() {
         const reg = await navigator.serviceWorker.ready;
         let subscription = await reg.pushManager.getSubscription();
         if (!subscription) {
-          /* edge function stubbed */
+          const keyResponse = await base44.functions.invoke('getVAPIDPublicKey', {});
           const vapidPublicKey = keyResponse.data?.publicKey;
           const padding = '='.repeat((4 - (vapidPublicKey.length % 4)) % 4);
           const base64 = (vapidPublicKey + padding).replace(/-/g, '+').replace(/_/g, '/');
@@ -81,7 +81,7 @@ export default function ProfileSettings() {
           const applicationServerKey = new Uint8Array([...rawData].map(c => c.charCodeAt(0)));
           subscription = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey });
         }
-        /* edge function stubbed */
+        await base44.functions.invoke('subscribeToNotifications', { subscription: subscription.toJSON() });
         toast.success("Push notifications enabled!");
       }
     } catch (e) {
@@ -108,18 +108,18 @@ export default function ProfileSettings() {
     setUploadingPhoto(true);
     try {
       const file = new File([blob], "profile.jpg", { type: "image/jpeg" });
-      const response = { file_url: await uploadFile(file) };
+      const response = await base44.integrations.Core.UploadFile({ file });
       const newAvatarUrl = response.file_url;
-      await updateMe({ avatar_url: newAvatarUrl });
+      await base44.auth.updateMe({ avatar_url: newAvatarUrl });
 
       // Sync avatar to all community posts and comments
       const [userPosts, userComments] = await Promise.all([
-        db.CommunityPost.filter({ author_email: user.email }),
-        db.Comment.filter({ author_email: user.email }),
+        base44.entities.CommunityPost.filter({ author_email: user.email }),
+        base44.entities.Comment.filter({ author_email: user.email }),
       ]);
       await Promise.all([
-        ...userPosts.map(p => db.CommunityPost.update(p.id, { author_avatar: newAvatarUrl })),
-        ...userComments.map(c => db.Comment.update(c.id, { author_avatar: newAvatarUrl })),
+        ...userPosts.map(p => base44.entities.CommunityPost.update(p.id, { author_avatar: newAvatarUrl })),
+        ...userComments.map(c => base44.entities.Comment.update(c.id, { author_avatar: newAvatarUrl })),
       ]);
 
       queryClient.invalidateQueries({ queryKey: ["currentUser"] });
@@ -155,11 +155,11 @@ export default function ProfileSettings() {
 
        // Step 2: Update UserPoints record (for leaderboard/community display)
        console.log("[ProfileSettings] Step 2: Updating UserPoints...");
-       const userPointsRecords = await db.UserPoints.filter({
+       const userPointsRecords = await base44.entities.UserPoints.filter({
          user_email: user.email,
        });
        if (userPointsRecords?.length > 0) {
-         await db.UserPoints.update(userPointsRecords[0].id, {
+         await base44.entities.UserPoints.update(userPointsRecords[0].id, {
            user_name: trimmedName,
          });
          console.log("[ProfileSettings] UserPoints updated");
@@ -167,13 +167,13 @@ export default function ProfileSettings() {
 
        // Step 3: Update CommunityPost records
        console.log("[ProfileSettings] Step 3: Updating CommunityPost records...");
-       const userPosts = await db.CommunityPost.filter({
+       const userPosts = await base44.entities.CommunityPost.filter({
          author_email: user.email,
        });
        if (userPosts?.length > 0) {
          await Promise.all(
            userPosts.map((post) =>
-             db.CommunityPost.update(post.id, {
+             base44.entities.CommunityPost.update(post.id, {
                author_name: trimmedName,
              })
            )
@@ -183,13 +183,13 @@ export default function ProfileSettings() {
 
        // Step 4: Update Comment records
        console.log("[ProfileSettings] Step 4: Updating Comment records...");
-       const userComments = await db.Comment.filter({
+       const userComments = await base44.entities.Comment.filter({
          author_email: user.email,
        });
        if (userComments?.length > 0) {
          await Promise.all(
            userComments.map((comment) =>
-             db.Comment.update(comment.id, {
+             base44.entities.Comment.update(comment.id, {
                author_name: trimmedName,
              })
            )
@@ -485,32 +485,32 @@ export default function ProfileSettings() {
                   const toastId = toast.loading("Deleting account data...");
                   try {
                     // Delete user's posts
-                    const userPosts = await db.CommunityPost.filter({ author_email: user.email });
-                    await Promise.all(userPosts.map(p => db.CommunityPost.delete(p.id)));
+                    const userPosts = await base44.entities.CommunityPost.filter({ author_email: user.email });
+                    await Promise.all(userPosts.map(p => base44.entities.CommunityPost.delete(p.id)));
 
                     // Delete user's comments
-                    const userComments = await db.Comment.filter({ author_email: user.email });
-                    await Promise.all(userComments.map(c => db.Comment.delete(c.id)));
+                    const userComments = await base44.entities.Comment.filter({ author_email: user.email });
+                    await Promise.all(userComments.map(c => base44.entities.Comment.delete(c.id)));
 
                     // Delete user's enrollments
-                    const userEnrollments = await db.Enrollment.filter({ user_email: user.email });
-                    await Promise.all(userEnrollments.map(e => db.Enrollment.delete(e.id)));
+                    const userEnrollments = await base44.entities.Enrollment.filter({ user_email: user.email });
+                    await Promise.all(userEnrollments.map(e => base44.entities.Enrollment.delete(e.id)));
 
                     // Delete user points record
-                    const userPoints = await db.UserPoints.filter({ user_email: user.email });
-                    await Promise.all(userPoints.map(p => db.UserPoints.delete(p.id)));
+                    const userPoints = await base44.entities.UserPoints.filter({ user_email: user.email });
+                    await Promise.all(userPoints.map(p => base44.entities.UserPoints.delete(p.id)));
 
                     // Delete notification subscriptions
-                    const subs = await db.NotificationSubscription.filter({ user_email: user.email });
-                    await Promise.all(subs.map(s => db.NotificationSubscription.delete(s.id)));
+                    const subs = await base44.entities.NotificationSubscription.filter({ user_email: user.email });
+                    await Promise.all(subs.map(s => base44.entities.NotificationSubscription.delete(s.id)));
 
                     toast.dismiss(toastId);
                     toast.success("Account data deleted. Signing out...");
-                    setTimeout(() => signOut().then(() => window.location.href = '/Login'), 1500);
+                    setTimeout(() => base44.auth.logout(), 1500);
                   } catch (err) {
                     toast.dismiss(toastId);
                     toast.error("Failed to delete all data. Signing out anyway...");
-                    setTimeout(() => signOut().then(() => window.location.href = '/Login'), 2000);
+                    setTimeout(() => base44.auth.logout(), 2000);
                   }
                 }}
               >

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,11 +13,11 @@ export default function MessagingPanel() {
   const [message, setMessage] = useState("");
   const [emailCopied, setEmailCopied] = useState(null);
 
-  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: getCurrentUser });
+  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
 
   const { data: allUsers = [] } = useQuery({
     queryKey: ["messagingUsers"],
-    queryFn: () => db.User.list(),
+    queryFn: () => base44.entities.User.list(),
   });
 
   // Filter to only show users that aren't admins or have messaging disabled
@@ -25,13 +25,13 @@ export default function MessagingPanel() {
 
   const { data: messages = [] } = useQuery({
     queryKey: ["messages", selectedUser?.id],
-    queryFn: () => selectedUser ? db.Message.list("-created_date", 100) : Promise.resolve([]),
+    queryFn: () => selectedUser ? base44.entities.Message.list("-created_date", 100) : Promise.resolve([]),
     enabled: !!selectedUser,
   });
 
   const sendMutation = useMutation({
     mutationFn: async () => {
-      await db.Message.create({
+      await base44.entities.Message.create({
         sender_email: user.email,
         sender_name: user.full_name || "Admin",
         recipient_email: selectedUser.email,

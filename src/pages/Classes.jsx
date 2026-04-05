@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Settings, Video, Download, Radio, PlayCircle, ExternalLink, Calendar } from "lucide-react";
@@ -210,25 +210,25 @@ export default function Classes() {
   const [selectedCourseId, setSelectedCourseId] = useState(null);
   const [showAdminEditor, setShowAdminEditor] = useState(false);
 
-  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: getCurrentUser });
+  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
   const isAdmin = user?.role === "admin";
 
   const { data: courses = [], isLoading: coursesLoading } = useQuery({
     queryKey: ["courses"],
-    queryFn: () => db.Course.list("-created_date", 200),
+    queryFn: () => base44.entities.Course.list("-created_date", 200),
     staleTime: 60000,
   });
 
   const { data: userEnrollments = [] } = useQuery({
     queryKey: ["myEnrollments", user?.email],
-    queryFn: () => db.Enrollment.filter({ user_email: user.email }),
+    queryFn: () => base44.entities.Enrollment.filter({ user_email: user.email }),
     enabled: !!user?.email,
   });
 
   // Fetch ALL LiveClass records — filter client-side so no records are missed
   const { data: allLiveClasses = [], isLoading: classesLoading } = useQuery({
     queryKey: ["memberClasses"],
-    queryFn: () => db.LiveClass.list("-created_date", 100),
+    queryFn: () => base44.entities.LiveClass.list("-created_date", 100),
     staleTime: 30000,
     refetchOnWindowFocus: true,
   });

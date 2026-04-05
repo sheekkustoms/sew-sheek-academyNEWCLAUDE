@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Gift, Trophy, Search, X, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,12 +18,12 @@ export default function RewardPointsPanel({ adminUser }) {
 
   const { data: allUsers = [] } = useQuery({
     queryKey: ["adminUsers"],
-    queryFn: () => db.User.list(),
+    queryFn: () => base44.entities.User.list(),
   });
 
   const { data: allUserPoints = [] } = useQuery({
     queryKey: ["adminAllUserPoints"],
-    queryFn: () => db.UserPoints.list("-last_activity_date", 200),
+    queryFn: () => base44.entities.UserPoints.list("-last_activity_date", 200),
   });
 
   const nonAdminUsers = allUsers.filter(u => u.role !== "admin");
@@ -52,11 +52,11 @@ export default function RewardPointsPanel({ adminUser }) {
       await Promise.all(selectedUsers.map(async (u) => {
         const existing = allUserPoints.find(p => p.user_email === u.email);
         if (existing) {
-          await db.UserPoints.update(existing.id, {
+          await base44.entities.UserPoints.update(existing.id, {
             total_xp: (existing.total_xp || 0) + xpAmount,
           });
         } else {
-          await db.UserPoints.create({
+          await base44.entities.UserPoints.create({
             user_email: u.email,
             user_name: u.display_name || u.full_name || u.email,
             total_xp: xpAmount,
@@ -66,7 +66,7 @@ export default function RewardPointsPanel({ adminUser }) {
 
       // 2. Send personal notification to each user
       await Promise.all(selectedUsers.map(u =>
-        db.Notification.create({
+        base44.entities.Notification.create({
           recipient_email: u.email,
           type: "badge",
           message: `🏆 You earned ${xpAmount} XP for completing ${project}! Great work!`,
@@ -79,7 +79,7 @@ export default function RewardPointsPanel({ adminUser }) {
       const postContent = customMessage.trim()
         || `Huge shoutout to our amazing students who completed ${project}! 🎉 They each earned ${xpAmount} XP for their hard work!\n\n🏆 ${names}\n\n${tags}\n\nKeep sewing and showing up — you all inspire this community! 💪✨`;
 
-      await db.CommunityPost.create({
+      await base44.entities.CommunityPost.create({
         title: `🏆 Project Completion Shoutout!`,
         content: postContent,
         author_email: adminUser.email,

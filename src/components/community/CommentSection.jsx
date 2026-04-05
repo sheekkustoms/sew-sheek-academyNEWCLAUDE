@@ -1,0 +1,498 @@
+import React, { useState, useRef, useEffect } from "react";
+import { base44 } from "@/api/base44Client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Heart, Send, Trash2, Pencil, Check, X } from "lucide-react";
+import { motion } from "framer-motion";
+import RelativeTime from "@/components/shared/RelativeTime";
+import { awardXP } from "../shared/useUserPoints";
+import { getDisplayName } from "../shared/useDisplayName";
+import AvatarWithFallback from "../shared/AvatarWithFallback";
+import RoleBadge, { getRoleBadgeProps } from "../shared/RoleBadge";
+
+const OWNER_EMAIL = "sheek24kustoms@gmail.com";
+
+function useCommentAuthorAvatars(comments, adminEmails = new Set()) {
+  // Always re-fetch avatar for admin/owner emails (to stay up-to-date), plus any comment missing an avatar
+  const emailsNeedingAvatars = [...new Set(
+    comments
+      .filter(c => c.author_email && (!c.author_avatar || c.author_email === OWNER_EMAIL || adminEmails.has(c.author_email)))
+      .map(c => c.author_email)
+  )];
+
+  return useQuery({
+    queryKey: ["commentAvatars", emailsNeedingAvatars.sort().join(",")],
+    queryFn: async () => {
+      if (!emailsNeedingAvatars.length) return {};
+      const map = {};
+      await Promise.all(
+        emailsNeedingAvatars.map(async (email) => {
+          const result = await base44.functions.invoke('getUserAvatar', { email });
+          map[email] = result.data.avatar_url;
+        })
+      );
+      return map;
+    },
+    enabled: emailsNeedingAvatars.length > 0,
+    staleTime: 60000,
+  });
+}
+
+function CommentAvatar({ email, name, avatarUrl, fallbackAvatarMap }) {
+  // Prefer live-fetched avatar (from fallbackAvatarMap) over stale stored avatar
+  const displayUrl = fallbackAvatarMap?.[email] || avatarUrl;
+  return (
+    <AvatarWithFallback
+      imageUrl={displayUrl}
+      name={name}
+      email={email}
+      size="sm"
+    />
+  );
+}
+
+export default function CommentSection({ postId, user, myPoints, isAdmin = false, adminEmails = new Set() }) {
+  const [newComment, setNewComment] = useState("");
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [editingId, setEditingId] = useState(null);
+  const [editContent, setEditContent] = useState("");
+  const queryClient = useQueryClient();
+  const textareaRef = useRef(null);
+
+  const { data: comments = [], refetch: refetchComments } = useQuery({
+    queryKey: ["comments", postId],
+    queryFn: () => base44.entities.Comment.filter({ post_id: postId }, "created_date", 500),
+    enabled: !!postId,
+    staleTime: 10000,
+    refetchOnWindowFocus: true,
+  });
+
+  // Real-time subscription for instant updates
+  useEffect(() => {
+    if (!postId) return;
+    const unsubscribe = base44.entities.Comment.subscribe((event) => {
+      if (event.data?.post_id === postId || event.type === "delete") {
+        refetchComments();
+      }
+    });
+    return () => unsubscribe();
+  }, [postId]);
+
+  // Get avatars for comments missing them (always live for admins)
+  const { data: fallbackAvatarMap = {} } = useCommentAuthorAvatars(comments, adminEmails);
+
+  // Get current user's display_name with fallback chain
+    const userDisplayName = getDisplayName(user);
+
+
+
+  // Sort comments by creation date ascending
+  const sortedComments = [...comments].sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
+
+  // A comment is a reply if it starts with @anything
+  const isReply = (c) => /^@/.test(c.content.trim());
+  const topLevelComments = sortedComments.filter(c => !isReply(c));
+  const replies = sortedComments.filter(c => isReply(c));
+
+  // Map replies under their parent by matching @mention against ALL possible name formats
+  const replyMap = {};
+  const orphanReplies = [];
+
+  replies.forEach(reply => {
+    // Grab everything after @ up to end of line or a double-space (handles "First Last" names)
+    const rawMention = reply.content.trim().slice(1); // remove leading @
+    
+    // Try to find a top-level comment whose author name/email matches the start of the mention
+    const parentComment = topLevelComments.find(c => {
+      const authorName = (c.author_name || "").trim();
+      const authorEmail = (c.author_email || "").split("@")[0];
+      // Check if the mention starts with this author's name (handles spaces in names)
+      return (
+        (authorName && rawMention.toLowerCase().startsWith(authorName.toLowerCase())) ||
+        (authorEmail && rawMention.toLowerCase().startsWith(authorEmail.toLowerCase()))
+      );
+    });
+
+    if (parentComment) {
+      if (!replyMap[parentComment.id]) replyMap[parentComment.id] = [];
+      replyMap[parentComment.id].push(reply);
+    } else {
+      // No match — attach to the most recent top-level comment before this reply
+      const precedingComments = topLevelComments.filter(c => new Date(c.created_date) <= new Date(reply.created_date));
+      const closestParent = precedingComments[precedingComments.length - 1];
+      if (closestParent) {
+        if (!replyMap[closestParent.id]) replyMap[closestParent.id] = [];
+        replyMap[closestParent.id].push(reply);
+      } else {
+        orphanReplies.push(reply);
+      }
+    }
+  });
+
+  const addCommentMutation = useMutation({
+   mutationFn: async () => {
+     // When replying, update the mention to use the current display_name
+     let commentContent = newComment;
+     if (replyingTo) {
+       const repliedToComment = comments.find(c => (c.author_name || c.author_email) === replyingTo);
+       if (repliedToComment) {
+         const currentDisplayName = repliedToComment.author_email === user.email ? userDisplayName : repliedToComment.author_name;
+         commentContent = newComment.replace(/^@[^\s]+/, `@${currentDisplayName}`);
+       }
+     }
+
+     await base44.entities.Comment.create({
+       post_id: postId,
+       author_email: user.email,
+       author_name: userDisplayName,
+       author_avatar: user.avatar_url || null,
+       content: commentContent,
+       likes: [],
+     });
+     // Use actual DB count to stay in sync
+     const [posts, allComments] = await Promise.all([
+       base44.entities.CommunityPost.filter({ id: postId }),
+       base44.entities.Comment.filter({ post_id: postId }, "created_date", 500),
+     ]);
+     if (posts[0]) {
+       await base44.entities.CommunityPost.update(postId, { comment_count: allComments.length });
+
+       // Notify post author (if not replying to them)
+       if (posts[0].author_email !== user.email && !replyingTo) {
+         await base44.entities.Notification.create({
+           recipient_email: posts[0].author_email,
+           type: "comment",
+           message: `${userDisplayName} commented on your post "${posts[0].title}"`,
+           from_name: userDisplayName,
+           post_id: postId,
+           is_read: false,
+         });
+       }
+
+       // Notify the person being replied to
+       if (replyingTo) {
+         const repliedToComment = comments.find(c => (c.author_name || c.author_email) === replyingTo);
+         if (repliedToComment && repliedToComment.author_email !== user.email) {
+           await base44.entities.Notification.create({
+             recipient_email: repliedToComment.author_email,
+             type: "reply",
+             message: `${userDisplayName} replied to your comment on "${posts[0].title}"`,
+             from_name: userDisplayName,
+             post_id: postId,
+             is_read: false,
+           });
+         }
+       }
+
+       // Detect @mentions and notify mentioned users
+       const mentions = newComment.match(/@([\w.+-]+@[\w-]+\.[\w.]+)/g);
+       if (mentions) {
+         const uniqueMentions = [...new Set(mentions.map(m => m.slice(1)))];
+         await Promise.all(uniqueMentions
+           .filter(email => email !== user.email && email !== posts[0].author_email && (!replyingTo || email !== comments.find(c => (c.author_name || c.author_email) === replyingTo)?.author_email))
+           .map(email => base44.entities.Notification.create({
+             recipient_email: email,
+             type: "reply",
+             message: `${userDisplayName} mentioned you in a comment on "${posts[0].title}"`,
+             from_name: userDisplayName,
+             post_id: postId,
+             is_read: false,
+           }))
+         );
+       }
+     }
+     if (myPoints) {
+       await awardXP(myPoints.id, myPoints, 5, { comments_made: (myPoints.comments_made || 0) + 1 });
+     }
+   },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["comments", postId] });
+      queryClient.invalidateQueries({ queryKey: ["postComments", postId] });
+      queryClient.invalidateQueries({ queryKey: ["communityPosts"] });
+      queryClient.invalidateQueries({ queryKey: ["myPointsCommunity", "myPoints"] });
+      setNewComment("");
+      setReplyingTo(null);
+    },
+  });
+
+  const likeCommentMutation = useMutation({
+    mutationFn: async (comment) => {
+      const likes = [...(comment.likes || [])];
+      const idx = likes.indexOf(user.email);
+      const isNewLike = idx === -1;
+      if (idx > -1) likes.splice(idx, 1);
+      else likes.push(user.email);
+      await base44.entities.Comment.update(comment.id, { likes });
+
+      // Award 2 XP to liker if liking
+      if (isNewLike && myPoints) {
+        await awardXP(myPoints.id, myPoints, 2);
+      }
+
+      // Award 2 XP to comment author if being liked
+      if (isNewLike) {
+        const authorPoints = await base44.entities.UserPoints.filter({ user_email: comment.author_email });
+        if (authorPoints[0]) {
+          await awardXP(authorPoints[0].id, authorPoints[0], 2);
+        }
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["comments", postId] });
+      queryClient.invalidateQueries({ queryKey: ["myPoints"] });
+    },
+  });
+
+  const editCommentMutation = useMutation({
+    mutationFn: async ({ id, content }) => {
+      await base44.entities.Comment.update(id, { content });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["comments", postId] });
+      setEditingId(null);
+      setEditContent("");
+    },
+  });
+
+  const deleteCommentMutation = useMutation({
+    mutationFn: async (comment) => {
+      await base44.entities.Comment.delete(comment.id);
+      // Recount from DB after delete to stay accurate
+      const allComments = await base44.entities.Comment.filter({ post_id: postId }, "created_date", 500);
+      await base44.entities.CommunityPost.update(postId, { comment_count: allComments.length });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["comments", postId] });
+      queryClient.invalidateQueries({ queryKey: ["communityPosts"] });
+    },
+  });
+
+  // Sync comment_count on the post to match actual fetched count whenever there's a mismatch
+  useEffect(() => {
+    if (!postId || comments.length === 0) return;
+    // Fire-and-forget: reconcile stored count with actual
+    base44.entities.CommunityPost.filter({ id: postId }).then(posts => {
+      if (posts[0] && posts[0].comment_count !== comments.length) {
+        base44.entities.CommunityPost.update(postId, { comment_count: comments.length });
+        queryClient.invalidateQueries({ queryKey: ["communityPosts"] });
+      }
+    });
+  }, [comments.length, postId]);
+
+  return (
+     <div className="space-y-4">
+       <h4 className="text-sm font-semibold text-gray-700">Comments ({comments.length})</h4>
+       <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+         {topLevelComments.map((comment, i) => (
+           <div key={comment.id}>
+             <motion.div
+               initial={{ opacity: 0, y: 5 }}
+               animate={{ opacity: 1, y: 0 }}
+               transition={{ delay: i * 0.03 }}
+               className="flex gap-3"
+             >
+               <CommentAvatar email={comment.author_email} name={comment.author_name} avatarUrl={comment.author_avatar} fallbackAvatarMap={fallbackAvatarMap} />
+               <div className="flex-1">
+                 <div className="bg-gray-100 rounded-2xl p-4">
+                   <div className="flex items-center gap-1.5 flex-nowrap mb-1">
+                     <span className="font-bold text-gray-900 text-sm truncate min-w-0">{comment.author_name || comment.author_email}</span>
+                     {adminEmails.has(comment.author_email) && <RoleBadge role={getRoleBadgeProps(true, comment.author_email, user?.email)} />}
+                     <span className="text-gray-400 text-xs shrink-0">•</span>
+                     <RelativeTime date={comment.created_date} />
+                   </div>
+                   {editingId === comment.id ? (
+                     <div className="space-y-2">
+                       <Textarea value={editContent} onChange={e => setEditContent(e.target.value)} className="text-sm bg-white rounded-xl min-h-[60px] resize-none" autoFocus />
+                       <div className="flex gap-2">
+                         <Button size="sm" onClick={() => editCommentMutation.mutate({ id: comment.id, content: editContent })} disabled={!editContent.trim() || editCommentMutation.isPending} className="bg-blue-600 hover:bg-blue-700 text-white h-7 text-xs gap-1"><Check className="w-3 h-3" /> Save</Button>
+                         <Button size="sm" variant="outline" onClick={() => setEditingId(null)} className="h-7 text-xs gap-1"><X className="w-3 h-3" /> Cancel</Button>
+                       </div>
+                     </div>
+                   ) : (
+                     <p className="text-gray-800 text-sm leading-relaxed">{comment.content}</p>
+                   )}
+                 </div>
+                 <div className="flex items-center gap-4 mt-2 ml-0 text-xs text-gray-600">
+                   <button
+                     onClick={() => likeCommentMutation.mutate(comment)}
+                     className={`flex items-center gap-1 transition-colors ${
+                       comment.likes?.includes(user?.email) ? "text-pink-500" : "text-gray-400 hover:text-pink-500"
+                     }`}
+                   >
+                     <Heart className={`w-3.5 h-3.5 ${comment.likes?.includes(user?.email) ? "fill-current" : ""}`} />
+                     {comment.likes?.length || 0}
+                   </button>
+                   <button
+                     onClick={() => {
+                       const name = comment.author_name || comment.author_email;
+                       setReplyingTo(name);
+                       setNewComment(`@${name} `);
+                       setTimeout(() => textareaRef.current?.focus(), 50);
+                     }}
+                     className="text-gray-400 hover:text-gray-600 transition-colors font-medium"
+                   >
+                     Reply
+                   </button>
+                   {(comment.author_email === user?.email || isAdmin) && (
+                     <div className="flex items-center gap-2 ml-auto">
+                       {comment.author_email === user?.email && (
+                         <button onClick={() => { setEditingId(comment.id); setEditContent(comment.content); }} className="text-gray-400 hover:text-blue-500 transition-colors">
+                           <Pencil className="w-3.5 h-3.5" />
+                         </button>
+                       )}
+                       <button
+                         onClick={() => { if (window.confirm("Delete this comment?")) deleteCommentMutation.mutate(comment); }}
+                         disabled={deleteCommentMutation.isPending}
+                         className="text-gray-400 hover:text-red-600 transition-colors"
+                       >
+                         <Trash2 className="w-3.5 h-3.5" />
+                       </button>
+                     </div>
+                   )}
+                 </div>
+               </div>
+             </motion.div>
+
+             {/* Replies to this comment */}
+             {replyMap[comment.id] && (
+               <div className="ml-10 space-y-2 mt-2">
+                 {replyMap[comment.id].map((reply, j) => {
+                   const mentionMatch = reply.content.match(/^@([^@\n]+?)\s/);
+                   const mentionedName = mentionMatch ? mentionMatch[1] : '';
+                   const replyContent = reply.content.replace(/^@[^@\n]+?\s/, "");
+
+                   return (
+                     <motion.div
+                       key={reply.id}
+                       initial={{ opacity: 0, x: -10 }}
+                       animate={{ opacity: 1, x: 0 }}
+                       transition={{ delay: i * 0.03 + j * 0.02 }}
+                       className="flex gap-3"
+                     >
+                       <CommentAvatar email={reply.author_email} name={reply.author_name} avatarUrl={reply.author_avatar} fallbackAvatarMap={fallbackAvatarMap} />
+                       <div className="flex-1">
+                         <div className="bg-blue-50 rounded-2xl p-4 border border-blue-100">
+                           <div className="flex items-center gap-1.5 flex-nowrap mb-2">
+                             <span className="font-bold text-gray-900 text-sm truncate min-w-0">{reply.author_name || reply.author_email}</span>
+                             {adminEmails.has(reply.author_email) && <RoleBadge role={getRoleBadgeProps(true, reply.author_email, user?.email)} />}
+                             <span className="text-gray-400 text-xs shrink-0">•</span>
+                             <RelativeTime date={reply.created_date} />
+                           </div>
+                           {editingId === reply.id ? (
+                             <div className="space-y-2">
+                               <Textarea value={editContent} onChange={e => setEditContent(e.target.value)} className="text-sm bg-white rounded-xl min-h-[60px] resize-none" autoFocus />
+                               <div className="flex gap-2">
+                                 <Button size="sm" onClick={() => editCommentMutation.mutate({ id: reply.id, content: editContent })} disabled={!editContent.trim() || editCommentMutation.isPending} className="bg-blue-600 hover:bg-blue-700 text-white h-7 text-xs gap-1"><Check className="w-3 h-3" /> Save</Button>
+                                 <Button size="sm" variant="outline" onClick={() => setEditingId(null)} className="h-7 text-xs gap-1"><X className="w-3 h-3" /> Cancel</Button>
+                               </div>
+                             </div>
+                           ) : (
+                             <div>
+                               <span className="text-blue-600 font-semibold">@{mentionedName}</span>
+                               <span className="text-gray-800"> {replyContent}</span>
+                             </div>
+                           )}
+                         </div>
+                         <div className="flex items-center gap-4 mt-2 ml-0 text-xs text-gray-600">
+                           <button
+                             onClick={() => likeCommentMutation.mutate(reply)}
+                             className={`flex items-center gap-1 transition-colors ${
+                               reply.likes?.includes(user?.email) ? "text-pink-500" : "text-gray-400 hover:text-pink-500"
+                             }`}
+                           >
+                             <Heart className={`w-3.5 h-3.5 ${reply.likes?.includes(user?.email) ? "fill-current" : ""}`} />
+                             {reply.likes?.length || 0}
+                           </button>
+                           {(reply.author_email === user?.email || isAdmin) && (
+                             <div className="flex items-center gap-2 ml-auto">
+                               {reply.author_email === user?.email && (
+                                 <button onClick={() => { setEditingId(reply.id); setEditContent(reply.content); }} className="text-gray-400 hover:text-blue-500 transition-colors">
+                                   <Pencil className="w-3.5 h-3.5" />
+                                 </button>
+                               )}
+                               <button onClick={() => { if (window.confirm("Delete this reply?")) deleteCommentMutation.mutate(reply); }} disabled={deleteCommentMutation.isPending} className="text-gray-400 hover:text-red-600 transition-colors">
+                                 <Trash2 className="w-3.5 h-3.5" />
+                               </button>
+                             </div>
+                           )}
+                         </div>
+                       </div>
+                     </motion.div>
+                   );
+                 })}
+               </div>
+             )}
+           </div>
+         ))}
+       {/* Orphan replies that couldn't be matched to a parent */}
+       {orphanReplies.map((reply, j) => {
+         const mentionMatch = reply.content.match(/^@([^\s]+)\s?/);
+         const mentionedName = mentionMatch ? mentionMatch[1] : '';
+         const replyContent = reply.content.replace(/^@[^\s]+\s?/, "");
+         return (
+           <motion.div key={reply.id} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="flex gap-3">
+             <CommentAvatar email={reply.author_email} name={reply.author_name} avatarUrl={reply.author_avatar} fallbackAvatarMap={fallbackAvatarMap} />
+             <div className="flex-1">
+               <div className="bg-blue-50 rounded-2xl p-4 border border-blue-100">
+                 <div className="flex items-center gap-1.5 flex-nowrap mb-2">
+                   <span className="font-bold text-gray-900 text-sm truncate min-w-0">{reply.author_name || reply.author_email}</span>
+                   {adminEmails.has(reply.author_email) && <RoleBadge role={getRoleBadgeProps(true, reply.author_email, user?.email)} />}
+                   <span className="text-gray-400 text-xs shrink-0">•</span>
+                   <RelativeTime date={reply.created_date} />
+                 </div>
+                 {mentionedName && <span className="text-blue-600 font-semibold">@{mentionedName} </span>}
+                 <span className="text-gray-800 text-sm">{replyContent}</span>
+               </div>
+               <div className="flex items-center gap-4 mt-2 text-xs text-gray-600">
+                 <button onClick={() => likeCommentMutation.mutate(reply)} className={`flex items-center gap-1 transition-colors ${reply.likes?.includes(user?.email) ? "text-pink-500" : "text-gray-400 hover:text-pink-500"}`}>
+                   <Heart className={`w-3.5 h-3.5 ${reply.likes?.includes(user?.email) ? "fill-current" : ""}`} />
+                   {reply.likes?.length || 0}
+                 </button>
+                 {(reply.author_email === user?.email || isAdmin) && (
+                   <button onClick={() => { if (window.confirm("Delete this comment?")) deleteCommentMutation.mutate(reply); }} className="text-gray-400 hover:text-red-600 transition-colors ml-auto">
+                     <Trash2 className="w-3.5 h-3.5" />
+                   </button>
+                 )}
+               </div>
+             </div>
+           </motion.div>
+         );
+       })}
+       </div>
+       <div className="flex gap-3 items-end mt-4 pt-4 border-t border-gray-200">
+        <AvatarWithFallback
+          imageUrl={user?.avatar_url}
+          name={user?.full_name}
+          email={user?.email}
+          size="sm"
+        />
+        <div className="flex-1 space-y-1">
+          {replyingTo && (
+            <div className="flex items-center gap-1 text-xs text-blue-600 font-medium mb-1">
+              Replying to @{replyingTo}
+              <button onClick={() => { setReplyingTo(null); setNewComment(""); }} className="ml-auto text-gray-400 hover:text-gray-600 text-xs">Clear</button>
+            </div>
+          )}
+          <div className="flex gap-2">
+            <Textarea
+              ref={textareaRef}
+              placeholder="Write a comment..."
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              className="border-gray-300 text-sm bg-white rounded-xl min-h-[44px] resize-none"
+            />
+            <Button
+              onClick={() => addCommentMutation.mutate()}
+              disabled={!newComment.trim() || addCommentMutation.isPending}
+              size="icon"
+              className="bg-blue-600 hover:bg-blue-700 text-white shrink-0"
+            >
+              <Send className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

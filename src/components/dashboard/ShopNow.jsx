@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,8 +15,8 @@ export default function ShopNow() {
   const { data: userPoints } = useQuery({
     queryKey: ["myPoints"],
     queryFn: async () => {
-      const user = await getCurrentUser();
-      const points = await db.UserPoints.filter({ user_email: user.email });
+      const user = await base44.auth.me();
+      const points = await base44.entities.UserPoints.filter({ user_email: user.email });
       return points?.[0];
     },
   });
@@ -38,10 +38,10 @@ export default function ShopNow() {
 
   const updateShopItems = useMutation({
     mutationFn: async (newItems) => {
-      const user = await getCurrentUser();
-      const points = await db.UserPoints.filter({ user_email: user.email });
+      const user = await base44.auth.me();
+      const points = await base44.entities.UserPoints.filter({ user_email: user.email });
       if (points?.[0]) {
-        await db.UserPoints.update(points[0].id, { 
+        await base44.entities.UserPoints.update(points[0].id, { 
           shop_items: JSON.stringify(newItems) 
         });
       }
@@ -73,7 +73,7 @@ export default function ShopNow() {
 
   const { data: user } = useQuery({
     queryKey: ["currentUser"],
-    queryFn: getCurrentUser,
+    queryFn: () => base44.auth.me(),
   });
 
   const isAdmin = user?.role === "admin";

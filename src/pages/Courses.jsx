@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -32,23 +32,23 @@ export default function Courses() {
 
   const { data: user } = useQuery({
     queryKey: ["currentUser"],
-    queryFn: getCurrentUser,
+    queryFn: () => base44.auth.me(),
   });
 
   const { data: courses = [] } = useQuery({
     queryKey: ["courses"],
-    queryFn: () => db.Course.list(),
+    queryFn: () => base44.entities.Course.list(),
   });
 
   const { data: userEnrollments = [] } = useQuery({
     queryKey: ["myEnrollments", user?.email],
-    queryFn: () => db.Enrollment.filter({ user_email: user.email }),
+    queryFn: () => base44.entities.Enrollment.filter({ user_email: user.email }),
     enabled: !!user?.email,
   });
 
   const { data: userPoints } = useQuery({
     queryKey: ["myPoints", user?.email],
-    queryFn: () => db.UserPoints.filter({ user_email: user.email }),
+    queryFn: () => base44.entities.UserPoints.filter({ user_email: user.email }),
     enabled: !!user?.email,
   });
 

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { useQueryClient } from "@tanstack/react-query";
 import { ChevronDown, ChevronUp, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,7 @@ export default function QuizEditor({ quiz, onClose }) {
 
   const save = async () => {
     setSaving(true);
-    await db.Quiz.update(quiz.id, {
+    await base44.entities.Quiz.update(quiz.id, {
       title: form.title,
       description: form.description,
       category: form.category,

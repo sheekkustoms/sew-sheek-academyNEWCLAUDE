@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Bell, Mail, Check } from "lucide-react";
 import { toast } from "sonner";
@@ -29,7 +29,7 @@ export default function NotificationSettings({ user }) {
   const toggle = async (key) => {
     const current = user?.[key] !== false; // default true
     setSaving(key);
-    await updateMe({ [key]: !current });
+    await base44.auth.updateMe({ [key]: !current });
     queryClient.invalidateQueries({ queryKey: ["currentUser"] });
     toast.success(`${!current ? "Enabled" : "Disabled"} successfully`);
     setSaving(null);

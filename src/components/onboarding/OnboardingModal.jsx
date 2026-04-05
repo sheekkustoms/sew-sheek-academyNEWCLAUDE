@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, Circle, ArrowRight, X, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 
 const STEPS = [
   {
@@ -43,7 +43,7 @@ export default function OnboardingModal({ onClose, completedSteps, onMarkStep })
 
   const { data: onboardingSettings = [] } = useQuery({
     queryKey: ["onboardingSettings"],
-    queryFn: () => db.OnboardingSettings.list(),
+    queryFn: () => base44.entities.OnboardingSettings.list(),
   });
   const settings = onboardingSettings[0];
   const welcomeVideoUrl = settings?.welcome_video_url;

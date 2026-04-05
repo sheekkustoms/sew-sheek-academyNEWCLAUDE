@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Radio, Calendar, ExternalLink, Download, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -53,7 +53,7 @@ const getPlayerInfo = (raw) => {
 export default function LiveClassesHub() {
   const { data: allClasses = [], isLoading } = useQuery({
     queryKey: ["liveClassesHub"],
-    queryFn: () => db.LiveClass.list("-scheduled_at", 100),
+    queryFn: () => base44.entities.LiveClass.list("-scheduled_at", 100),
     staleTime: 30000,
   });
 
@@ -155,11 +155,6 @@ function LiveCard({ cls, isLive, isPast, isJoinable }) {
         {isLive && (
           <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-600 uppercase">
             <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" /> Live Now
-          </span>
-        )}
-        {isPast && (
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-600 uppercase">
-            🔁 Live Replay
           </span>
         )}
         <h3 className="font-bold text-[#111] leading-snug">{cls.title}</h3>

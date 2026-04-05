@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Trash2, Edit2, Play, Eye, Gamepad2, ChevronDown, ChevronUp, X, Copy, Radio } from "lucide-react";
@@ -36,7 +36,7 @@ function QuestionEditor({ question, quizId, onDelete, index }) {
 
   const save = async () => {
     setSaving(true);
-    await db.QuizQuestion.update(question.id, form);
+    await base44.entities.QuizQuestion.update(question.id, form);
     queryClient.invalidateQueries({ queryKey: ["adminQuizQuestions", quizId] });
     setSaving(false);
     setExpanded(false);
@@ -135,14 +135,14 @@ export default function QuizBuilder() {
   const [newQuizForm, setNewQuizForm] = useState({ title: "", description: "", category: "beginner_sewing", quiz_type: "practice", time_per_question: 20, total_duration_seconds: 0 });
   const [totalPoints, setTotalPoints] = useState("");
 
-  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: getCurrentUser });
+  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
   const { data: quizzes = [] } = useQuery({
     queryKey: ["adminQuizzes"],
-    queryFn: () => db.Quiz.list("-created_date", 50),
+    queryFn: () => base44.entities.Quiz.list("-created_date", 50),
   });
   const { data: questions = [] } = useQuery({
     queryKey: ["adminQuizQuestions", editingQuizId],
-    queryFn: () => db.QuizQuestion.filter({ quiz_id: editingQuizId }),
+    queryFn: () => base44.entities.QuizQuestion.filter({ quiz_id: editingQuizId }),
     enabled: !!editingQuizId,
   });
   const sortedQuestions = [...questions].sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -150,28 +150,28 @@ export default function QuizBuilder() {
   const createQuiz = useMutation({
     mutationFn: async () => {
       const code = generateCode();
-      await db.Quiz.create({ ...newQuizForm, game_code: code, status: "draft", is_published: false, created_by_email: user.email });
+      await base44.entities.Quiz.create({ ...newQuizForm, game_code: code, status: "draft", is_published: false, created_by_email: user.email });
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["adminQuizzes"] }); setShowNewQuiz(false); setNewQuizForm({ title: "", description: "", category: "beginner_sewing", quiz_type: "practice", time_per_question: 20, total_duration_seconds: 0 }); },
   });
 
   const deleteQuiz = useMutation({
-    mutationFn: (id) => db.Quiz.delete(id),
+    mutationFn: (id) => base44.entities.Quiz.delete(id),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["adminQuizzes"] }); if (editingQuizId === "deleted") setEditingQuizId(null); },
   });
 
   const togglePublish = useMutation({
-    mutationFn: ({ id, published }) => db.Quiz.update(id, { is_published: !published }),
+    mutationFn: ({ id, published }) => base44.entities.Quiz.update(id, { is_published: !published }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["adminQuizzes"] }),
   });
 
   const launchLive = useMutation({
-    mutationFn: (id) => db.Quiz.update(id, { status: "waiting", is_published: true }),
+    mutationFn: (id) => base44.entities.Quiz.update(id, { status: "waiting", is_published: true }),
     onSuccess: (_, id) => { queryClient.invalidateQueries({ queryKey: ["adminQuizzes"] }); setHostingQuizId(id); },
   });
 
   const addQuestion = useMutation({
-    mutationFn: () => db.QuizQuestion.create({
+    mutationFn: () => base44.entities.QuizQuestion.create({
       quiz_id: editingQuizId,
       question_text: "New Question",
       question_type: "multiple_choice",
@@ -185,7 +185,7 @@ export default function QuizBuilder() {
   });
 
   const deleteQuestion = useMutation({
-    mutationFn: (id) => db.QuizQuestion.delete(id),
+    mutationFn: (id) => base44.entities.QuizQuestion.delete(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["adminQuizQuestions", editingQuizId] }),
   });
 
@@ -196,10 +196,10 @@ export default function QuizBuilder() {
     const remainder = total - perQuestion * sortedQuestions.length;
     // First reset all to 0 so useEffect detects change, then set final values
     await Promise.all(sortedQuestions.map(q =>
-      db.QuizQuestion.update(q.id, { points: 0 })
+      base44.entities.QuizQuestion.update(q.id, { points: 0 })
     ));
     await Promise.all(sortedQuestions.map((q, i) =>
-      db.QuizQuestion.update(q.id, { points: perQuestion + (i === 0 ? remainder : 0) })
+      base44.entities.QuizQuestion.update(q.id, { points: perQuestion + (i === 0 ? remainder : 0) })
     ));
     queryClient.invalidateQueries({ queryKey: ["adminQuizQuestions", editingQuizId] });
     setTotalPoints("");

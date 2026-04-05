@@ -1,6 +1,6 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { Zap, Trophy, Star } from "lucide-react";
 import moment from "moment";
 
@@ -9,7 +9,7 @@ export default function ProfileRewardsTab({ points, targetEmail }) {
   const { data: shoutouts = [] } = useQuery({
     queryKey: ["profileShoutouts", targetEmail],
     queryFn: async () => {
-      const allPosts = await db.CommunityPost.list("-created_date", 200);
+      const allPosts = await base44.entities.CommunityPost.list("-created_date", 200);
       return allPosts.filter(p =>
         p.category === "student_projects" &&
         (p.content?.includes(targetEmail) || p.author_name?.toLowerCase().includes("reward") || p.title?.toLowerCase().includes("reward"))

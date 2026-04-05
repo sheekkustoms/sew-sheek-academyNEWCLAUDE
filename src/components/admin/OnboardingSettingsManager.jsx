@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,7 @@ export default function OnboardingSettingsManager() {
 
   const { data: settings = [] } = useQuery({
     queryKey: ["onboardingSettings"],
-    queryFn: () => db.OnboardingSettings.list(),
+    queryFn: () => base44.entities.OnboardingSettings.list(),
   });
 
   const existing = settings[0];
@@ -30,9 +30,9 @@ export default function OnboardingSettingsManager() {
     mutationFn: async () => {
       const data = { welcome_video_url: videoUrl, welcome_video_title: videoTitle, label: "default" };
       if (existing) {
-        await db.OnboardingSettings.update(existing.id, data);
+        await base44.entities.OnboardingSettings.update(existing.id, data);
       } else {
-        await db.OnboardingSettings.create(data);
+        await base44.entities.OnboardingSettings.create(data);
       }
     },
     onSuccess: () => {
@@ -105,7 +105,7 @@ export default function OnboardingSettingsManager() {
                 const file = e.target.files?.[0];
                 if (!file) return;
                 setUploading(true);
-                const file_url = await uploadFile(file);
+                const { file_url } = await base44.integrations.Core.UploadFile({ file });
                 setVideoUrl(file_url);
                 setUploading(false);
               }}

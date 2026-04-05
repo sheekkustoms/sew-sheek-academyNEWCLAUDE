@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Video, Clock, Download, ChevronLeft, CheckCircle2 } from "lucide-react";
@@ -16,7 +16,7 @@ export default function LiveClassDetail() {
 
   const { data: cls, isLoading } = useQuery({
     queryKey: ["liveClassDetail", classId],
-    queryFn: () => db.LiveClass.list().then(classes => classes.find(c => c.id === classId)),
+    queryFn: () => base44.entities.LiveClass.list().then(classes => classes.find(c => c.id === classId)),
     enabled: !!classId,
   });
 

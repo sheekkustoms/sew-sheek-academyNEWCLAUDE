@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -21,10 +21,10 @@ export default function QuizHome() {
   const [joinError, setJoinError] = useState("");
   const navigate = useNavigate();
 
-  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: getCurrentUser });
+  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
   const { data: quizzes = [], isLoading } = useQuery({
     queryKey: ["publishedQuizzes"],
-    queryFn: () => db.Quiz.filter({ is_published: true }),
+    queryFn: () => base44.entities.Quiz.filter({ is_published: true }),
   });
 
   const practiceQuizzes = quizzes.filter(q => q.quiz_type === "practice");

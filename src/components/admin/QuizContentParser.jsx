@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -26,7 +26,43 @@ export default function QuizContentParser({ quizId, onQuestionsGenerated }) {
 
     try {
       // Use LLM to generate questions from content
-      const response = await Promise.resolve({ content: "" });
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt: `You are a quiz creator. Based on the following content, generate 5 multiple choice quiz questions with 4 options each and one correct answer.
+
+Content:
+${content}
+
+Return the response as a JSON object with this structure:
+{
+  "questions": [
+    {
+      "question_text": "Question text here?",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "correct_answer_index": 0,
+      "points": 100
+    }
+  ]
+}
+
+IMPORTANT: Return ONLY valid JSON, no markdown formatting, no code blocks.`,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            questions: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  question_text: { type: "string" },
+                  options: { type: "array", items: { type: "string" } },
+                  correct_answer_index: { type: "number" },
+                  points: { type: "number" }
+                }
+              }
+            }
+          }
+        }
+      });
 
       const questions = response?.questions || [];
       
@@ -53,13 +89,13 @@ export default function QuizContentParser({ quizId, onQuestionsGenerated }) {
       setIsLoading(true);
       
       // Get current max order
-      const existingQuestions = await db.QuizQuestion.filter({ quiz_id: quizId });
+      const existingQuestions = await base44.entities.QuizQuestion.filter({ quiz_id: quizId });
       const maxOrder = Math.max(0, ...existingQuestions.map(q => q.order || 0));
 
       // Create all questions
       await Promise.all(
         questionsToSave.map((q, idx) =>
-          db.QuizQuestion.create({
+          base44.entities.QuizQuestion.create({
             quiz_id: quizId,
             question_text: q.question_text,
             question_type: "multiple_choice",

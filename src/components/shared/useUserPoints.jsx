@@ -1,11 +1,11 @@
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { getLevelFromXP } from "./XPBar";
 
 export async function getOrCreateUserPoints(user) {
   if (!user?.email) return null;
-  const existing = await db.UserPoints.filter({ user_email: user.email });
+  const existing = await base44.entities.UserPoints.filter({ user_email: user.email });
   if (existing.length > 0) return existing[0];
-  return await db.UserPoints.create({
+  return await base44.entities.UserPoints.create({
     user_email: user.email,
     user_name: user.full_name || user.email,
     total_xp: 0,
@@ -72,11 +72,11 @@ export async function awardXP(userPointsId, currentPoints, amount, extraUpdates 
     ...extraUpdates,
   };
 
-  await db.UserPoints.update(userPointsId, updateData);
+  await base44.entities.UserPoints.update(userPointsId, updateData);
 
   // Create notifications
   for (const badge of newBadges) {
-    await db.Notification.create({
+    await base44.entities.Notification.create({
       recipient_email: currentPoints.user_email,
       type: "badge",
       message: `🏅 You unlocked the "${badge}" badge!`,
@@ -85,7 +85,7 @@ export async function awardXP(userPointsId, currentPoints, amount, extraUpdates 
   }
 
   if (newLevel > oldLevel) {
-    await db.Notification.create({
+    await base44.entities.Notification.create({
       recipient_email: currentPoints.user_email,
       type: "announcement",
       message: `⭐ Congratulations! You reached Level ${newLevel}!`,
@@ -94,7 +94,7 @@ export async function awardXP(userPointsId, currentPoints, amount, extraUpdates 
   }
 
   if (isNewStreakRecord && streakDays > 0) {
-    await db.Notification.create({
+    await base44.entities.Notification.create({
       recipient_email: currentPoints.user_email,
       type: "announcement",
       message: `🔥 New personal best! Your streak is now ${streakDays} days!`,

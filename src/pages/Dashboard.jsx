@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -12,8 +12,6 @@ import { Input } from "@/components/ui/input";
 import { getDisplayName } from "@/components/shared/useDisplayName";
 import { getLevelFromXP, loadThresholds } from "@/components/shared/XPBar";
 import moment from "moment";
-import MembershipGate from "@/components/membership/MembershipGate";
-import MembershipStatusBadge from "@/components/membership/MembershipStatusBadge";
 
 function ContentTypeCard({ icon: Icon, title, desc, page, color, count }) {
   return (
@@ -43,36 +41,36 @@ export default function Dashboard() {
 
   const { data: user } = useQuery({
     queryKey: ["currentUser"],
-    queryFn: getCurrentUser,
+    queryFn: () => base44.auth.me(),
     staleTime: 0,
     refetchInterval: 30000,
   });
 
   const { data: userPoints } = useQuery({
     queryKey: ["myPoints", user?.email],
-    queryFn: () => db.UserPoints.filter({ user_email: user.email }),
+    queryFn: () => base44.entities.UserPoints.filter({ user_email: user.email }),
     enabled: !!user?.email,
   });
 
   const { data: enrollments = [] } = useQuery({
     queryKey: ["myEnrollments", user?.email],
-    queryFn: () => db.Enrollment.filter({ user_email: user.email }),
+    queryFn: () => base44.entities.Enrollment.filter({ user_email: user.email }),
     enabled: !!user?.email,
   });
 
   const { data: courses = [] } = useQuery({
     queryKey: ["courses"],
-    queryFn: () => db.Course.list("-created_date", 100),
+    queryFn: () => base44.entities.Course.list("-created_date", 100),
   });
 
   const { data: lessons = [] } = useQuery({
     queryKey: ["lessons"],
-    queryFn: () => db.Lesson.list("-created_date", 200),
+    queryFn: () => base44.entities.Lesson.list("-created_date", 200),
   });
 
   const { data: allClasses = [] } = useQuery({
     queryKey: ["allClassesHub"],
-    queryFn: () => db.LiveClass.list("-created_date", 200),
+    queryFn: () => base44.entities.LiveClass.list("-created_date", 200),
     staleTime: 30000,
   });
 
@@ -124,17 +122,13 @@ export default function Dashboard() {
   const typePage = { live: "LiveClassesHub", replay: "ReplaysHub", tutorial: "TutorialsHub", course: "Classes" };
 
   return (
-    <MembershipGate user={user}>
     <div className="max-w-6xl mx-auto space-y-8">
       {/* Welcome */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold text-[#111] tracking-tight">
-            Welcome back, {getDisplayName(user)?.split(" ")[0] || "Student"} 👋
-          </h1>
-          <p className="text-sm text-[#666] mt-1">Ready to keep learning? Jump right in.</p>
-        </div>
-        {user?.role !== "admin" && <MembershipStatusBadge userEmail={user?.email} />}
+      <div>
+        <h1 className="text-2xl md:text-3xl font-extrabold text-[#111] tracking-tight">
+          Welcome back, {getDisplayName(user)?.split(" ")[0] || "Student"} 👋
+        </h1>
+        <p className="text-sm text-[#666] mt-1">Ready to keep learning? Jump right in.</p>
       </div>
 
       {/* Search */}
@@ -331,6 +325,5 @@ export default function Dashboard() {
         </div>
       )}
     </div>
-    </MembershipGate>
   );
 }

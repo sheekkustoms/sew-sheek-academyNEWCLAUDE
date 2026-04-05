@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Calendar, Clock, Video, Copy, Check, Bell, BellOff, ChevronLeft, ChevronRight, Gamepad2, Download } from "lucide-react";
@@ -206,12 +206,12 @@ export default function LiveClasses() {
   const navigate = useNavigate();
   const { data: classes = [] } = useQuery({
     queryKey: ["liveClasses"],
-    queryFn: () => db.LiveClass.filter({ is_active: true }),
+    queryFn: () => base44.entities.LiveClass.filter({ is_active: true }),
   });
 
   const { data: quizzes = [] } = useQuery({
     queryKey: ["quizzes"],
-    queryFn: () => db.Quiz.filter({ is_published: true }),
+    queryFn: () => base44.entities.Quiz.filter({ is_published: true }),
   });
 
   const sorted = [...classes].sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at));

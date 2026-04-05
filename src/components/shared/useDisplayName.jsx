@@ -1,4 +1,4 @@
-import { db, getCurrentUser, signIn, signOut, signUp, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 
 /**
  * Get display name with fallback chain:
@@ -32,7 +32,7 @@ export async function updateUserDisplayName(displayName) {
   const trimmed = displayName.trim();
   console.log("[useDisplayName] Updating display_name to:", trimmed);
   
-  await updateMe({
+  await base44.auth.updateMe({
     display_name: trimmed,
   });
   

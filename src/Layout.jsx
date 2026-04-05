@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { db, getCurrentUser, signIn, signUp, signOut, updateMe, uploadFile } from '@/lib/supabase';
+import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import {
   Menu, X, Bell, LogOut, Shield, ChevronDown,
@@ -54,13 +54,13 @@ export default function Layout({ children, currentPageName }) {
 
   const { data: user } = useQuery({
     queryKey: ["currentUser"],
-    queryFn: getCurrentUser,
+    queryFn: () => base44.auth.me(),
     refetchInterval: 30000,
   });
 
   const { data: notifications = [] } = useQuery({
     queryKey: ["notifications", user?.email],
-    queryFn: () => db.Notification.filter({ recipient_email: user.email, is_read: false }),
+    queryFn: () => base44.entities.Notification.filter({ recipient_email: user.email, is_read: false }),
     enabled: !!user?.email,
     refetchInterval: 60000,
   });
@@ -161,7 +161,7 @@ export default function Layout({ children, currentPageName }) {
                     </Link>
                   )}
                   <div className="border-t border-[#F5F5F5]">
-                    <button onClick={() => signOut().then(() => window.location.href = '/Login')} className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#E74C3C] hover:bg-[#F5F5F5] w-full">
+                    <button onClick={() => base44.auth.logout()} className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#E74C3C] hover:bg-[#F5F5F5] w-full">
                       <LogOut className="w-4 h-4" /> Sign out
                     </button>
                   </div>
@@ -221,7 +221,7 @@ export default function Layout({ children, currentPageName }) {
               )}
             </nav>
             <div className="p-3 border-t border-white/10">
-              <button onClick={() => signOut().then(() => window.location.href = '/Login')} className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-white/50 hover:text-white hover:bg-white/5 transition-all w-full">
+              <button onClick={() => base44.auth.logout()} className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-white/50 hover:text-white hover:bg-white/5 transition-all w-full">
                 <LogOut className="w-4 h-4" /> Sign out
               </button>
             </div>

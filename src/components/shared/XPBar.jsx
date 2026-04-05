@@ -12,7 +12,7 @@ export async function loadThresholds(force = false) {
   if (_cacheLoaded && !force) return _cachedThresholds;
   try {
     const { base44 } = await import("@/api/base44Client");
-    const settings = await db.LevelSettings.list();
+    const settings = await base44.entities.LevelSettings.list();
     if (settings.length > 0 && settings[0].thresholds?.length > 0) {
       _cachedThresholds = settings[0].thresholds;
     }
