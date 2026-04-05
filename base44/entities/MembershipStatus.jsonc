@@ -1,0 +1,48 @@
+{
+  "name": "MembershipStatus",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the member"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Display name of the member"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether membership is currently active"
+    },
+    "paid_through": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the member is paid through"
+    },
+    "stripe_customer_id": {
+      "type": "string",
+      "description": "Stripe customer ID for automatic sync"
+    },
+    "stripe_subscription_id": {
+      "type": "string",
+      "description": "Stripe subscription ID for automatic sync"
+    },
+    "stripe_status": {
+      "type": "string",
+      "description": "Raw Stripe subscription status (active, past_due, canceled, etc.)"
+    },
+    "admin_override": {
+      "type": "boolean",
+      "default": false,
+      "description": "If true, admin has manually set the active status (overrides Stripe sync)"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Admin notes about this membership"
+    }
+  },
+  "required": [
+    "user_email"
+  ]
+}

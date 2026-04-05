@@ -12,6 +12,8 @@ import { Input } from "@/components/ui/input";
 import { getDisplayName } from "@/components/shared/useDisplayName";
 import { getLevelFromXP, loadThresholds } from "@/components/shared/XPBar";
 import moment from "moment";
+import MembershipGate from "@/components/membership/MembershipGate";
+import MembershipStatusBadge from "@/components/membership/MembershipStatusBadge";
 
 function ContentTypeCard({ icon: Icon, title, desc, page, color, count }) {
   return (
@@ -122,13 +124,17 @@ export default function Dashboard() {
   const typePage = { live: "LiveClassesHub", replay: "ReplaysHub", tutorial: "TutorialsHub", course: "Classes" };
 
   return (
+    <MembershipGate user={user}>
     <div className="max-w-6xl mx-auto space-y-8">
       {/* Welcome */}
-      <div>
-        <h1 className="text-2xl md:text-3xl font-extrabold text-[#111] tracking-tight">
-          Welcome back, {getDisplayName(user)?.split(" ")[0] || "Student"} 👋
-        </h1>
-        <p className="text-sm text-[#666] mt-1">Ready to keep learning? Jump right in.</p>
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-extrabold text-[#111] tracking-tight">
+            Welcome back, {getDisplayName(user)?.split(" ")[0] || "Student"} 👋
+          </h1>
+          <p className="text-sm text-[#666] mt-1">Ready to keep learning? Jump right in.</p>
+        </div>
+        {user?.role !== "admin" && <MembershipStatusBadge userEmail={user?.email} />}
       </div>
 
       {/* Search */}
@@ -325,5 +331,6 @@ export default function Dashboard() {
         </div>
       )}
     </div>
+    </MembershipGate>
   );
 }

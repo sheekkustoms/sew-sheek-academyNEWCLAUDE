@@ -1,0 +1,26 @@
+{
+  "name": "MembershipSettings",
+  "type": "object",
+  "properties": {
+    "label": {
+      "type": "string",
+      "default": "default",
+      "description": "Identifier \u2014 only one record needed"
+    },
+    "lockout_enabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "If true, inactive members are blocked from dashboard access"
+    },
+    "inactive_message": {
+      "type": "string",
+      "default": "Your membership is currently inactive. Please contact administration or make sure your $99/month subscription is active on sewsheek.com.",
+      "description": "Message shown to inactive/locked-out members"
+    },
+    "monthly_price_id": {
+      "type": "string",
+      "description": "Stripe Price ID for the $99/month subscription"
+    }
+  },
+  "required": []
+}

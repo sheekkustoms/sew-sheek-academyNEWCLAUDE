@@ -157,6 +157,11 @@ function LiveCard({ cls, isLive, isPast, isJoinable }) {
             <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" /> Live Now
           </span>
         )}
+        {isPast && (
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-600 uppercase">
+            🔁 Live Replay
+          </span>
+        )}
         <h3 className="font-bold text-[#111] leading-snug">{cls.title}</h3>
         {cls.scheduled_at && (
           <p className="text-xs text-[#999] flex items-center gap-1">
