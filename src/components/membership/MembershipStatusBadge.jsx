@@ -44,10 +44,12 @@ export default function MembershipStatusBadge({ userEmail }) {
         : <XCircle className="w-4 h-4 shrink-0" />
       }
       <span>{isActive ? "Membership Active" : "Membership Inactive"}</span>
-      {paidThrough && isActive && (
-        <span className="text-xs font-normal text-green-600 ml-1">
-          · Paid through {moment(paidThrough).format("MMM D, YYYY")}
+      {paidThrough ? (
+        <span className={`text-xs font-normal ml-1 ${isActive ? "text-green-600" : "text-red-500"}`}>
+          · {isActive ? "Paid through" : "Due"} {moment(paidThrough).format("MMMM D, YYYY")}
         </span>
+      ) : !isActive && (
+        <span className="text-xs font-normal text-red-500 ml-1">· No billing date on file</span>
       )}
     </div>
   );
