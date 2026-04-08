@@ -72,15 +72,27 @@ export default function MembershipBillingPanel() {
     return new Date(today.getFullYear(), today.getMonth() + 1, 1);
   };
 
-  const setPaidThrough = async (user, date) => {
+  const setPaidThroughMonths = async (user, months) => {
+    const today = new Date();
+    const paidThroughDate = new Date(today.getFullYear(), today.getMonth() + months, 1);
+    const dateString = paidThroughDate.toISOString().split('T')[0];
+    
     const existing = getMembership(user.email);
     if (existing) {
-      await base44.entities.MembershipStatus.update(existing.id, { paid_through: date });
+      await base44.entities.MembershipStatus.update(existing.id, { paid_through: dateString });
     } else {
-      await base44.entities.MembershipStatus.create({ user_email: user.email, user_name: user.full_name || user.email, paid_through: date });
+      await base44.entities.MembershipStatus.create({ user_email: user.email, user_name: user.full_name || user.email, paid_through: dateString });
     }
     queryClient.invalidateQueries({ queryKey: ["allMemberships"] });
-    toast.success(`Paid through date updated for ${user.full_name || user.email}`);
+    toast.success(`${user.full_name || user.email} paid for ${months} month${months > 1 ? 's' : ''}`);
+  };
+
+  const getMonthsFromPaidThrough = (paidThrough) => {
+    if (!paidThrough) return 1;
+    const today = new Date();
+    const paidDate = new Date(paidThrough);
+    const months = (paidDate.getFullYear() - today.getFullYear()) * 12 + (paidDate.getMonth() - today.getMonth());
+    return Math.max(1, months);
   };
 
   const toggleForceDisable = async (user) => {
@@ -191,15 +203,21 @@ export default function MembershipBillingPanel() {
                     {m?.admin_override && <p className="text-xs text-amber-500">⚠ Admin override active</p>}
                   </div>
 
-                  {/* Paid through date */}
+                  {/* Months paid selector */}
                   <div className="hidden sm:flex flex-col items-center gap-0.5">
-                    <p className="text-[10px] text-gray-400 uppercase">Paid Through</p>
-                    <input
-                      type="date"
-                      value={paidThrough}
-                      onChange={e => setPaidThrough(user, e.target.value)}
-                      className="text-xs border border-gray-200 rounded-lg px-2 py-1 text-gray-700 focus:outline-none focus:border-[#D4AF37]"
-                    />
+                    <p className="text-[10px] text-gray-400 uppercase">Months Paid</p>
+                    <select
+                      value={getMonthsFromPaidThrough(paidThrough)}
+                      onChange={e => setPaidThroughMonths(user, parseInt(e.target.value))}
+                      className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 text-gray-700 focus:outline-none focus:border-[#D4AF37] bg-white cursor-pointer"
+                    >
+                      {[1, 2, 3, 6, 12].map(m => (
+                        <option key={m} value={m}>{m} month{m > 1 ? 's' : ''}</option>
+                      ))}
+                    </select>
+                    {paidThrough && (
+                      <p className="text-[9px] text-gray-400 mt-0.5">thru {moment(paidThrough).format("MMM 1, YYYY")}</p>
+                    )}
                   </div>
 
                   {/* Status badge + force disable toggle */}
