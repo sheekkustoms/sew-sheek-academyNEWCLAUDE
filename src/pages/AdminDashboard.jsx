@@ -15,6 +15,7 @@ import OnboardingSettingsManager from "../components/admin/OnboardingSettingsMan
 import PushNotificationPanel from "../components/admin/PushNotificationPanel";
 import AnnouncementPanel from "../components/admin/AnnouncementPanel";
 import MembershipBillingPanel from "../components/admin/MembershipBillingPanel";
+import MemberViewPreview from "../components/admin/MemberViewPreview";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -276,6 +277,9 @@ export default function AdminDashboard() {
           </TabsTrigger>
           <TabsTrigger value="billing" className="flex items-center gap-1">
             <Shield className="w-3.5 h-3.5" /> Billing
+          </TabsTrigger>
+          <TabsTrigger value="memberview" className="flex items-center gap-1">
+            👁 View as Member
           </TabsTrigger>
         </TabsList>
 
@@ -556,6 +560,11 @@ export default function AdminDashboard() {
         {/* Billing */}
         <TabsContent value="billing" className="mt-4">
           <MembershipBillingPanel />
+        </TabsContent>
+
+        {/* View as Member */}
+        <TabsContent value="memberview" className="mt-4">
+          <MemberViewPreview />
         </TabsContent>
 
         {/* Activity Log */}
