@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import {
   Menu, X, Bell, LogOut, Shield, ChevronDown,
-  Download, LayoutDashboard, Radio, PlayCircle, BookOpen, GraduationCap, TrendingUp, Settings, User
+  Download, LayoutDashboard, Radio, PlayCircle, BookOpen, GraduationCap, TrendingUp, Settings, User, Eye
 } from "lucide-react";
 import { getDisplayName } from "@/components/shared/useDisplayName";
 import { Toaster } from "@/components/ui/sonner";
@@ -68,10 +68,39 @@ export default function Layout({ children, currentPageName }) {
   const displayName = getDisplayName(user);
   const isAdmin = user?.role === "admin";
   const unreadCount = notifications.length;
+  const [isPreviewMode, setIsPreviewMode] = useState(() => localStorage.getItem("member_preview_mode") === "true");
+
+  const enterPreview = () => {
+    localStorage.setItem("member_preview_mode", "true");
+    setIsPreviewMode(true);
+    window.location.href = createPageUrl("Dashboard");
+  };
+
+  const exitPreview = () => {
+    localStorage.removeItem("member_preview_mode");
+    setIsPreviewMode(false);
+    window.location.reload();
+  };
 
   return (
     <div className="min-h-screen bg-[#F5F5F5] text-[#111]">
       <Toaster position="top-right" richColors />
+
+      {/* Member Preview Banner */}
+      {isPreviewMode && (
+        <div className="fixed top-0 left-0 right-0 z-[200] bg-amber-400 text-black flex items-center justify-between px-4 py-2 shadow-lg">
+          <div className="flex items-center gap-2 text-sm font-semibold">
+            <Eye className="w-4 h-4" />
+            <span>Member Preview Mode — you're seeing the app exactly as a member would</span>
+          </div>
+          <button
+            onClick={exitPreview}
+            className="flex items-center gap-1.5 bg-black text-white text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-gray-800 transition-colors shrink-0"
+          >
+            <X className="w-3.5 h-3.5" /> Exit Preview
+          </button>
+        </div>
+      )}
       <style>{`
         video, iframe { -webkit-user-select: none; user-select: none; }
         button, a, nav { -webkit-user-select: none; user-select: none; }
@@ -80,7 +109,7 @@ export default function Layout({ children, currentPageName }) {
       `}</style>
 
       {/* PWA Banner */}
-      {showPWA && (
+      {showPWA && !isPreviewMode && (
         <div className="fixed top-0 left-0 right-0 z-[110] h-10 bg-black text-white px-4 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 text-xs font-medium">
             <Download className="w-3.5 h-3.5 shrink-0 text-[#D4AF37]" />
@@ -99,7 +128,7 @@ export default function Layout({ children, currentPageName }) {
       )}
 
       {/* Top Bar */}
-      <header className={`fixed left-0 right-0 z-50 bg-black border-b border-white/10 ${showPWA ? "top-10" : "top-0"}`} style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}>
+      <header className={`fixed left-0 right-0 z-50 bg-black border-b border-white/10 ${isPreviewMode ? "top-10" : showPWA ? "top-10" : "top-0"}`} style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}>
         <div className="max-w-7xl mx-auto px-4 md:px-6 flex items-center h-14 gap-6">
           <Link to={createPageUrl("Dashboard")} className="text-white font-extrabold tracking-widest text-sm uppercase shrink-0">
             SEW SHEEK
@@ -159,6 +188,11 @@ export default function Layout({ children, currentPageName }) {
                     <Link to={createPageUrl("AdminDashboard")} onClick={() => setAvatarOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#D4AF37] hover:bg-[#F5F5F5]">
                       <Shield className="w-4 h-4" /> Admin Panel
                     </Link>
+                  )}
+                  {isAdmin && !isPreviewMode && (
+                    <button onClick={() => { setAvatarOpen(false); enterPreview(); }} className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-amber-600 hover:bg-[#F5F5F5] w-full text-left">
+                      <Eye className="w-4 h-4" /> Preview as Member
+                    </button>
                   )}
                   <div className="border-t border-[#F5F5F5]">
                     <button onClick={() => base44.auth.logout()} className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#E74C3C] hover:bg-[#F5F5F5] w-full">
@@ -230,7 +264,7 @@ export default function Layout({ children, currentPageName }) {
       )}
 
       {/* Page Content */}
-      <main className={`min-h-screen bg-[#F5F5F5] ${showPWA ? "pt-24" : "pt-14"}`}>
+      <main className={`min-h-screen bg-[#F5F5F5] ${isPreviewMode || showPWA ? "pt-24" : "pt-14"}`}>
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-8 pb-16">
           {children}
         </div>

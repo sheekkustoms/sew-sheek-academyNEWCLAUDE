@@ -19,8 +19,9 @@ export default function MembershipGate({ user, children }) {
     staleTime: 60000,
   });
 
-  // Admin bypass — never lock out admins
-  if (user?.role === "admin") return children;
+  // Admin bypass — unless in member preview mode
+  const isPreviewMode = localStorage.getItem("member_preview_mode") === "true";
+  if (user?.role === "admin" && !isPreviewMode) return children;
 
   const settings = settingsArr[0] || null;
   const lockoutEnabled = settings?.lockout_enabled ?? false;
