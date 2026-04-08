@@ -185,6 +185,7 @@ export default function MembershipBillingPanel() {
               const m = getMembership(user.email);
               const isActive = m?.is_active ?? false;
               const paidThrough = m?.paid_through || "";
+              const [selectedMonths, setSelectedMonths] = useState(1);
 
               return (
                 <div key={user.id} className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-gray-200 transition-all">
@@ -204,19 +205,27 @@ export default function MembershipBillingPanel() {
                   </div>
 
                   {/* Months paid selector */}
-                  <div className="hidden sm:flex flex-col items-center gap-0.5">
+                  <div className="hidden sm:flex flex-col items-center gap-1">
                     <p className="text-[10px] text-gray-400 uppercase">Months Paid</p>
-                    <select
-                      value={getMonthsFromPaidThrough(paidThrough)}
-                      onChange={e => setPaidThroughMonths(user, parseInt(e.target.value))}
-                      className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 text-gray-700 focus:outline-none focus:border-[#D4AF37] bg-white cursor-pointer"
-                    >
-                      {[1, 2, 3, 6, 12].map(m => (
-                        <option key={m} value={m}>{m} month{m > 1 ? 's' : ''}</option>
-                      ))}
-                    </select>
+                    <div className="flex items-center gap-1">
+                      <select
+                        value={selectedMonths}
+                        onChange={e => setSelectedMonths(parseInt(e.target.value))}
+                        className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 text-gray-700 focus:outline-none focus:border-[#D4AF37] bg-white cursor-pointer"
+                      >
+                        {[1, 2, 3, 6, 12].map(n => (
+                          <option key={n} value={n}>{n} mo</option>
+                        ))}
+                      </select>
+                      <button
+                        onClick={() => setPaidThroughMonths(user, selectedMonths)}
+                        className="text-[10px] bg-[#D4AF37] text-black font-bold px-2 py-1.5 rounded-lg hover:bg-[#c09d30]"
+                      >
+                        Apply
+                      </button>
+                    </div>
                     {paidThrough && (
-                      <p className="text-[9px] text-gray-400 mt-0.5">thru {moment(paidThrough).format("MMM 1, YYYY")}</p>
+                      <p className="text-[9px] text-gray-400">thru {moment(paidThrough).format("MMM D, YYYY")}</p>
                     )}
                   </div>
 
