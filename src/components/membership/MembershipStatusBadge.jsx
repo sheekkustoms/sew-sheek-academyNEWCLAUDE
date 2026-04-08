@@ -34,19 +34,19 @@ export default function MembershipStatusBadge({ userEmail }) {
   }
 
   return (
-    <div className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-sm font-semibold ${
+    <div className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl border text-sm font-bold ${
       isActive
         ? "bg-green-50 border-green-200 text-green-700"
         : "bg-red-50 border-red-200 text-red-600"
     }`}>
       {isActive
-        ? <CheckCircle2 className="w-4 h-4 shrink-0" />
-        : <XCircle className="w-4 h-4 shrink-0" />
+        ? <CheckCircle2 className="w-5 h-5 shrink-0" />
+        : <XCircle className="w-5 h-5 shrink-0" />
       }
-      <span>{isActive ? "Membership Active" : "Membership Inactive"}</span>
+      <span className="text-base">Membership Status: {isActive ? "ACTIVE ✓" : "INACTIVE"}</span>
       {paidThrough && (
-        <span className={`text-xs font-normal ml-1 ${isActive ? "text-green-600" : "text-red-500"}`}>
-          · Next due: {moment(paidThrough).format("MMMM D, YYYY")}
+        <span className={`text-xs font-semibold ml-auto ${isActive ? "text-green-600" : "text-red-500"}`}>
+          {isActive ? "Paid through:" : "Expired:"} {moment(paidThrough).format("MMMM D, YYYY")}
         </span>
       )}
     </div>
