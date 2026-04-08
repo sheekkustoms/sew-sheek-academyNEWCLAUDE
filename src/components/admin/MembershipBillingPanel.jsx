@@ -58,23 +58,12 @@ export default function MembershipBillingPanel() {
     setSavingSettings(false);
   };
 
-  const toggleMember = async (user, currentStatus) => {
-    const email = user.email;
-    const existing = getMembership(email);
-    const newActive = !currentStatus;
-    const payload = {
-      user_email: email,
-      user_name: user.full_name || user.email,
-      is_active: newActive,
-      admin_override: true,
-    };
-    if (existing) {
-      await base44.entities.MembershipStatus.update(existing.id, { is_active: newActive, admin_override: true });
-    } else {
-      await base44.entities.MembershipStatus.create(payload);
-    }
-    queryClient.invalidateQueries({ queryKey: ["allMemberships"] });
-    toast.success(`${user.full_name || email} marked as ${newActive ? "Active" : "Inactive"}`);
+  // Helper to calculate if member is active based on paid_through + 2-day grace
+  const isActiveByDate = (m) => {
+    if (!m?.paid_through) return false;
+    const paidThroughDate = new Date(m.paid_through);
+    const graceDeadline = new Date(paidThroughDate.getTime() + 2 * 24 * 60 * 60 * 1000);
+    return new Date() <= graceDeadline;
   };
 
   const setPaidThrough = async (user, date) => {
@@ -85,6 +74,7 @@ export default function MembershipBillingPanel() {
       await base44.entities.MembershipStatus.create({ user_email: user.email, user_name: user.full_name || user.email, paid_through: date });
     }
     queryClient.invalidateQueries({ queryKey: ["allMemberships"] });
+    toast.success(`Paid through date updated for ${user.full_name || user.email}`);
   };
 
   return (
@@ -180,19 +170,11 @@ export default function MembershipBillingPanel() {
                     />
                   </div>
 
-                  {/* Status badge + toggle */}
+                  {/* Status badge (auto-calculated from paid_through + 2 days) */}
                   <div className="flex items-center gap-2 shrink-0">
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600"}`}>
-                      {isActive ? "Active" : "Inactive"}
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isActiveByDate(m) ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600"}`}>
+                      {isActiveByDate(m) ? "Active" : "Expired"}
                     </span>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => toggleMember(user, isActive)}
-                      className={`h-8 gap-1 text-xs ${isActive ? "text-red-500 hover:bg-red-50" : "text-green-600 hover:bg-green-50"}`}
-                    >
-                      {isActive ? <><ShieldOff className="w-3.5 h-3.5" /> Deactivate</> : <><Shield className="w-3.5 h-3.5" /> Activate</>}
-                    </Button>
                   </div>
                 </div>
               );

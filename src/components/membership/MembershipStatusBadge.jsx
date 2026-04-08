@@ -13,8 +13,15 @@ export default function MembershipStatusBadge({ userEmail }) {
   });
 
   const membership = memberships[0] || null;
-  const isActive = membership?.is_active ?? false;
   const paidThrough = membership?.paid_through;
+  
+  // Calculate active status based on paid_through + 2-day grace period
+  let isActive = false;
+  if (paidThrough) {
+    const paidThroughDate = new Date(paidThrough);
+    const graceDeadline = new Date(paidThroughDate.getTime() + 2 * 24 * 60 * 60 * 1000); // +2 days
+    isActive = new Date() <= graceDeadline;
+  }
 
   return (
     <div className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-sm font-semibold ${

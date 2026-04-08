@@ -31,7 +31,14 @@ export default function MembershipGate({ user, children }) {
   if (isLoading) return children;
 
   const membership = memberships[0] || null;
-  const isActive = membership?.is_active ?? false;
+  
+  // Calculate active status based on paid_through + 2-day grace period
+  let isActive = false;
+  if (membership?.paid_through) {
+    const paidThroughDate = new Date(membership.paid_through);
+    const graceDeadline = new Date(paidThroughDate.getTime() + 2 * 24 * 60 * 60 * 1000); // +2 days
+    isActive = new Date() <= graceDeadline;
+  }
 
   if (isActive) return children;
 
