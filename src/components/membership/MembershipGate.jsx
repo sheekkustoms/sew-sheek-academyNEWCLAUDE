@@ -29,7 +29,10 @@ export default function MembershipGate({ user, children, allowInactive = false }
   const isPreviewMode = localStorage.getItem("member_preview_mode") === "true";
   if (isTrueAdmin(user) && !isPreviewMode) return children;
 
-  // allowInactive = Dashboard page — always let them through to see their status
+  // Wait for user to load before making any access decision
+  if (!user) return null;
+
+  // Wait for membership query to finish before blocking anyone
   if (isLoading) return allowInactive ? children : null;
 
   const membership = memberships[0] || null;
@@ -37,11 +40,16 @@ export default function MembershipGate({ user, children, allowInactive = false }
   // Check for admin override (force disabled)
   const isForceDisabled = membership?.admin_override === true;
 
-  // Calculate active status based on paid_through + 2-day grace period
+  // Calculate active status: paid_through date (with 2-day grace) OR explicit is_active flag
   let isActive = false;
-  if (!isForceDisabled && membership?.paid_through) {
-    const graceDeadline = new Date(new Date(membership.paid_through).getTime() + 2 * 24 * 60 * 60 * 1000);
-    isActive = new Date() <= graceDeadline;
+  if (!isForceDisabled && membership) {
+    if (membership.paid_through) {
+      const graceDeadline = new Date(new Date(membership.paid_through).getTime() + 2 * 24 * 60 * 60 * 1000);
+      isActive = new Date() <= graceDeadline;
+    } else if (membership.is_active === true) {
+      // Legacy: manually set active without a paid_through date
+      isActive = true;
+    }
   }
 
   // If active — always show content
