@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
+import { useActivityTracker } from "@/hooks/useActivityTracker";
 import { useQuery } from "@tanstack/react-query";
 import { BookOpen, Search, Download } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -28,6 +29,9 @@ const getPlayerInfo = (raw) => {
 export default function TutorialsHub() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
+
+  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
+  useActivityTracker(user, "TutorialsHub");
 
   const { data: allClasses = [], isLoading } = useQuery({
     queryKey: ["tutorialsHub"],

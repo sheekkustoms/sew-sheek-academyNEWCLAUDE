@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
+import { useQuery as useUserQuery } from "@tanstack/react-query";
+import { useActivityTracker } from "@/hooks/useActivityTracker";
 import { useQuery } from "@tanstack/react-query";
 import { PlayCircle, Download, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -18,6 +20,9 @@ const getPlayerInfo = (raw) => {
 
 export default function ReplaysHub() {
   const [search, setSearch] = useState("");
+
+  const { data: user } = useUserQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
+  useActivityTracker(user, "ReplaysHub");
 
   const { data: allClasses = [], isLoading } = useQuery({
     queryKey: ["replaysHub"],

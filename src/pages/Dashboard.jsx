@@ -14,6 +14,7 @@ import { getLevelFromXP, loadThresholds } from "@/components/shared/XPBar";
 import moment from "moment";
 import MembershipGate from "@/components/membership/MembershipGate";
 import MembershipStatusBadge from "@/components/membership/MembershipStatusBadge";
+import { useActivityTracker } from "@/hooks/useActivityTracker";
 
 function ContentTypeCard({ icon: Icon, title, desc, page, color, count }) {
   return (
@@ -77,6 +78,7 @@ export default function Dashboard() {
   });
 
   useEffect(() => { loadThresholds(true).then(setThresholds); }, []);
+  useActivityTracker(user, "Dashboard");
 
   if (!user) {
     return <div className="flex items-center justify-center min-h-[60vh]"><Loader2 className="w-6 h-6 animate-spin text-gray-400" /></div>;

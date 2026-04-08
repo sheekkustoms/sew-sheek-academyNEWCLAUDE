@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
+import { useActivityTracker } from "@/hooks/useActivityTracker";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Settings, Video, Download, Radio, PlayCircle, ExternalLink, Calendar } from "lucide-react";
@@ -211,6 +212,7 @@ export default function Classes() {
   const [showAdminEditor, setShowAdminEditor] = useState(false);
 
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
+  useActivityTracker(user, "Classes");
   const isAdmin = user?.role === "admin";
 
   const { data: courses = [], isLoading: coursesLoading } = useQuery({

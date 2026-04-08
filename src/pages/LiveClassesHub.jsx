@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
+import { useActivityTracker } from "@/hooks/useActivityTracker";
 import { useQuery } from "@tanstack/react-query";
 import { Radio, Calendar, ExternalLink, Download, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -51,6 +52,9 @@ const getPlayerInfo = (raw) => {
 };
 
 export default function LiveClassesHub() {
+  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
+  useActivityTracker(user, "LiveClassesHub");
+
   const { data: allClasses = [], isLoading } = useQuery({
     queryKey: ["liveClassesHub"],
     queryFn: () => base44.entities.LiveClass.list("-scheduled_at", 100),

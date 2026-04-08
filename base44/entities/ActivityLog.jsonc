@@ -1,0 +1,31 @@
+{
+  "name": "ActivityLog",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Display name of the user"
+    },
+    "page": {
+      "type": "string",
+      "description": "Page or section visited"
+    },
+    "action": {
+      "type": "string",
+      "description": "What they did (e.g. visited, played video, completed lesson)"
+    },
+    "details": {
+      "type": "string",
+      "description": "Extra context like class title or course name"
+    }
+  },
+  "required": [
+    "user_email",
+    "page",
+    "action"
+  ]
+}
