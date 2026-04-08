@@ -3,7 +3,6 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { useActivityTracker } from "@/hooks/useActivityTracker";
 import MembershipGate from "@/components/membership/MembershipGate";
-import { useQuery } from "@tanstack/react-query";
 import { PlayCircle, Download, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import ReplayPlayer from "../components/classes/ReplayPlayer";
