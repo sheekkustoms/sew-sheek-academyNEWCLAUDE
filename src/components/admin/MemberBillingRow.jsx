@@ -24,7 +24,7 @@ export default function MemberBillingRow({ user, membership, onApplyMonths, onTo
         {membership?.admin_override && <p className="text-xs text-amber-500">⚠ Admin override active</p>}
       </div>
 
-      {/* Months paid selector */}
+      {/* Months paid selector + billing dates */}
       <div className="hidden sm:flex flex-col items-center gap-1">
         <p className="text-[10px] text-gray-400 uppercase">Months Paid</p>
         <div className="flex items-center gap-1">
@@ -44,8 +44,13 @@ export default function MemberBillingRow({ user, membership, onApplyMonths, onTo
             Apply
           </button>
         </div>
-        {paidThrough && (
-          <p className="text-[9px] text-gray-400">thru {moment(paidThrough).format("MMM D, YYYY")}</p>
+        {paidThrough ? (
+          <div className="text-center">
+            <p className="text-[9px] text-gray-500">Paid through: <span className="font-semibold text-gray-700">{moment(paidThrough).format("MMM D, YYYY")}</span></p>
+            <p className="text-[9px] text-gray-500">Next due: <span className="font-semibold text-[#D4AF37]">{moment(paidThrough).format("MMM D, YYYY")}</span></p>
+          </div>
+        ) : (
+          <p className="text-[9px] text-gray-400">No date set</p>
         )}
       </div>
 
