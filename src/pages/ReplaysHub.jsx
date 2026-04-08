@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery as useUserQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useActivityTracker } from "@/hooks/useActivityTracker";
+import MembershipGate from "@/components/membership/MembershipGate";
 import { useQuery } from "@tanstack/react-query";
 import { PlayCircle, Download, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -21,7 +22,7 @@ const getPlayerInfo = (raw) => {
 export default function ReplaysHub() {
   const [search, setSearch] = useState("");
 
-  const { data: user } = useUserQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
+  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
   useActivityTracker(user, "ReplaysHub");
 
   const { data: allClasses = [], isLoading } = useQuery({
@@ -45,6 +46,7 @@ export default function ReplaysHub() {
   );
 
   return (
+    <MembershipGate user={user}>
     <div className="max-w-5xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
@@ -107,5 +109,6 @@ export default function ReplaysHub() {
         </div>
       )}
     </div>
+    </MembershipGate>
   );
 }

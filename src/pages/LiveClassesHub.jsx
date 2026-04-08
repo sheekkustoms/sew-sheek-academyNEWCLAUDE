@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useActivityTracker } from "@/hooks/useActivityTracker";
+import MembershipGate from "@/components/membership/MembershipGate";
 import { useQuery } from "@tanstack/react-query";
 import { Radio, Calendar, ExternalLink, Download, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -56,6 +57,7 @@ export default function LiveClassesHub() {
   useActivityTracker(user, "LiveClassesHub");
 
   const { data: allClasses = [], isLoading } = useQuery({
+
     queryKey: ["liveClassesHub"],
     queryFn: () => base44.entities.LiveClass.list("-scheduled_at", 100),
     staleTime: 30000,
@@ -91,6 +93,7 @@ export default function LiveClassesHub() {
   };
 
   return (
+    <MembershipGate user={user}>
     <div className="max-w-5xl mx-auto space-y-8">
       <div>
         <h1 className="text-2xl md:text-3xl font-extrabold text-[#111] tracking-tight">Live Classes</h1>
@@ -142,6 +145,7 @@ export default function LiveClassesHub() {
         </>
       )}
     </div>
+    </MembershipGate>
   );
 }
 

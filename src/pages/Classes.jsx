@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useActivityTracker } from "@/hooks/useActivityTracker";
+import MembershipGate from "@/components/membership/MembershipGate";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Settings, Video, Download, Radio, PlayCircle, ExternalLink, Calendar } from "lucide-react";
@@ -276,6 +277,7 @@ export default function Classes() {
   const showPrerecorded = filter === "all" || filter === "prerecorded";
 
   return (
+    <MembershipGate user={user}>
     <div className="max-w-7xl mx-auto">
       {/* Top bar */}
       <div className="flex items-start justify-between gap-3 mb-6">
@@ -443,5 +445,6 @@ export default function Classes() {
         </Dialog>
       )}
     </div>
+    </MembershipGate>
   );
 }

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useActivityTracker } from "@/hooks/useActivityTracker";
+import MembershipGate from "@/components/membership/MembershipGate";
 import { useQuery } from "@tanstack/react-query";
 import { BookOpen, Search, Download } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -48,6 +49,7 @@ export default function TutorialsHub() {
   });
 
   return (
+    <MembershipGate user={user}>
     <div className="max-w-5xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
@@ -124,5 +126,6 @@ export default function TutorialsHub() {
         </div>
       )}
     </div>
+    </MembershipGate>
   );
 }

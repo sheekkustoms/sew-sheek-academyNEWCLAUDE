@@ -126,7 +126,7 @@ export default function Dashboard() {
   const typePage = { live: "LiveClassesHub", replay: "ReplaysHub", tutorial: "TutorialsHub", course: "Classes" };
 
   return (
-    <MembershipGate user={user}>
+    <MembershipGate user={user} allowInactive={true}>
     <div className="max-w-6xl mx-auto space-y-8">
       {/* Membership Status Bar — always visible for members */}
       {user?.role !== "admin" && (
