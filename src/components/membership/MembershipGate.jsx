@@ -32,6 +32,21 @@ export default function MembershipGate({ user, children }) {
 
   const membership = memberships[0] || null;
   
+  // Check for admin override (force disabled)
+  if (membership?.admin_override) {
+    return (
+      <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center p-6">
+        <div className="bg-white rounded-2xl border border-[#EEEEEE] shadow-lg p-8 max-w-md text-center">
+          <div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center mx-auto mb-4">
+            <span className="text-3xl">🚫</span>
+          </div>
+          <h2 className="text-xl font-bold text-[#111] mb-2">Account Disabled</h2>
+          <p className="text-sm text-[#666]">{settings?.inactive_message || "Your account has been disabled. Please contact administration."}</p>
+        </div>
+      </div>
+    );
+  }
+  
   // Calculate active status based on paid_through + 2-day grace period
   let isActive = false;
   if (membership?.paid_through) {

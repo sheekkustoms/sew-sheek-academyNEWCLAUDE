@@ -15,6 +15,16 @@ export default function MembershipStatusBadge({ userEmail }) {
   const membership = memberships[0] || null;
   const paidThrough = membership?.paid_through;
   
+  // Check for admin override (force disabled)
+  if (membership?.admin_override) {
+    return (
+      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-100 border border-orange-200">
+        <span className="text-orange-600 text-xs">🚫</span>
+        <span className="text-xs font-semibold text-orange-700">Disabled</span>
+      </div>
+    );
+  }
+  
   // Calculate active status based on paid_through + 2-day grace period
   let isActive = false;
   if (paidThrough) {

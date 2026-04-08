@@ -77,6 +77,24 @@ export default function MembershipBillingPanel() {
     toast.success(`Paid through date updated for ${user.full_name || user.email}`);
   };
 
+  const toggleForceDisable = async (user) => {
+    const existing = getMembership(user.email);
+    if (existing) {
+      const newOverride = !existing.admin_override;
+      await base44.entities.MembershipStatus.update(existing.id, { admin_override: newOverride, is_active: !newOverride });
+    } else {
+      await base44.entities.MembershipStatus.create({ user_email: user.email, user_name: user.full_name || user.email, admin_override: true, is_active: false });
+    }
+    queryClient.invalidateQueries({ queryKey: ["allMemberships"] });
+    toast.success(`${user.full_name || user.email} ${existing?.admin_override ? "re-enabled" : "force disabled"}`);
+  };
+
+  // Updated helper: respects admin_override
+  const getEffectiveStatus = (m) => {
+    if (m?.admin_override) return false; // Force disabled
+    return isActiveByDate(m);
+  };
+
   return (
     <div className="space-y-6">
       {/* Global Settings */}
@@ -170,11 +188,19 @@ export default function MembershipBillingPanel() {
                     />
                   </div>
 
-                  {/* Status badge (auto-calculated from paid_through + 2 days) */}
+                  {/* Status badge + force disable toggle */}
                   <div className="flex items-center gap-2 shrink-0">
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isActiveByDate(m) ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600"}`}>
-                      {isActiveByDate(m) ? "Active" : "Expired"}
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${getEffectiveStatus(m) ? "bg-green-100 text-green-700" : m?.admin_override ? "bg-orange-100 text-orange-700" : "bg-red-100 text-red-600"}`}>
+                      {m?.admin_override ? "Disabled" : getEffectiveStatus(m) ? "Active" : "Expired"}
                     </span>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => toggleForceDisable(user)}
+                      className={`h-7 gap-1 text-[10px] ${m?.admin_override ? "text-green-600 hover:bg-green-50" : "text-orange-600 hover:bg-orange-50"}`}
+                    >
+                      {m?.admin_override ? "Re-enable" : "Force Disable"}
+                    </Button>
                   </div>
                 </div>
               );
