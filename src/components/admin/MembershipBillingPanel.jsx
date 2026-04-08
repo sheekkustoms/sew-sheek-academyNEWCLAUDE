@@ -66,6 +66,12 @@ export default function MembershipBillingPanel() {
     return new Date() <= graceDeadline;
   };
 
+  // Calculate next due date (1st of next month)
+  const getNextDueDate = () => {
+    const today = new Date();
+    return new Date(today.getFullYear(), today.getMonth() + 1, 1);
+  };
+
   const setPaidThrough = async (user, date) => {
     const existing = getMembership(user.email);
     if (existing) {
@@ -142,10 +148,18 @@ export default function MembershipBillingPanel() {
 
       {/* Member List */}
       <div className="bg-white border border-gray-100 rounded-2xl p-5 space-y-3 shadow-sm">
-        <h3 className="font-semibold text-gray-800 flex items-center gap-2">
-          <RefreshCw className="w-4 h-4 text-blue-500" /> Member Billing Status
-        </h3>
-        <p className="text-xs text-gray-400">Manually manage billing status. Stripe will auto-update these when payments are received.</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+              <RefreshCw className="w-4 h-4 text-blue-500" /> Member Billing Status
+            </h3>
+            <p className="text-xs text-gray-400 mt-1">Manually manage billing status. Stripe will auto-update these when payments are received.</p>
+          </div>
+          <div className="text-right">
+            <p className="text-[10px] text-gray-400 uppercase tracking-wide font-semibold">Next Due Date</p>
+            <p className="text-sm font-bold text-gray-800">{moment(getNextDueDate()).format("MMM Do")}</p>
+          </div>
+        </div>
 
         {isLoading ? (
           <div className="space-y-2">
