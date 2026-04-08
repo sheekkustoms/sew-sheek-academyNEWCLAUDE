@@ -5,39 +5,45 @@ import { CheckCircle2, XCircle } from "lucide-react";
 import moment from "moment";
 
 export default function MembershipStatusBadge({ userEmail }) {
-  const { data: memberships = [] } = useQuery({
+  const { data: memberships = [], isLoading } = useQuery({
     queryKey: ["myMembership", userEmail],
     queryFn: () => base44.entities.MembershipStatus.filter({ user_email: userEmail }),
     enabled: !!userEmail,
     staleTime: 60000,
   });
 
-  const membership = memberships[0] || null;
-  const paidThrough = membership?.paid_through;
-  
-  // Check for admin override (force disabled)
-  if (membership?.admin_override) {
+  if (isLoading) {
     return (
-      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-100 border border-orange-200">
-        <span className="text-orange-600 text-xs">🚫</span>
-        <span className="text-xs font-semibold text-orange-700">Disabled</span>
+      <div className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl border bg-gray-50 border-gray-200 animate-pulse">
+        <div className="w-5 h-5 rounded-full bg-gray-200 shrink-0" />
+        <div className="h-4 w-48 bg-gray-200 rounded" />
       </div>
     );
   }
-  
+
+  const membership = memberships[0] || null;
+  const paidThrough = membership?.paid_through;
+
+  // Admin override = force disabled
+  if (membership?.admin_override) {
+    return (
+      <div className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl border bg-orange-50 border-orange-200 text-orange-700 font-bold">
+        <span className="text-lg">🚫</span>
+        <span className="text-base">Membership Status: DISABLED</span>
+      </div>
+    );
+  }
+
   // Calculate active status based on paid_through + 2-day grace period
   let isActive = false;
   if (paidThrough) {
-    const paidThroughDate = new Date(paidThrough);
-    const graceDeadline = new Date(paidThroughDate.getTime() + 2 * 24 * 60 * 60 * 1000); // +2 days
+    const graceDeadline = new Date(new Date(paidThrough).getTime() + 2 * 24 * 60 * 60 * 1000);
     isActive = new Date() <= graceDeadline;
   }
 
   return (
-    <div className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl border text-sm font-bold ${
-      isActive
-        ? "bg-green-50 border-green-200 text-green-700"
-        : "bg-red-50 border-red-200 text-red-600"
+    <div className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl border font-bold ${
+      isActive ? "bg-green-50 border-green-200 text-green-700" : "bg-red-50 border-red-200 text-red-600"
     }`}>
       {isActive
         ? <CheckCircle2 className="w-5 h-5 shrink-0" />
