@@ -42,15 +42,15 @@ export default function MembershipGate({ user, children, allowInactive = false }
   // Check for admin override (force disabled)
   const isForceDisabled = membership?.admin_override === true;
 
-  // Calculate active status: paid_through date (with 2-day grace) OR explicit is_active flag
+  // Calculate active status: is_active flag OR paid_through date (with 2-day grace)
   let isActive = false;
   if (!isForceDisabled && membership) {
-    if (membership.paid_through) {
+    // Explicit is_active flag always wins
+    if (membership.is_active === true) {
+      isActive = true;
+    } else if (membership.paid_through) {
       const graceDeadline = new Date(new Date(membership.paid_through).getTime() + 2 * 24 * 60 * 60 * 1000);
       isActive = new Date() <= graceDeadline;
-    } else if (membership.is_active === true) {
-      // Legacy: manually set active without a paid_through date
-      isActive = true;
     }
   }
 
