@@ -39,6 +39,9 @@ export default function MembershipGate({ user, children, allowInactive = false }
 
   const membership = memberships[0] || null;
 
+  // In preview mode with no membership record, grant access so admin can see the experience
+  if (isPreviewMode && !membership) return children;
+
   // Check for admin override (force disabled)
   const isForceDisabled = membership?.admin_override === true;
 
