@@ -181,7 +181,7 @@ function LiveCard({ cls, isLive, isPast, isJoinable }) {
         {cls.scheduled_at && !isLive && <Countdown targetDate={cls.scheduled_at} />}
         {cls.description && <p className="text-xs text-[#666] line-clamp-2">{cls.description}</p>}
         <div className="flex gap-2 pt-2 border-t border-[#F5F5F5]">
-          {(!isPast || isJoinable) && cls.zoom_url && (
+          {(isLive || !isPast || isJoinable) && cls.zoom_url && (
             <a href={cls.zoom_url.startsWith("http") ? cls.zoom_url : `https://${cls.zoom_url}`} target="_blank" rel="noopener noreferrer" className="flex-1">
               <Button size="sm" className="w-full bg-red-500 hover:bg-red-600 text-white gap-1.5 text-xs font-semibold rounded-xl h-8">
                 <ExternalLink className="w-3.5 h-3.5" /> Join Class
