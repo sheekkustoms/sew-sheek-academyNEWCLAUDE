@@ -17,6 +17,12 @@ const isTrueAdmin = (user) => {
 };
 
 export default function MembershipGate({ user, children, allowInactive = false }) {
+  const isPreviewMode = localStorage.getItem("member_preview_mode") === "true";
+
+  // Admin bypass — ALWAYS first, before any loading/query logic
+  // In preview mode, admins see the member experience
+  if (user?.role === "admin" && !isPreviewMode) return children;
+
   const { data: memberships = [], isLoading } = useQuery({
     queryKey: ["myMembership", user?.email],
     queryFn: () => base44.entities.MembershipStatus.filter({ user_email: user.email }),
@@ -24,10 +30,6 @@ export default function MembershipGate({ user, children, allowInactive = false }
     staleTime: 30000,
     refetchInterval: 60000,
   });
-
-  // True admin bypass — unless in member preview mode
-  const isPreviewMode = localStorage.getItem("member_preview_mode") === "true";
-  if (isTrueAdmin(user) && !isPreviewMode) return children;
 
   // Wait for user to load before making any access decision
   if (!user) return null;
