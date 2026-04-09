@@ -150,8 +150,10 @@ export default function LiveClassesHub() {
 }
 
 function LiveCard({ cls, isLive, isPast, isJoinable }) {
-  return (
-    <div className="bg-white border border-[#EEEEEE] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all">
+  const zoomUrl = cls.zoom_url ? (cls.zoom_url.startsWith("http") ? cls.zoom_url : `https://${cls.zoom_url}`) : null;
+
+  const card = (
+    <div className={`bg-white border rounded-2xl overflow-hidden shadow-sm transition-all ${isLive && zoomUrl ? "border-red-300 hover:shadow-lg hover:border-red-400 cursor-pointer" : "border-[#EEEEEE] hover:shadow-md"}`}>
       {cls.thumbnail_url ? (
         <img src={cls.thumbnail_url} alt={cls.title} className="w-full aspect-video object-cover" />
       ) : (
@@ -209,4 +211,9 @@ function LiveCard({ cls, isLive, isPast, isJoinable }) {
       </div>
     </div>
   );
+
+  if (isLive && zoomUrl) {
+    return <a href={zoomUrl} target="_blank" rel="noopener noreferrer">{card}</a>;
+  }
+  return card;
 }
