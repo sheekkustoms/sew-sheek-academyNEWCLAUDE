@@ -212,8 +212,5 @@ function LiveCard({ cls, isLive, isPast, isJoinable }) {
     </div>
   );
 
-  if (isLive && zoomUrl) {
-    return <a href={zoomUrl} target="_blank" rel="noopener noreferrer">{card}</a>;
-  }
   return card;
 }
