@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Shield, Users, FileText, Pin, Trash2, CheckCircle, XCircle, Megaphone, BarChart2, Ban, Gamepad2, BookOpen, UserPlus, Copy, Check, Brain, Video, Zap, Tags, Mail, Bell, UserX, Star, Trophy } from "lucide-react";
+import { Shield, Users, FileText, Pin, Trash2, CheckCircle, XCircle, Megaphone, BarChart2, Ban, Gamepad2, BookOpen, UserPlus, Copy, Check, Brain, Video, Zap, Tags, Mail, Bell, UserX, Star, Trophy, GraduationCap } from "lucide-react";
 import QuizBuilder from "../components/admin/QuizBuilder";
 import CourseManager from "../components/admin/CourseManager";
 import WeeklyChallengeManager from "../components/admin/WeeklyChallengeManager";
@@ -16,6 +16,7 @@ import PushNotificationPanel from "../components/admin/PushNotificationPanel";
 import AnnouncementPanel from "../components/admin/AnnouncementPanel";
 import MembershipBillingPanel from "../components/admin/MembershipBillingPanel";
 import MemberActivityPanel from "../components/admin/MemberActivityPanel";
+import CourseAssignmentPanel from "../components/admin/CourseAssignmentPanel";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -256,6 +257,9 @@ export default function AdminDashboard() {
           <TabsTrigger value="courses" className="flex items-center gap-1">
             <BookOpen className="w-3.5 h-3.5" /> Courses
           </TabsTrigger>
+          <TabsTrigger value="assign" className="flex items-center gap-1">
+            <GraduationCap className="w-3.5 h-3.5" /> Assign Courses
+          </TabsTrigger>
           <TabsTrigger value="users">Students</TabsTrigger>
           <TabsTrigger value="invite" className="flex items-center gap-1">
             <UserPlus className="w-3.5 h-3.5" /> Invite
@@ -392,6 +396,13 @@ export default function AdminDashboard() {
         {/* Course Manager */}
         <TabsContent value="courses" className="mt-4">
           <CourseManager />
+        </TabsContent>
+
+        {/* Course Assignment */}
+        <TabsContent value="assign" className="mt-4">
+          <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
+            <CourseAssignmentPanel />
+          </div>
         </TabsContent>
 
         {/* Weekly Challenge Manager */}
