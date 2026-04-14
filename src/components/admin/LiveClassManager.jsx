@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Trash2, Plus, Video, Edit2, X, Upload, CheckCircle2, Bell, Radio, PlayCircle, Eye, EyeOff, BookOpen, Zap } from "lucide-react";
+import { Trash2, Plus, Video, Edit2, X, Upload, CheckCircle2, Bell, Radio, PlayCircle, Eye, EyeOff, BookOpen, Zap, ImagePlus } from "lucide-react";
 import moment from "moment";
 
 const EMPTY = {
@@ -29,6 +29,7 @@ export default function LiveClassManager() {
   const [uploadingPdf, setUploadingPdf] = useState(false);
   const [uploadingThumb, setUploadingThumb] = useState(false);
   const [notifyMembers, setNotifyMembers] = useState(false);
+  const [uploadingThumbFor, setUploadingThumbFor] = useState(null); // class id being uploaded
 
   const { data: classes = [] } = useQuery({
     queryKey: ["adminLiveClasses"],
@@ -121,6 +122,18 @@ export default function LiveClassManager() {
     const { file_url } = await base44.integrations.Core.UploadFile({ file });
     setForm(f => ({ ...f, thumbnail_url: file_url }));
     setUploadingThumb(false);
+  };
+
+  const handleCardThumbUpload = async (e, cls) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingThumbFor(cls.id);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    await base44.entities.LiveClass.update(cls.id, { thumbnail_url: file_url });
+    queryClient.invalidateQueries({ queryKey: ["adminLiveClasses"] });
+    queryClient.invalidateQueries({ queryKey: ["liveClassesAll"] });
+    queryClient.invalidateQueries({ queryKey: ["libraryClasses"] });
+    setUploadingThumbFor(null);
   };
 
   const toggleStatus = async (cls) => {
@@ -330,6 +343,22 @@ export default function LiveClassManager() {
       <div className="space-y-2">
         {classes.map(cls => (
           <div key={cls.id} className="bg-white border border-gray-100 rounded-xl px-4 py-3 flex items-start justify-between gap-3 shadow-sm hover:border-gray-300 transition-all">
+            {/* Thumbnail preview/upload */}
+            <div className="relative shrink-0 w-14 h-14 rounded-lg overflow-hidden border border-gray-200 bg-gray-50 cursor-pointer group"
+              onClick={() => document.getElementById(`thumb-upload-${cls.id}`).click()}>
+              {cls.thumbnail_url
+                ? <img src={cls.thumbnail_url} className="w-full h-full object-cover" />
+                : <div className="w-full h-full flex items-center justify-center"><ImagePlus className="w-5 h-5 text-gray-300" /></div>
+              }
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                {uploadingThumbFor === cls.id
+                  ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  : <ImagePlus className="w-4 h-4 text-white" />}
+              </div>
+              <input id={`thumb-upload-${cls.id}`} type="file" accept="image/*" className="hidden"
+                onChange={e => handleCardThumbUpload(e, cls)} disabled={uploadingThumbFor === cls.id} />
+            </div>
+
             <div onClick={() => handleEdit(cls)} className="flex-1 cursor-pointer min-w-0">
               <div className="flex items-center gap-2 flex-wrap mb-0.5">
                 <p className="text-sm font-semibold text-gray-800 truncate">{cls.title}</p>
@@ -361,7 +390,7 @@ export default function LiveClassManager() {
                 <p className="text-xs text-gray-400">Prerecorded class</p>
               )}
             </div>
-            <div className="flex gap-1 shrink-0">
+            <div className="flex gap-1 shrink-0 items-center">
               <Button
                 size="icon" variant="ghost"
                 className={`w-8 h-8 ${cls.status === "published" ? "text-green-500 hover:bg-green-50" : "text-gray-400 hover:bg-gray-50"}`}
