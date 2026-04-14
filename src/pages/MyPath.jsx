@@ -48,6 +48,7 @@ export default function MyPath() {
 
   const saveAssessmentMutation = useMutation({
     mutationFn: async (data) => {
+      console.log("[MyPath] saveAssessmentMutation called with:", data);
       const { answers, experienceScore } = data;
       
       let tier, startPhase, startModule;
@@ -66,6 +67,7 @@ export default function MyPath() {
         startModule = 1;
       }
 
+      console.log("[MyPath] Creating assessment with tier:", tier, "score:", experienceScore);
       await base44.asServiceRole.entities.PlacementAssessment.create({
         user_email: user.email,
         tier,
@@ -76,9 +78,13 @@ export default function MyPath() {
         completed: true,
       });
 
+      console.log("[MyPath] Assessment created, setting tier and state");
       setAssignedTier(tier);
       setAssessmentState("results");
     },
+    onError: (error) => {
+      console.error("[MyPath] Mutation error:", error);
+    }
   });
 
   const published = courses.filter(c => c.is_published).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
