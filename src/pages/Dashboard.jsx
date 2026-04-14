@@ -56,10 +56,10 @@ export default function Dashboard() {
 
   return (
     <MembershipGate user={user} allowInactive>
-      <div className="max-w-2xl mx-auto space-y-8 pb-20">
+      <div className="max-w-3xl mx-auto space-y-8 pb-20">
 
         {/* ── Hero ── */}
-        <div className="relative rounded-3xl overflow-hidden text-white" style={{
+        <div className="relative rounded-3xl overflow-hidden text-white shadow-xl" style={{
           background: "linear-gradient(135deg, #0f0220 0%, #2d1060 40%, #6B3FA0 100%)"
         }}>
           {/* Dot pattern overlay */}
@@ -71,7 +71,7 @@ export default function Dashboard() {
           <div className="absolute -top-12 -right-12 w-56 h-56 rounded-full bg-white/5" />
           <div className="absolute -bottom-8 -left-8 w-40 h-40 rounded-full bg-[#D4AF37]/10" />
 
-          <div className="relative p-7 pb-6">
+          <div className="relative p-8 md:p-10 pb-8">
             <div className="flex items-center justify-between mb-4">
               <p className="text-[#D4AF37] text-[11px] font-bold uppercase tracking-[0.2em]">Oh Sew Sheek Academy</p>
               {streakDays > 0 && (
@@ -82,7 +82,7 @@ export default function Dashboard() {
               )}
             </div>
 
-            <h1 className="text-2xl md:text-3xl font-extrabold leading-tight mb-2 tracking-tight">
+            <h1 className="text-3xl md:text-4xl font-extrabold leading-tight mb-2 tracking-tight">
               {isNewStudent ? `Welcome, ${firstName}! 🎉` : `Keep going, ${firstName}! 💪`}
             </h1>
             <p className="text-white/65 text-sm mb-6 leading-relaxed">
