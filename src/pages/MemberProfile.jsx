@@ -57,6 +57,12 @@ export default function MemberProfile() {
     enabled: !!targetEmail,
   });
 
+  const { data: assessment } = useQuery({
+    queryKey: ["memberAssessment", targetEmail],
+    queryFn: () => base44.entities.PlacementAssessment.filter({ user_email: targetEmail }).then(r => r[0] || null),
+    enabled: !!targetEmail,
+  });
+
   const points = userPoints?.[0];
   const displayName = profileUser
     ? (profileUser.data?.display_name || profileUser.full_name || profileUser.email?.split("@")[0])
@@ -84,6 +90,7 @@ export default function MemberProfile() {
         avatarUrl={avatarUrl}
         role={role}
         isOwnProfile={targetEmail === currentUser?.email}
+        tier={assessment?.completed ? assessment?.tier : null}
       />
 
       <ProfileStats

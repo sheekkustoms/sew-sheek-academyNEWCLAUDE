@@ -1,0 +1,67 @@
+{
+  "name": "PlacementAssessment",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the student"
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "tier_1",
+        "tier_2",
+        "tier_3"
+      ],
+      "description": "Assigned tier: tier_1 (Fresh Start), tier_2 (Rusty Creator), tier_3 (Skilled Builder)"
+    },
+    "experience_score": {
+      "type": "number",
+      "description": "Total score from experience questions (1-5)"
+    },
+    "answers": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Array of {question_id, answer_index} objects"
+    },
+    "starting_phase": {
+      "type": "string",
+      "description": "Phase number they start in (e.g., 'Phase 1')"
+    },
+    "starting_module": {
+      "type": "number",
+      "description": "Module number they start in within their phase"
+    },
+    "recommended_projects": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "3 project IDs recommended for this tier"
+    },
+    "primary_goal": {
+      "type": "string",
+      "enum": [
+        "learn_skill",
+        "personal",
+        "business",
+        "mixed"
+      ],
+      "description": "Primary goal from question 6"
+    },
+    "creation_focus": {
+      "type": "string",
+      "description": "What they want to create (from question 7)"
+    },
+    "completed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether assessment has been completed"
+    }
+  },
+  "required": [
+    "user_email"
+  ]
+}

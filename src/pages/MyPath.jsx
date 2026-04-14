@@ -1,13 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Lock, CheckCircle, ChevronRight, Clock, BookOpen, Zap } from "lucide-react";
 import MembershipGate from "@/components/membership/MembershipGate";
 import { useActivityTracker } from "@/hooks/useActivityTracker";
+import PlacementQuiz from "@/components/assessment/PlacementQuiz";
+import PlacementResults from "@/components/assessment/PlacementResults";
 
 export default function MyPath() {
+  const queryClient = useQueryClient();
+  const [assessmentState, setAssessmentState] = useState("check");
+  const [quizData, setQuizData] = useState(null);
+  const [assignedTier, setAssignedTier] = useState(null);
+
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
   useActivityTracker(user, "MyPath");
 
@@ -33,6 +40,47 @@ export default function MyPath() {
     enabled: !!user?.email,
   });
 
+  const { data: assessment } = useQuery({
+    queryKey: ["placementAssessment", user?.email],
+    queryFn: () => base44.entities.PlacementAssessment.filter({ user_email: user.email }).then(r => r[0] || null),
+    enabled: !!user?.email,
+  });
+
+  const saveAssessmentMutation = useMutation({
+    mutationFn: async (data) => {
+      const { answers, experienceScore } = data;
+      
+      let tier, startPhase, startModule;
+      if (experienceScore <= 10) {
+        tier = "tier_1";
+        startPhase = "Phase 1";
+        startModule = 1;
+      } else if (experienceScore <= 16) {
+        tier = "tier_2";
+        startPhase = "Phase 1";
+        startModule = 3;
+      } else {
+        tier = "tier_3";
+        const isSublamation = answers[6] === 2;
+        startPhase = isSublamation ? "Phase 3" : "Phase 2";
+        startModule = 1;
+      }
+
+      await base44.asServiceRole.entities.PlacementAssessment.create({
+        user_email: user.email,
+        tier,
+        experience_score: experienceScore,
+        answers: Object.entries(answers).map(([qId, aIdx]) => ({ question_id: parseInt(qId), answer_index: aIdx })),
+        starting_phase: startPhase,
+        starting_module: startModule,
+        completed: true,
+      });
+
+      setAssignedTier(tier);
+      setAssessmentState("results");
+    },
+  });
+
   const published = courses.filter(c => c.is_published).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   const enrollmentMap = {};
@@ -48,6 +96,34 @@ export default function MyPath() {
       (r.score / r.total_questions) >= 0.9
     );
   };
+
+  // Check if assessment is needed
+  if (assessmentState === "check" && user && !assessment && !isLoading) {
+    setAssessmentState("quiz");
+  }
+
+  if (assessmentState === "quiz") {
+    return (
+      <PlacementQuiz
+        onComplete={(data) => {
+          setQuizData(data);
+          saveAssessmentMutation.mutate(data);
+        }}
+      />
+    );
+  }
+
+  if (assessmentState === "results" && assignedTier) {
+    return (
+      <PlacementResults
+        tier={assignedTier}
+        onStart={() => {
+          setAssessmentState("path");
+          queryClient.invalidateQueries({ queryKey: ["placementAssessment", user?.email] });
+        }}
+      />
+    );
+  }
 
   // Determine which courses are unlocked:
   // - First course: always unlocked

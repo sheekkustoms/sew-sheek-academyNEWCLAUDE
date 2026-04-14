@@ -5,7 +5,13 @@ import { MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import RoleBadge from "@/components/shared/RoleBadge";
 
-export default function ProfileHeader({ name, email, avatarUrl, role, isOwnProfile }) {
+const TIER_COLORS = {
+  tier_1: { color: "#4A9D6F", label: "Fresh Start" },
+  tier_2: { color: "#D4AF37", label: "Rusty Creator" },
+  tier_3: { color: "#6B3FA0", label: "Skilled Builder" },
+};
+
+export default function ProfileHeader({ name, email, avatarUrl, role, isOwnProfile, tier }) {
   // Map platform roles to badge types
   const badgeRole = role === "admin" ? "moderator" : (role === "coach" ? "coach" : null);
   const handle = "@" + (email?.split("@")[0] || "");
@@ -56,10 +62,16 @@ export default function ProfileHeader({ name, email, avatarUrl, role, isOwnProfi
           </div>
         </div>
 
-        <div className="space-y-1">
-          <div className="flex items-center gap-2 flex-nowrap">
-            <h1 className="text-xl font-extrabold text-[#111] truncate min-w-0">{name}</h1>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h1 className="text-xl font-extrabold text-[#111]">{name}</h1>
             {badgeRole && <RoleBadge role={badgeRole} />}
+            {tier && (
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold" style={{ backgroundColor: TIER_COLORS[tier]?.color + "20", color: TIER_COLORS[tier]?.color }}>
+                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: TIER_COLORS[tier]?.color }} />
+                {TIER_COLORS[tier]?.label}
+              </div>
+            )}
           </div>
           <p className="text-sm text-[#999]">{handle}</p>
         </div>

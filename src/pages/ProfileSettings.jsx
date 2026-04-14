@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Check, AlertCircle, Upload, Trash2, Bell, BellOff } from "lucide-react";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { Loader2, Check, AlertCircle, Upload, Trash2, Bell, BellOff, RotateCcw, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getDisplayName, updateUserDisplayName } from "@/components/shared/useDisplayName";
@@ -20,6 +20,12 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+const TIER_COLORS = {
+  tier_1: { color: "#4A9D6F", label: "Fresh Start" },
+  tier_2: { color: "#D4AF37", label: "Rusty Creator" },
+  tier_3: { color: "#6B3FA0", label: "Skilled Builder" },
+};
+
 export default function ProfileSettings() {
   const queryClient = useQueryClient();
   const [displayName, setDisplayName] = useState("");
@@ -30,6 +36,7 @@ export default function ProfileSettings() {
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [cropImageUrl, setCropImageUrl] = useState(null);
   const [pendingFile, setPendingFile] = useState(null);
+  const [reassessing, setReassessing] = useState(false);
 
   // Fetch current user
    const { data: user, isLoading: userLoading } = useQuery({
@@ -43,6 +50,21 @@ export default function ProfileSettings() {
          fullName: u.full_name,
        });
        return u;
+     },
+   });
+
+   const { data: assessment } = useQuery({
+     queryKey: ["placementAssessment", user?.email],
+     queryFn: () => base44.entities.PlacementAssessment.filter({ user_email: user.email }).then(r => r[0] || null),
+     enabled: !!user?.email,
+   });
+
+   const reassessmentMutation = useMutation({
+     mutationFn: async () => {
+       await base44.asServiceRole.entities.PlacementAssessment.update(assessment.id, {
+         completed: false,
+       });
+       queryClient.invalidateQueries({ queryKey: ["placementAssessment", user.email] });
      },
    });
 
@@ -427,6 +449,42 @@ export default function ProfileSettings() {
       <div className="mt-8 bg-white border border-gray-200 rounded-lg shadow-sm p-6">
         <NotificationSettings user={user} />
       </div>
+
+      {/* Placement Assessment Tier */}
+      {assessment && assessment.completed && (
+        <div className="mt-8 bg-white border border-gray-200 rounded-lg shadow-sm p-6 space-y-4">
+          <div className="flex items-center gap-3 mb-4">
+            <div
+              className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-xl"
+              style={{ backgroundColor: TIER_COLORS[assessment.tier]?.color }}
+            >
+              {assessment.tier === "tier_1" ? "1" : assessment.tier === "tier_2" ? "2" : "3"}
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Your Tier</p>
+              <p className="text-lg font-bold text-gray-900">{TIER_COLORS[assessment.tier]?.label}</p>
+            </div>
+          </div>
+          <p className="text-xs text-gray-600">
+            Starting point: <span className="font-semibold">{assessment.starting_phase} — Module {assessment.starting_module}</span>
+          </p>
+          <button
+            onClick={() => {
+              setReassessing(true);
+              reassessmentMutation.mutate();
+              setTimeout(() => setReassessing(false), 1000);
+            }}
+            disabled={reassessing}
+            className="w-full flex items-center justify-center gap-2 text-sm font-semibold py-2.5 px-4 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-900 transition-colors disabled:opacity-50"
+          >
+            <RotateCcw className="w-4 h-4" />
+            {reassessing ? "Processing..." : "Request Reassessment"}
+          </button>
+          <p className="text-[10px] text-gray-500">
+            ⚠ Reassessing will update your starting point but will not delete your completed lessons.
+          </p>
+        </div>
+      )}
 
       {/* Push Notifications Section */}
       <div className="mt-8 bg-white border border-gray-200 rounded-lg shadow-sm p-6 space-y-3">
