@@ -21,7 +21,7 @@ export default function ProfileHeader({ name, email, avatarUrl, role, isOwnProfi
           backgroundSize: "20px 20px"
         }} />
         <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full bg-white/5" />
-        <div className="absolute bottom-0 left-8 text-[#D4AF37]/20 text-4xl font-black tracking-widest select-none">SEW SHEEK</div>
+        <div className="absolute bottom-0 right-8 text-[#D4AF37]/20 text-4xl font-black tracking-widest select-none">SEW SHEEK</div>
       </div>
 
       <div className="px-6 pb-6">
