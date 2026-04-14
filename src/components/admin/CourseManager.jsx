@@ -26,6 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { createPageUrl } from "@/utils";
+import ModuleManager from "./ModuleManager";
 
 const CATEGORIES = [
   { value: "beginner_sewing", label: "Beginner Sewing" },
@@ -305,6 +306,7 @@ function CourseEditor({ course, onClose }) {
   const SIDE_MENU = [
     { id: "details", icon: Edit2, label: "Edit Details", sub: "Course Info & Settings" },
     { id: "settings", icon: Settings, label: "Settings", sub: "Configure Course Settings" },
+    { id: "modules", icon: BookOpen, label: "Assign Videos", sub: "Organize videos into modules" },
     { id: "materials", icon: FolderOpen, label: "Course Materials", sub: "Reference Material & Files" },
     { id: "styling", icon: Palette, label: "Styling", sub: "Thumbnail & Presentation" },
   ];
@@ -465,6 +467,13 @@ function CourseEditor({ course, onClose }) {
                 <Button onClick={saveCourse} disabled={saving} size="sm" className="w-full bg-gradient-to-r from-pink-500 to-violet-500 text-white text-xs">
                   {saving ? "Saving..." : "Save Details"}
                 </Button>
+              </motion.div>
+            )}
+
+            {activePanel === "modules" && (
+              <motion.div key="modules" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="p-4 bg-white border-t border-gray-100 flex-1 overflow-y-auto">
+                <ModuleManager courseId={course.id} />
               </motion.div>
             )}
 
