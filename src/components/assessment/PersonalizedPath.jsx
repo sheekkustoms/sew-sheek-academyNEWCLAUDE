@@ -1,5 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
 import { ChevronRight, Zap, BookMarked, Lock, CheckCircle } from "lucide-react";
 
@@ -43,6 +45,32 @@ export default function PersonalizedPath({ tier, assessment }) {
   const config = TIER_CONFIG[tier];
   if (!config) return null;
 
+  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
+
+  const { data: enrollments = [] } = useQuery({
+    queryKey: ["tierEnrollments", user?.email],
+    queryFn: () => base44.entities.Enrollment.filter({ user_email: user?.email }),
+    enabled: !!user?.email,
+  });
+
+  const { data: courses = [] } = useQuery({
+    queryKey: ["allCourses"],
+    queryFn: () => base44.entities.Course.list("-created_date", 100),
+  });
+
+  // Get courses matching this tier's titles
+  const tierCourses = config.courses.map(courseConfig => {
+    const course = courses.find(c => c.title?.toLowerCase().includes(courseConfig.title.toLowerCase()));
+    const enrollment = course ? enrollments.find(e => e.course_id === course.id) : null;
+    return { ...courseConfig, course, enrollment, isCompleted: enrollment?.is_completed };
+  });
+
+  // Determine which courses are unlocked
+  const unlockedCourses = tierCourses.map((item, idx) => ({
+    ...item,
+    isUnlocked: idx === 0 || (tierCourses[idx - 1] && tierCourses[idx - 1].isCompleted),
+  }));
+
   return (
     <div className="max-w-3xl mx-auto space-y-8 pb-16">
       {/* Tier header */}
@@ -75,22 +103,48 @@ export default function PersonalizedPath({ tier, assessment }) {
       <div>
         <h3 className="text-lg font-extrabold text-[#111] mb-4">Your Learning Path</h3>
         <div className="space-y-3">
-          {config.courses.map((course, idx) => (
-            <div key={idx} className="bg-white border border-[#EEEEEE] rounded-2xl p-4 flex items-start gap-4 hover:shadow-md transition-shadow">
-              <div className="w-10 h-10 rounded-full bg-[#6B3FA0] text-white flex items-center justify-center font-bold shrink-0 flex-col text-xs">
-                <span>{idx + 1}</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <h4 className="font-bold text-[#111] text-sm">{course.title}</h4>
-                <p className="text-xs text-[#666] mt-0.5">{course.description}</p>
-              </div>
-              {idx === 0 && (
-                <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-[#6B3FA0]/10 text-[#6B3FA0] uppercase shrink-0">
-                  Start Here
-                </span>
-              )}
-            </div>
-          ))}
+          {unlockedCourses.map((item, idx) => {
+            const isLocked = !item.isUnlocked;
+            return (
+              <Link
+                key={idx}
+                to={item.isUnlocked && item.course ? `${createPageUrl("CourseDetail")}?id=${item.course.id}` : "#"}
+                className={!item.isUnlocked ? "cursor-not-allowed" : ""}
+              >
+                <div className={`bg-white border rounded-2xl p-4 flex items-start gap-4 transition-all ${
+                  isLocked ? "border-[#EEEEEE] opacity-60" : "border-[#EEEEEE] hover:shadow-md hover:border-[#6B3FA0]/30"
+                }`}>
+                  <div className={`w-10 h-10 rounded-full text-white flex items-center justify-center font-bold shrink-0 text-xs ${
+                    item.isCompleted ? "bg-[#D4AF37]" : isLocked ? "bg-[#CFCFCF]" : "bg-[#6B3FA0]"
+                  }`}>
+                    {item.isCompleted ? <CheckCircle className="w-5 h-5" /> : <span>{idx + 1}</span>}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className={`font-bold text-sm ${isLocked ? "text-[#AAAAAA]" : "text-[#111]"}`}>{item.title}</h4>
+                    <p className={`text-xs mt-0.5 ${isLocked ? "text-[#BBBBBB]" : "text-[#666]"}`}>{item.description}</p>
+                  </div>
+                  {item.isCompleted && (
+                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-[#D4AF37]/15 text-[#B8960C] uppercase shrink-0">
+                      ✓ Complete
+                    </span>
+                  )}
+                  {idx === 0 && !item.isCompleted && (
+                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-[#6B3FA0]/10 text-[#6B3FA0] uppercase shrink-0">
+                      Start Here
+                    </span>
+                  )}
+                  {isLocked && (
+                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-gray-100 text-gray-400 uppercase shrink-0 flex items-center gap-1">
+                      <Lock className="w-3 h-3" /> Locked
+                    </span>
+                  )}
+                  {item.isUnlocked && !item.isCompleted && (
+                    <ChevronRight className="w-4 h-4 text-[#6B3FA0] shrink-0" />
+                  )}
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </div>
 
