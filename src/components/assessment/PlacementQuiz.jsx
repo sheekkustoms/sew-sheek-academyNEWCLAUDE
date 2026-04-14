@@ -76,25 +76,23 @@ export default function PlacementQuiz({ onComplete }) {
     const newAnswers = { ...answers, [currentQuestion]: answerIndex };
     setAnswers(newAnswers);
 
-    setTimeout(() => {
-      if (currentQuestion < 10) {
+    if (currentQuestion < 10) {
+      setTimeout(() => {
         setSelectedAnswer(null);
         setCurrentQuestion(currentQuestion + 1);
-      } else {
-        completeQuiz(newAnswers);
-      }
-    }, 300);
-  };
-
-  const completeQuiz = (finalAnswers) => {
-    console.log("[PlacementQuiz] Completing with answers:", finalAnswers);
-    const experienceScore = [1, 2, 3, 4, 5].reduce((sum, id) => {
-      const answerIndex = finalAnswers[id];
-      return sum + (answerIndex !== undefined ? answerIndex + 1 : 0);
-    }, 0);
-
-    console.log("[PlacementQuiz] Experience score:", experienceScore);
-    onComplete({ answers: finalAnswers, experienceScore });
+      }, 300);
+    } else {
+      // Question 10 - complete the quiz
+      setTimeout(() => {
+        console.log("[PlacementQuiz] Completing with answers:", newAnswers);
+        const experienceScore = [1, 2, 3, 4, 5].reduce((sum, id) => {
+          const answerIndex = newAnswers[id];
+          return sum + (answerIndex !== undefined ? answerIndex + 1 : 0);
+        }, 0);
+        console.log("[PlacementQuiz] Experience score:", experienceScore);
+        onComplete({ answers: newAnswers, experienceScore });
+      }, 300);
+    }
   };
 
   if (screen === "welcome") {
