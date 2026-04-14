@@ -76,14 +76,14 @@ export default function PlacementQuiz({ onComplete }) {
     const newAnswers = { ...answers, [currentQuestion]: answerIndex };
     setAnswers(newAnswers);
 
-    if (currentQuestion < 10) {
-      setTimeout(() => {
+    setTimeout(() => {
+      if (currentQuestion < 10) {
         setSelectedAnswer(null);
         setCurrentQuestion(currentQuestion + 1);
-      }, 200);
-    } else {
-      setTimeout(() => completeQuiz(newAnswers), 200);
-    }
+      } else {
+        completeQuiz(newAnswers);
+      }
+    }, 300);
   };
 
   const completeQuiz = (finalAnswers) => {
