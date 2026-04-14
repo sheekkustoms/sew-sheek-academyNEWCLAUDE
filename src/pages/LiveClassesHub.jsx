@@ -204,7 +204,7 @@ function LiveCard({ cls, isLive, isPast, isJoinable, myXP = 0 }) {
             <Calendar className="w-3 h-3" /> {moment(cls.scheduled_at).format("MMM D, YYYY [at] h:mm A")}
           </p>
         )}
-        {cls.scheduled_at && !isLive && <Countdown targetDate={cls.scheduled_at} />}
+        {cls.scheduled_at && !isLive && !isPast && <Countdown targetDate={cls.scheduled_at} />}
         {cls.description && <p className="text-xs text-[#666] line-clamp-2">{cls.description}</p>}
         <div className="flex gap-2 pt-2 border-t border-[#F5F5F5]">
           {isLocked ? (
