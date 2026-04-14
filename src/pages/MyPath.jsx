@@ -100,8 +100,21 @@ export default function MyPath() {
   };
 
   // Check if assessment is needed
-  if (assessmentState === "check" && user && !assessment && !isLoading) {
-    setAssessmentState("quiz");
+  if (assessmentState === "check" && user && !isLoading) {
+    if (assessment && assessment.completed) {
+      // Already completed — check if 60 days have passed for retake
+      const daysAgo = (Date.now() - new Date(assessment.created_date).getTime()) / (1000 * 60 * 60 * 24);
+      if (daysAgo < 60) {
+        // Within 60 days — show path only
+        setAssessmentState("path");
+      } else {
+        // 60+ days passed — allow retake
+        setAssessmentState("quiz");
+      }
+    } else {
+      // No assessment yet — show quiz
+      setAssessmentState("quiz");
+    }
   }
 
   if (assessmentState === "quiz") {
