@@ -8,7 +8,7 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import Layout from './Layout';
 
 // Page imports
-import Dashboard from './pages/Dashboard';
+import Dashboard from './pages/Dashboard.jsx';
 import Classes from './pages/Classes';
 import LiveClassesHub from './pages/LiveClassesHub';
 import ReplaysHub from './pages/ReplaysHub';
@@ -26,6 +26,8 @@ import CourseDetail from './pages/CourseDetail';
 import DailyChallenges from './pages/DailyChallenges';
 import UserProgress from './pages/UserProgress';
 import LiveClassDetail from './pages/LiveClassDetail';
+import MyPath from './pages/MyPath';
+import Library from './pages/Library';
 
 const LayoutWrapper = ({ children, currentPageName }) => (
   <Layout currentPageName={currentPageName}>{children}</Layout>
@@ -69,6 +71,8 @@ const AuthenticatedApp = () => {
       <Route path="/DailyChallenges" element={<LayoutWrapper currentPageName="DailyChallenges"><DailyChallenges /></LayoutWrapper>} />
       <Route path="/UserProgress" element={<LayoutWrapper currentPageName="UserProgress"><UserProgress /></LayoutWrapper>} />
       <Route path="/LiveClassDetail" element={<LayoutWrapper currentPageName="LiveClassDetail"><LiveClassDetail /></LayoutWrapper>} />
+      <Route path="/MyPath" element={<LayoutWrapper currentPageName="MyPath"><MyPath /></LayoutWrapper>} />
+      <Route path="/Library" element={<LayoutWrapper currentPageName="Library"><Library /></LayoutWrapper>} />
 
       <Route path="*" element={<PageNotFound />} />
     </Routes>
