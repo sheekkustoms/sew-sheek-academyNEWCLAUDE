@@ -12,6 +12,7 @@ const FILTERS = [
   { value: "all", label: "All" },
   { value: "replay", label: "Replays" },
   { value: "tutorial", label: "Tutorials" },
+  { value: "unlock", label: "🔒 Unlock" },
 ];
 
 const getPlayerInfo = (raw) => {
@@ -88,10 +89,18 @@ export default function Library() {
     );
   }
 
+  const allItems = [
+    ...replays.map(c => ({ ...c, _type: "replay" })),
+    ...tutorials.map(c => ({ ...c, _type: "tutorial" })),
+  ];
+  const lockedItems = allItems.filter(c => (c.xp_unlock || 0) > 0 && myXP < c.xp_unlock);
+  const unlockedItems = allItems.filter(c => !((c.xp_unlock || 0) > 0 && myXP < c.xp_unlock));
+
   let items = [];
-  if (filter === "all") items = [...replays.map(c => ({ ...c, _type: "replay" })), ...tutorials.map(c => ({ ...c, _type: "tutorial" }))];
-  else if (filter === "replay") items = replays.map(c => ({ ...c, _type: "replay" }));
-  else items = tutorials.map(c => ({ ...c, _type: "tutorial" }));
+  if (filter === "all") items = unlockedItems;
+  else if (filter === "replay") items = unlockedItems.filter(c => c._type === "replay");
+  else if (filter === "tutorial") items = unlockedItems.filter(c => c._type === "tutorial");
+  else if (filter === "unlock") items = lockedItems;
 
   const filtered = items.filter(c =>
     !search || c.title?.toLowerCase().includes(search.toLowerCase()) || c.description?.toLowerCase().includes(search.toLowerCase())
@@ -118,25 +127,35 @@ export default function Library() {
 
         {/* Filters */}
         <div className="flex gap-2 flex-wrap">
-          {FILTERS.map(f => (
-            <button
-              key={f.value}
-              onClick={() => setFilter(f.value)}
-              className={`px-4 py-1.5 rounded-full text-sm font-semibold border transition-all ${
-                filter === f.value
-                  ? "bg-[#6B3FA0] text-white border-[#6B3FA0]"
-                  : "bg-white text-[#666] border-[#EEEEEE] hover:border-[#6B3FA0]/40"
-              }`}
-            >
-              {f.label}
-              {f.value === "replay" && replays.length > 0 && (
-                <span className="ml-1.5 text-[10px] opacity-70">({replays.length})</span>
-              )}
-              {f.value === "tutorial" && tutorials.length > 0 && (
-                <span className="ml-1.5 text-[10px] opacity-70">({tutorials.length})</span>
-              )}
-            </button>
-          ))}
+          {FILTERS.map(f => {
+            const isUnlock = f.value === "unlock";
+            const activeClass = isUnlock
+              ? "bg-amber-500 text-white border-amber-500"
+              : "bg-[#6B3FA0] text-white border-[#6B3FA0]";
+            const inactiveClass = isUnlock
+              ? "bg-white text-amber-600 border-amber-200 hover:border-amber-400"
+              : "bg-white text-[#666] border-[#EEEEEE] hover:border-[#6B3FA0]/40";
+            return (
+              <button
+                key={f.value}
+                onClick={() => setFilter(f.value)}
+                className={`px-4 py-1.5 rounded-full text-sm font-semibold border transition-all ${
+                  filter === f.value ? activeClass : inactiveClass
+                }`}
+              >
+                {f.label}
+                {f.value === "replay" && unlockedItems.filter(c => c._type === "replay").length > 0 && (
+                  <span className="ml-1.5 text-[10px] opacity-70">({unlockedItems.filter(c => c._type === "replay").length})</span>
+                )}
+                {f.value === "tutorial" && unlockedItems.filter(c => c._type === "tutorial").length > 0 && (
+                  <span className="ml-1.5 text-[10px] opacity-70">({unlockedItems.filter(c => c._type === "tutorial").length})</span>
+                )}
+                {f.value === "unlock" && lockedItems.length > 0 && (
+                  <span className="ml-1.5 text-[10px] opacity-70">({lockedItems.length})</span>
+                )}
+              </button>
+            );
+          })}
         </div>
 
         {isLoading ? (
