@@ -56,7 +56,7 @@ export default function Dashboard() {
 
   return (
     <MembershipGate user={user} allowInactive>
-      <div className="max-w-3xl mx-auto space-y-8 pb-20">
+      <div className="space-y-8 pb-20">
 
         {/* ── Hero ── */}
         <div className="relative rounded-3xl overflow-hidden text-white shadow-xl" style={{
