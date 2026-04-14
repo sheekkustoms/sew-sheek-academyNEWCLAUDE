@@ -69,15 +69,20 @@ export default function PlacementQuiz({ onComplete }) {
   const [screen, setScreen] = useState("welcome");
   const [answers, setAnswers] = useState({});
   const [currentQuestion, setCurrentQuestion] = useState(1);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
 
   const handleAnswer = (answerIndex) => {
+    setSelectedAnswer(answerIndex);
     const newAnswers = { ...answers, [currentQuestion]: answerIndex };
     setAnswers(newAnswers);
 
     if (currentQuestion < 10) {
-      setCurrentQuestion(currentQuestion + 1);
+      setTimeout(() => {
+        setSelectedAnswer(null);
+        setCurrentQuestion(currentQuestion + 1);
+      }, 200);
     } else {
-      setTimeout(() => completeQuiz(newAnswers), 100);
+      setTimeout(() => completeQuiz(newAnswers), 200);
     }
   };
 
@@ -135,7 +140,12 @@ export default function PlacementQuiz({ onComplete }) {
             <button
               key={idx}
               onClick={() => handleAnswer(idx)}
-              className="w-full bg-white border-2 border-[#EEEEEE] rounded-xl px-5 py-4 text-left font-semibold text-[#333] hover:border-[#D4AF37] hover:bg-[#D4AF37]/5 transition-all active:scale-95"
+              disabled={selectedAnswer !== null}
+              className={`w-full border-2 rounded-xl px-5 py-4 text-left font-semibold transition-all active:scale-95 ${
+                selectedAnswer === idx
+                  ? "bg-[#D4AF37] border-[#D4AF37] text-black"
+                  : "bg-white border-[#EEEEEE] text-[#333] hover:border-[#D4AF37] hover:bg-[#D4AF37]/5 disabled:opacity-60"
+              }`}
             >
               {answer}
             </button>
