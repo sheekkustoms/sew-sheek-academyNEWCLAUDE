@@ -705,13 +705,21 @@ export default function CourseManager() {
                             <span>{course.lesson_count || 0} lessons</span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-1 shrink-0">
+                        <div className="flex items-center gap-2 shrink-0">
+                          <button
+                            onClick={() => togglePublish.mutate({ id: course.id, published: course.is_published })}
+                            className={`flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg border transition-all ${
+                              course.is_published
+                                ? "bg-emerald-50 border-emerald-300 text-emerald-700 hover:bg-red-50 hover:border-red-300 hover:text-red-600"
+                                : "bg-gray-100 border-gray-200 text-gray-500 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700"
+                            }`}
+                            title={course.is_published ? "Click to Unpublish" : "Click to Publish"}
+                          >
+                            <span className={`w-2 h-2 rounded-full ${course.is_published ? "bg-emerald-500" : "bg-gray-400"}`} />
+                            {course.is_published ? "Published" : "Draft"}
+                          </button>
                           <Button size="icon" variant="ghost" className="w-8 h-8 text-violet-500" title="Edit" onClick={() => setEditingId(editingId === course.id ? null : course.id)}>
                             <Edit2 className="w-3.5 h-3.5" />
-                          </Button>
-                          <Button size="icon" variant="ghost" className={`w-8 h-8 ${course.is_published ? "text-amber-500" : "text-emerald-500"}`}
-                            title={course.is_published ? "Unpublish" : "Publish"} onClick={() => togglePublish.mutate({ id: course.id, published: course.is_published })}>
-                            <Eye className="w-3.5 h-3.5" />
                           </Button>
                           <Button size="icon" variant="ghost" className="w-8 h-8 text-red-400 hover:bg-red-50" onClick={() => deleteCourse.mutate(course.id)}>
                             <Trash2 className="w-3.5 h-3.5" />
