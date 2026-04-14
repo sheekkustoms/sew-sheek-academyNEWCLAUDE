@@ -42,9 +42,6 @@ const TIER_CONFIG = {
 };
 
 export default function PersonalizedPath({ tier, assessment }) {
-  const config = TIER_CONFIG[tier];
-  if (!config) return null;
-
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
 
   const { data: enrollments = [] } = useQuery({
@@ -57,6 +54,9 @@ export default function PersonalizedPath({ tier, assessment }) {
     queryKey: ["allCourses"],
     queryFn: () => base44.entities.Course.list("-created_date", 100),
   });
+
+  const config = TIER_CONFIG[tier];
+  if (!config) return null;
 
   // Get courses matching this tier's titles
   const tierCourses = config.courses.map(courseConfig => {
