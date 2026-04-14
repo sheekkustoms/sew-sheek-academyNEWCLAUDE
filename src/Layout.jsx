@@ -135,7 +135,7 @@ export default function Layout({ children, currentPageName }) {
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-0.5 flex-1">
+          <nav className="hidden lg:flex items-center gap-0.5 flex-1">
             {NAV_ITEMS.map(item => {
               const isActive = currentPageName === item.page;
               return (
@@ -169,7 +169,7 @@ export default function Layout({ children, currentPageName }) {
                     {(user?.full_name || user?.email)?.[0]?.toUpperCase() || "?"}
                   </div>
                 )}
-                <ChevronDown className={`w-3.5 h-3.5 text-white/50 hidden md:block transition-transform ${avatarOpen ? "rotate-180" : ""}`} />
+                <ChevronDown className={`w-3.5 h-3.5 text-white/50 hidden lg:block transition-transform ${avatarOpen ? "rotate-180" : ""}`} />
               </button>
 
               {avatarOpen && (
@@ -204,7 +204,7 @@ export default function Layout({ children, currentPageName }) {
             </div>
 
             {/* Mobile hamburger */}
-            <button className="md:hidden p-1.5 text-white/70 hover:text-white" onClick={() => setMobileOpen(true)}>
+            <button className="lg:hidden p-1.5 text-white/70 hover:text-white" onClick={() => setMobileOpen(true)}>
               <Menu className="w-5 h-5" />
             </button>
           </div>
@@ -264,7 +264,7 @@ export default function Layout({ children, currentPageName }) {
       )}
 
       {/* Mobile Bottom Tab Bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-black border-t border-white/10 flex items-center justify-around px-2 pb-safe" style={{ paddingBottom: "env(safe-area-inset-bottom, 8px)" }}>
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-black border-t border-white/10 flex items-center justify-around px-2 pb-safe" style={{ paddingBottom: "env(safe-area-inset-bottom, 8px)" }}>
         {NAV_ITEMS.map(item => {
           const isActive = currentPageName === item.page;
           return (
@@ -281,7 +281,7 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Page Content */}
       <main className={`min-h-screen bg-[#F5F5F5] ${isPreviewMode || showPWA ? "pt-24" : "pt-14"}`}>
-        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-8 pb-16">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-8 pb-24 lg:pb-8">
           {children}
         </div>
       </main>
