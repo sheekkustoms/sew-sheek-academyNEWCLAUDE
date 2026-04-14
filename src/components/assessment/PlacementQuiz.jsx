@@ -87,11 +87,13 @@ export default function PlacementQuiz({ onComplete }) {
   };
 
   const completeQuiz = (finalAnswers) => {
+    console.log("[PlacementQuiz] Completing with answers:", finalAnswers);
     const experienceScore = [1, 2, 3, 4, 5].reduce((sum, id) => {
       const answerIndex = finalAnswers[id];
       return sum + (answerIndex !== undefined ? answerIndex + 1 : 0);
     }, 0);
 
+    console.log("[PlacementQuiz] Experience score:", experienceScore);
     onComplete({ answers: finalAnswers, experienceScore });
   };
 
