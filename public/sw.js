@@ -1,68 +1,47 @@
-// SEW SHEEK - Service Worker for Push Notifications
+const CACHE_NAME = 'sew-sheek-v' + Date.now();
+const STATIC_ASSETS = ['/'];
 
-const ICON_URL = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69ad18c269d65fade54e850d/fbce1e699_generated_image.png';
-
+// Install: take control immediately
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installed');
   self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(STATIC_ASSETS))
+  );
 });
 
+// Activate: delete old caches and claim clients immediately
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activated');
-  event.waitUntil(self.clients.claim());
-});
-
-// ── Handle incoming push messages ──────────────────────────────────────────
-self.addEventListener('push', (event) => {
-  console.log('[SW] Push received:', event);
-
-  let data = {};
-  if (event.data) {
-    try {
-      data = event.data.json();
-    } catch (e) {
-      data = { title: 'SEW SHEEK', body: event.data.text() };
-    }
-  }
-
-  const title = data.title || 'SEW SHEEK';
-  const options = {
-    body: data.body || 'You have a new notification',
-    icon: ICON_URL,
-    badge: ICON_URL,
-    tag: data.id || 'sew-sheek-notif',
-    data: {
-      url: data.url || '/',
-      post_id: data.post_id || null,
-    },
-    requireInteraction: false,
-    vibrate: [200, 100, 200],
-  };
-
   event.waitUntil(
-    self.registration.showNotification(title, options)
+    caches.keys().then(keys =>
+      Promise.all(
+        keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
+      )
+    ).then(() => self.clients.claim())
   );
 });
 
-// ── Handle notification click ───────────────────────────────────────────────
-self.addEventListener('notificationclick', (event) => {
-  console.log('[SW] Notification clicked:', event.notification.tag);
-  event.notification.close();
+// Fetch: network-first strategy — always try network, fallback to cache
+self.addEventListener('fetch', (event) => {
+  // Skip non-GET and chrome-extension requests
+  if (event.request.method !== 'GET' || event.request.url.startsWith('chrome-extension')) return;
 
-  const targetUrl = event.notification.data?.url || '/';
-
-  event.waitUntil(
-    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-      for (const client of clientList) {
-        if (client.url.includes(self.location.origin) && 'focus' in client) {
-          client.focus();
-          client.navigate(targetUrl);
-          return;
+  event.respondWith(
+    fetch(event.request)
+      .then(response => {
+        // Cache successful responses
+        if (response && response.status === 200) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         }
-      }
-      if (self.clients.openWindow) {
-        return self.clients.openWindow(targetUrl);
-      }
-    })
+        return response;
+      })
+      .catch(() => caches.match(event.request))
   );
+});
+
+// Listen for skip-waiting message from the page
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
