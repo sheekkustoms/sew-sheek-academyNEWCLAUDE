@@ -5,7 +5,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import {
   Menu, X, Bell, LogOut, Shield, ChevronDown,
-  Download, LayoutDashboard, Radio, BookMarked, Map, TrendingUp, Settings, User, Eye
+  Download, LayoutDashboard, BookMarked, Map, TrendingUp, Settings, User, Eye
 } from "lucide-react";
 
 import { getDisplayName } from "@/components/shared/useDisplayName";
@@ -21,7 +21,6 @@ const registerServiceWorker = async () => {
 const NAV_ITEMS = [
   { label: "Dashboard",  page: "Dashboard",     icon: LayoutDashboard },
   { label: "My Path",    page: "MyPath",         icon: Map },
-  { label: "Live",       page: "LiveClassesHub", icon: Radio },
   { label: "Library",    page: "Library",        icon: BookMarked },
   { label: "Progress",   page: "MemberProfile",  icon: TrendingUp },
 ];
