@@ -27,6 +27,12 @@ export default function MyPath() {
     queryFn: () => base44.entities.Lesson.list("order", 500),
   });
 
+  const { data: quizResults = [] } = useQuery({
+    queryKey: ["myQuizResults", user?.email],
+    queryFn: () => base44.entities.DailyChallenge.filter({ user_email: user.email }),
+    enabled: !!user?.email,
+  });
+
   const published = courses.filter(c => c.is_published).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   const enrollmentMap = {};
@@ -34,7 +40,18 @@ export default function MyPath() {
 
   const completedCount = enrollments.filter(e => e.is_completed).length;
 
-  // Determine which courses are unlocked: first always unlocked, rest require previous to be complete
+  // Check if user passed the quiz for a given course with ≥90%
+  const passedQuizForCourse = (courseId) => {
+    return quizResults.some(r =>
+      r.course_id === courseId &&
+      r.total_questions > 0 &&
+      (r.score / r.total_questions) >= 0.9
+    );
+  };
+
+  // Determine which courses are unlocked:
+  // - First course: always unlocked
+  // - Subsequent courses: require passing the quiz linked to the previous course with ≥90%
   const courseStatuses = published.map((course, idx) => {
     const enrollment = enrollmentMap[course.id];
     const isCompleted = enrollment?.is_completed || false;
@@ -43,8 +60,7 @@ export default function MyPath() {
     let isUnlocked = idx === 0; // First course always unlocked
     if (idx > 0) {
       const prevCourse = published[idx - 1];
-      const prevEnrollment = enrollmentMap[prevCourse?.id];
-      isUnlocked = prevEnrollment?.is_completed || false;
+      isUnlocked = passedQuizForCourse(prevCourse.id);
     }
     const courseLessons = lessons.filter(l => l.course_id === course.id);
     return { course, enrollment, isCompleted, isActive, isUnlocked, progress, lessonCount: courseLessons.length };
@@ -55,7 +71,7 @@ export default function MyPath() {
       <div className="max-w-2xl mx-auto space-y-6 pb-16">
         <div>
           <h1 className="text-2xl md:text-3xl font-extrabold text-[#111] tracking-tight">My Learning Path</h1>
-          <p className="text-sm text-[#666] mt-1">Complete each course to unlock the next one</p>
+          <p className="text-sm text-[#666] mt-1">Pass the weekly quiz with 90% or higher to unlock the next course</p>
         </div>
 
         {/* Progress summary */}
@@ -132,7 +148,7 @@ export default function MyPath() {
                             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#6B3FA0]/15 text-[#6B3FA0] uppercase">In Progress</span>
                           )}
                           {!isUnlocked && (
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-400 uppercase">Locked</span>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-400 uppercase">🔒 Quiz Required</span>
                           )}
                         </div>
                         <h3 className={`font-bold text-sm leading-snug ${!isUnlocked ? "text-[#AAAAAA]" : "text-[#111]"}`}>
@@ -140,6 +156,9 @@ export default function MyPath() {
                         </h3>
                         {course.description && isUnlocked && (
                           <p className="text-xs text-[#666] mt-1 line-clamp-2">{course.description}</p>
+                        )}
+                        {!isUnlocked && idx > 0 && (
+                          <p className="text-xs text-[#AAAAAA] mt-1">Score 90%+ on the Weekly Challenge to unlock</p>
                         )}
                         <div className="flex items-center gap-3 mt-2">
                           {lessonCount > 0 && (

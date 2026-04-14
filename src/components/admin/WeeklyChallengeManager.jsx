@@ -128,6 +128,12 @@ export default function WeeklyChallengeManager() {
     queryFn: () => base44.entities.WeeklyChallengeSettings.list(),
   });
 
+  const { data: courses = [] } = useQuery({
+    queryKey: ["allCoursesForQuiz"],
+    queryFn: () => base44.entities.Course.list("order", 100),
+    select: (data) => data.filter(c => c.is_published).sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
+  });
+
   const { data: questions = [] } = useQuery({
     queryKey: ["weeklyChallengeQuestions"],
     queryFn: () => base44.entities.WeeklyChallengeQuestion.list("order", 50),
@@ -204,6 +210,36 @@ export default function WeeklyChallengeManager() {
               Save
             </Button>
           </div>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-xs font-semibold text-gray-600">Linked Course <span className="text-fuchsia-600">(required for unlock logic)</span></label>
+          <p className="text-xs text-gray-400">Students who score 90%+ on this quiz will unlock the NEXT course in the path.</p>
+          <div className="flex gap-2">
+            <select
+              id="linkedCourse"
+              defaultValue={settings?.course_id || ""}
+              className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 bg-white"
+            >
+              <option value="">— Not linked to a course —</option>
+              {courses.map(c => (
+                <option key={c.id} value={c.id}>{c.title}</option>
+              ))}
+            </select>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const val = document.getElementById("linkedCourse").value;
+                saveSetting.mutate({ ...(settings || {}), course_id: val });
+              }}
+            >
+              Save
+            </Button>
+          </div>
+          {settings?.course_id && (
+            <p className="text-xs text-emerald-600">✓ Linked to: <strong>{courses.find(c => c.id === settings.course_id)?.title || settings.course_id}</strong></p>
+          )}
         </div>
 
         <div className="space-y-2">

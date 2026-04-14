@@ -128,6 +128,7 @@ export default function DailyChallenges() {
       await base44.entities.DailyChallenge.create({
         user_email: user.email,
         challenge_date: THIS_WEEK,
+        course_id: settings?.course_id || "",
         course_title: settings?.week_label || "Weekly Challenge",
         score,
         total_questions: total,
