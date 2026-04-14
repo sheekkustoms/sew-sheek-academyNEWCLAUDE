@@ -31,7 +31,14 @@ export default function ProfileOverviewTab({ enrollments, courses, posts, commen
       <div>
         <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Currently Enrolled</h3>
         {activeEnrollments.length === 0 ? (
-          <p className="text-sm text-gray-400">No courses in progress.</p>
+          <div className="text-center py-10 bg-gradient-to-br from-[#6B3FA0]/5 to-purple-50 rounded-2xl border border-[#6B3FA0]/10">
+            <div className="text-4xl mb-3">🗺️</div>
+            <p className="font-bold text-[#333] text-sm mb-1">No courses in progress yet</p>
+            <p className="text-xs text-[#999] mb-4">Start your learning journey on My Path</p>
+            <a href="/MyPath" className="inline-flex items-center gap-2 bg-[#D4AF37] text-black font-bold text-xs px-4 py-2 rounded-xl hover:bg-[#F0D060] transition-colors">
+              🚀 Go to My Path
+            </a>
+          </div>
         ) : (
           <div className="space-y-3">
             {activeEnrollments.map(e => {
@@ -49,14 +56,14 @@ export default function ProfileOverviewTab({ enrollments, courses, posts, commen
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-gray-900 text-sm truncate">{course.title}</p>
                     <div className="flex items-center gap-2 mt-1.5">
-                      <div className="flex-1 bg-gray-200 rounded-full h-1.5">
-                        <div className="bg-gray-700 h-1.5 rounded-full" style={{ width: `${e.progress_percent || 0}%` }} />
+                      <div className="flex-1 bg-gray-100 rounded-full h-1.5">
+                        <div className="bg-[#6B3FA0] h-1.5 rounded-full" style={{ width: `${e.progress_percent || 0}%` }} />
                       </div>
                       <span className="text-xs text-gray-400 shrink-0">{e.progress_percent || 0}%</span>
                     </div>
                   </div>
                   <Link to={createPageUrl(`CourseDetail?id=${course.id}`)}>
-                    <Button size="sm" variant="outline" className="gap-1.5 border-gray-200 text-gray-700 shrink-0">
+                    <Button size="sm" className="gap-1.5 bg-[#6B3FA0] hover:bg-[#5A3490] text-white shrink-0 rounded-xl text-xs">
                       <Play className="w-3.5 h-3.5" /> Resume
                     </Button>
                   </Link>

@@ -78,10 +78,18 @@ export default function MyPath() {
             ))}
           </div>
         ) : published.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-24 bg-white rounded-2xl border border-[#EEEEEE]">
-            <BookOpen className="w-10 h-10 text-[#CFCFCF] mb-3" />
-            <p className="text-[#999] font-medium">No courses added yet</p>
-            <p className="text-sm text-[#CFCFCF] mt-1">Check back soon</p>
+          <div className="flex flex-col items-center justify-center py-16 bg-gradient-to-br from-[#6B3FA0]/5 to-purple-50 rounded-3xl border border-[#6B3FA0]/10 text-center px-8">
+            <div className="w-20 h-20 rounded-full bg-[#6B3FA0]/10 flex items-center justify-center mb-5">
+              <BookOpen className="w-9 h-9 text-[#6B3FA0]" />
+            </div>
+            <h3 className="text-lg font-extrabold text-[#111] mb-2">Your path is being built!</h3>
+            <p className="text-sm text-[#666] leading-relaxed mb-6">
+              Your learning path is being crafted just for you — check back soon!<br />
+              In the meantime, explore the Library.
+            </p>
+            <Link to={createPageUrl("Library")} className="inline-flex items-center gap-2 bg-[#D4AF37] text-black font-bold px-6 py-3 rounded-xl hover:bg-[#F0D060] transition-colors shadow-md shadow-[#D4AF37]/20 text-sm">
+              🎬 Explore the Library
+            </Link>
           </div>
         ) : (
           <div className="relative">

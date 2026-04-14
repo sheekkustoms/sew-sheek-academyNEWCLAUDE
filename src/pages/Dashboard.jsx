@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import MembershipGate from "@/components/membership/MembershipGate";
 import { useActivityTracker } from "@/hooks/useActivityTracker";
-import { Map, Radio, BookMarked, ChevronRight, Zap, Star, CheckCircle, Lock } from "lucide-react";
+import { ChevronRight, Zap, Star, BookOpen, CheckCircle, Radio, Map, TrendingUp, Flame } from "lucide-react";
 
 export default function Dashboard() {
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
@@ -39,13 +39,11 @@ export default function Dashboard() {
   const completedCourses = enrollments.filter(e => e.is_completed).length;
   const hasStarted = completedLessonsCount > 0;
   const hasCompleted = completedCourses > 0;
-
   const isNewStudent = !hasStarted;
   const isReturning = hasCompleted;
-
   const firstName = user?.full_name?.split(" ")[0] || "there";
+  const streakDays = userPoints?.streak_days || 0;
 
-  // Find the first in-progress or unlocked course
   const enrollmentMap = {};
   enrollments.forEach(e => { enrollmentMap[e.course_id] = e; });
 
@@ -58,109 +56,115 @@ export default function Dashboard() {
 
   return (
     <MembershipGate user={user} allowInactive>
-      <div className="max-w-2xl mx-auto space-y-6 pb-16">
+      <div className="max-w-2xl mx-auto space-y-8 pb-20">
 
-        {/* ── Hero greeting ── */}
-        <div className="bg-gradient-to-br from-[#1a0533] to-[#6B3FA0] rounded-3xl p-7 text-white relative overflow-hidden">
-          <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full bg-white/5" />
-          <div className="absolute -bottom-6 -left-6 w-28 h-28 rounded-full bg-white/5" />
-          <p className="text-[#D4AF37] text-xs font-bold uppercase tracking-widest mb-1">Oh Sew Sheek Academy</p>
-          <h1 className="text-2xl font-extrabold leading-tight mb-1">
-            {isNewStudent ? `Welcome, ${firstName}! 🎉` : `Keep going, ${firstName}! 💪`}
-          </h1>
-          <p className="text-white/70 text-sm mb-5">
-            {isNewStudent
-              ? "Your sewing journey starts right here. You've got this!"
-              : isReturning
-              ? `${completedCourses} course${completedCourses !== 1 ? "s" : ""} completed — you're crushing it!`
-              : `${completedLessonsCount} lesson${completedLessonsCount !== 1 ? "s" : ""} done — don't stop now!`}
-          </p>
-          <Link
-            to={createPageUrl("MyPath")}
-            className="inline-flex items-center gap-2 bg-[#D4AF37] text-black font-bold px-5 py-2.5 rounded-xl hover:bg-[#F0D060] transition-colors text-sm"
-          >
-            {isNewStudent ? "🚀 Start My Journey" : "▶ Continue Learning"}
-            <ChevronRight className="w-4 h-4" />
-          </Link>
-          {!isNewStudent && userPoints && (
-            <div className="flex gap-3 mt-5">
-              <div className="bg-white/10 rounded-xl px-4 py-2 text-center">
-                <p className="text-lg font-extrabold text-[#D4AF37]">{userPoints.total_xp || 0}</p>
-                <p className="text-[10px] text-white/60 uppercase tracking-wide">XP</p>
-              </div>
-              <div className="bg-white/10 rounded-xl px-4 py-2 text-center">
-                <p className="text-lg font-extrabold">{userPoints.level || 1}</p>
-                <p className="text-[10px] text-white/60 uppercase tracking-wide">Level</p>
-              </div>
-              <div className="bg-white/10 rounded-xl px-4 py-2 text-center">
-                <p className="text-lg font-extrabold">{completedCourses}</p>
-                <p className="text-[10px] text-white/60 uppercase tracking-wide">Courses</p>
-              </div>
+        {/* ── Hero ── */}
+        <div className="relative rounded-3xl overflow-hidden text-white" style={{
+          background: "linear-gradient(135deg, #0f0220 0%, #2d1060 40%, #6B3FA0 100%)"
+        }}>
+          {/* Dot pattern overlay */}
+          <div className="absolute inset-0 opacity-10" style={{
+            backgroundImage: "radial-gradient(circle, #D4AF37 1px, transparent 1px)",
+            backgroundSize: "24px 24px"
+          }} />
+          {/* Decorative circles */}
+          <div className="absolute -top-12 -right-12 w-56 h-56 rounded-full bg-white/5" />
+          <div className="absolute -bottom-8 -left-8 w-40 h-40 rounded-full bg-[#D4AF37]/10" />
+
+          <div className="relative p-7 pb-6">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-[#D4AF37] text-[11px] font-bold uppercase tracking-[0.2em]">Oh Sew Sheek Academy</p>
+              {streakDays > 0 && (
+                <div className="flex items-center gap-1.5 bg-orange-500/20 border border-orange-400/30 rounded-full px-3 py-1">
+                  <Flame className="w-3.5 h-3.5 text-orange-400" />
+                  <span className="text-xs font-bold text-orange-300">{streakDays} day streak</span>
+                </div>
+              )}
             </div>
-          )}
+
+            <h1 className="text-2xl md:text-3xl font-extrabold leading-tight mb-2 tracking-tight">
+              {isNewStudent ? `Welcome, ${firstName}! 🎉` : `Keep going, ${firstName}! 💪`}
+            </h1>
+            <p className="text-white/65 text-sm mb-6 leading-relaxed">
+              {isNewStudent
+                ? "Your sewing journey starts right here. Take it one stitch at a time — you've got this!"
+                : isReturning
+                ? `${completedCourses} course${completedCourses !== 1 ? "s" : ""} completed — you're absolutely crushing it!`
+                : `${completedLessonsCount} lesson${completedLessonsCount !== 1 ? "s" : ""} done — keep that momentum going!`}
+            </p>
+            <Link
+              to={createPageUrl("MyPath")}
+              className="inline-flex items-center gap-2 bg-[#D4AF37] text-black font-bold px-6 py-3 rounded-xl hover:bg-[#F0D060] transition-all shadow-lg shadow-[#D4AF37]/20 text-sm"
+            >
+              {isNewStudent ? "🚀 Start My Journey" : "▶ Continue Learning"}
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+
+            {/* Stats row */}
+            {!isNewStudent && (
+              <div className="flex gap-3 mt-6 flex-wrap">
+                <StatPill icon={<Zap className="w-4 h-4 text-[#D4AF37]" />} value={userPoints?.total_xp || 0} label="XP" gold />
+                <StatPill icon={<Star className="w-4 h-4 text-white" />} value={userPoints?.level || 1} label="Level" />
+                <StatPill icon={<BookOpen className="w-4 h-4 text-white" />} value={completedCourses} label="Courses" />
+                {streakDays > 0 && <StatPill icon={<Flame className="w-4 h-4 text-orange-400" />} value={streakDays} label="Streak" />}
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* ── Beginner Course Preview (always visible) ── */}
+        {/* ── Beginner Course Preview ── */}
         {firstCourse && (
           <div>
-            <p className="text-xs font-bold text-[#999] uppercase tracking-widest mb-3">🎓 Beginner Journey</p>
-            <div className="bg-white border border-[#EEEEEE] rounded-2xl overflow-hidden shadow-sm">
-              {/* Course header */}
-              <div className="bg-gradient-to-r from-[#6B3FA0] to-[#8B5CC0] px-5 py-4 flex items-center justify-between">
+            <p className="text-[11px] font-bold text-[#D4AF37] uppercase tracking-[0.15em] mb-3">🎓 Beginner Journey</p>
+            <div className="bg-white border border-[#EEEEEE] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+              <div className="bg-gradient-to-r from-[#4A2880] to-[#7B4FC0] px-5 py-4 flex items-center justify-between">
                 <div>
-                  <p className="text-white font-extrabold text-base">{firstCourse.title}</p>
-                  <p className="text-white/70 text-xs mt-0.5">{totalInFirst} lessons · {firstCourse.xp_reward || 200} XP to earn</p>
+                  <p className="text-white font-extrabold text-base leading-tight">{firstCourse.title}</p>
+                  <p className="text-white/60 text-xs mt-0.5">{totalInFirst} lessons · {firstCourse.xp_reward || 200} XP to earn</p>
                 </div>
                 {firstCourseProgress > 0 && (
-                  <div className="text-right shrink-0">
-                    <p className="text-[#D4AF37] text-xl font-extrabold">{firstCourseProgress}%</p>
-                    <p className="text-white/60 text-[10px]">complete</p>
+                  <div className="text-right shrink-0 bg-white/10 rounded-xl px-3 py-2">
+                    <p className="text-[#D4AF37] text-xl font-extrabold leading-none">{firstCourseProgress}%</p>
+                    <p className="text-white/50 text-[10px] mt-0.5">complete</p>
                   </div>
                 )}
               </div>
-
-              {/* Progress bar */}
               {firstCourseProgress > 0 && (
                 <div className="h-1.5 bg-[#EEEEEE]">
-                  <div className="h-1.5 bg-[#D4AF37] transition-all" style={{ width: `${firstCourseProgress}%` }} />
+                  <div className="h-1.5 bg-gradient-to-r from-[#D4AF37] to-[#F0D060] transition-all" style={{ width: `${firstCourseProgress}%` }} />
                 </div>
               )}
-
-              {/* Lesson list */}
               <div className="divide-y divide-[#F5F5F5]">
                 {firstCourseLessons.slice(0, 10).map((lesson, idx) => {
                   const isDone = firstEnrollment?.completed_lessons?.includes(lesson.id);
                   const isNext = !isDone && idx === completedInFirst;
                   return (
-                    <div key={lesson.id} className={`flex items-center gap-3 px-5 py-3 ${isNext ? "bg-[#6B3FA0]/5" : ""}`}>
+                    <div key={lesson.id} className={`flex items-center gap-3 px-5 py-3 transition-colors ${isNext ? "bg-[#6B3FA0]/5" : "hover:bg-[#FAFAFA]"}`}>
                       <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-xs font-bold ${
                         isDone ? "bg-[#D4AF37] text-white" :
-                        isNext ? "bg-[#6B3FA0] text-white" :
+                        isNext ? "bg-[#6B3FA0] text-white shadow-sm shadow-[#6B3FA0]/30" :
                         "bg-[#F0F0F0] text-[#AAAAAA]"
                       }`}>
                         {isDone ? <CheckCircle className="w-4 h-4" /> : idx + 1}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className={`text-sm font-semibold truncate ${isDone ? "text-[#999] line-through" : isNext ? "text-[#6B3FA0]" : "text-[#333]"}`}>
+                        <p className={`text-sm font-semibold truncate ${isDone ? "text-[#BBBBBB] line-through" : isNext ? "text-[#6B3FA0]" : "text-[#333]"}`}>
                           {lesson.title}
                         </p>
+                        {lesson.duration_minutes > 0 && (
+                          <p className="text-[10px] text-[#BBBBBB] mt-0.5">{lesson.duration_minutes} min</p>
+                        )}
                       </div>
-                      {isNext && (
-                        <span className="text-[10px] font-bold bg-[#6B3FA0] text-white px-2 py-0.5 rounded-full shrink-0">UP NEXT</span>
-                      )}
-                      {isDone && (
-                        <span className="text-[10px] font-bold text-[#D4AF37] shrink-0">✓ Done</span>
-                      )}
+                      {isNext && <span className="text-[10px] font-bold bg-[#6B3FA0] text-white px-2 py-0.5 rounded-full shrink-0">UP NEXT</span>}
+                      {isDone && <span className="text-[10px] font-bold text-[#D4AF37] shrink-0">✓ Done</span>}
                     </div>
                   );
                 })}
               </div>
-
-              {/* CTA */}
               <div className="px-5 py-4 bg-[#FAFAFA] border-t border-[#EEEEEE]">
                 <Link
                   to={`${createPageUrl("CourseDetail")}?id=${firstCourse.id}`}
-                  className="w-full flex items-center justify-center gap-2 bg-[#6B3FA0] text-white font-bold py-3 rounded-xl hover:bg-[#5A3490] transition-colors text-sm"
+                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#5A2E90] to-[#7B4FC0] text-white font-bold py-3 rounded-xl hover:opacity-90 transition-opacity text-sm shadow-sm"
                 >
                   {completedInFirst === 0 ? "🚀 Start Lesson 1" : completedInFirst >= totalInFirst ? "🏆 Review Course" : `▶ Continue — Lesson ${completedInFirst + 1}`}
                 </Link>
@@ -171,11 +175,12 @@ export default function Dashboard() {
 
         {/* ── Quick Links ── */}
         <div>
-          <p className="text-xs font-bold text-[#999] uppercase tracking-widest mb-3">Explore</p>
-          <div className="grid grid-cols-3 gap-3">
-            <QuickLink to="LiveClassesHub" icon="📡" label="Live Classes" />
-            <QuickLink to="Library" icon="🎬" label="Library" />
-            <QuickLink to="MyPath" icon="🗺️" label="My Path" />
+          <p className="text-[11px] font-bold text-[#D4AF37] uppercase tracking-[0.15em] mb-3">Explore</p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <ExploreCard to="LiveClassesHub" icon={<Radio className="w-6 h-6" />} label="Live Classes" desc="Join live sessions" color="from-red-500/10 to-rose-500/5" iconColor="text-red-500" border="border-red-100" />
+            <ExploreCard to="Library" icon={<BookOpen className="w-6 h-6" />} label="Library" desc="Replays & tutorials" color="from-blue-500/10 to-indigo-500/5" iconColor="text-blue-500" border="border-blue-100" />
+            <ExploreCard to="MyPath" icon={<Map className="w-6 h-6" />} label="My Path" desc="Your roadmap" color="from-[#6B3FA0]/10 to-purple-500/5" iconColor="text-[#6B3FA0]" border="border-purple-100" />
+            <ExploreCard to="MemberProfile" icon={<TrendingUp className="w-6 h-6" />} label="Progress" desc="XP, badges & stats" color="from-[#D4AF37]/10 to-amber-500/5" iconColor="text-[#D4AF37]" border="border-amber-100" />
           </div>
         </div>
 
@@ -184,14 +189,33 @@ export default function Dashboard() {
   );
 }
 
-function QuickLink({ to, icon, label }) {
+function StatPill({ icon, value, label, gold }) {
+  return (
+    <div className={`flex items-center gap-2 rounded-xl px-4 py-2.5 border ${
+      gold
+        ? "bg-[#D4AF37]/15 border-[#D4AF37]/40 shadow-sm shadow-[#D4AF37]/10"
+        : "bg-white/10 border-white/15"
+    }`}>
+      {icon}
+      <div>
+        <p className={`text-base font-extrabold leading-none ${gold ? "text-[#D4AF37]" : "text-white"}`}>{value}</p>
+        <p className="text-[10px] text-white/50 uppercase tracking-wide mt-0.5">{label}</p>
+      </div>
+    </div>
+  );
+}
+
+function ExploreCard({ to, icon, label, desc, color, iconColor, border }) {
   return (
     <Link
       to={createPageUrl(to)}
-      className="bg-white border border-[#EEEEEE] rounded-2xl p-4 flex flex-col items-center gap-2 hover:shadow-md hover:border-[#6B3FA0]/30 transition-all text-center"
+      className={`bg-gradient-to-br ${color} border ${border} rounded-2xl p-4 flex flex-col gap-3 hover:shadow-md hover:scale-[1.02] transition-all group`}
     >
-      <span className="text-2xl">{icon}</span>
-      <p className="text-xs font-bold text-[#333]">{label}</p>
+      <div className={`${iconColor} group-hover:scale-110 transition-transform`}>{icon}</div>
+      <div>
+        <p className="text-sm font-bold text-[#111]">{label}</p>
+        <p className="text-[11px] text-[#888] mt-0.5">{desc}</p>
+      </div>
     </Link>
   );
 }

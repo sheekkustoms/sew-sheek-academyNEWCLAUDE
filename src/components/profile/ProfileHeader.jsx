@@ -13,7 +13,16 @@ export default function ProfileHeader({ name, email, avatarUrl, role, isOwnProfi
   return (
     <div className="bg-white border border-[#EEEEEE] rounded-2xl overflow-hidden shadow-sm">
       {/* Banner */}
-      <div className="h-28 bg-black" />
+      <div className="h-32 relative overflow-hidden" style={{
+        background: "linear-gradient(135deg, #0f0220 0%, #2d1060 45%, #6B3FA0 100%)"
+      }}>
+        <div className="absolute inset-0 opacity-10" style={{
+          backgroundImage: "radial-gradient(circle, #D4AF37 1px, transparent 1px)",
+          backgroundSize: "20px 20px"
+        }} />
+        <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full bg-white/5" />
+        <div className="absolute bottom-0 left-8 text-[#D4AF37]/20 text-4xl font-black tracking-widest select-none">SEW SHEEK</div>
+      </div>
 
       <div className="px-6 pb-6">
         <div className="flex items-end justify-between -mt-12 mb-4">
