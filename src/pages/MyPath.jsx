@@ -48,7 +48,6 @@ export default function MyPath() {
 
   const saveAssessmentMutation = useMutation({
     mutationFn: async (data) => {
-      console.log("[MyPath] saveAssessmentMutation called with:", data);
       const { answers, experienceScore } = data;
       
       let tier, startPhase, startModule;
@@ -67,19 +66,15 @@ export default function MyPath() {
         startModule = 1;
       }
 
-      console.log("[MyPath] Creating assessment with tier:", tier, "score:", experienceScore);
-      await base44.asServiceRole.entities.PlacementAssessment.create({
-        user_email: user.email,
+      const res = await base44.functions.invoke('saveAssessment', {
+        answers,
+        experienceScore,
         tier,
-        experience_score: experienceScore,
-        answers: Object.entries(answers).map(([qId, aIdx]) => ({ question_id: parseInt(qId), answer_index: aIdx })),
-        starting_phase: startPhase,
-        starting_module: startModule,
-        completed: true,
+        startPhase,
+        startModule,
       });
 
-      console.log("[MyPath] Assessment created, setting tier and state");
-      setAssignedTier(tier);
+      setAssignedTier(res.data.tier);
       setAssessmentState("results");
     },
     onError: (error) => {
