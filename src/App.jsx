@@ -8,7 +8,7 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import Layout from './Layout';
 
 // Page imports
-import Dashboard from './pages/Dashboard.jsx';
+import Dashboard from './pages/Dashboard';
 import Classes from './pages/Classes';
 import LiveClassesHub from './pages/LiveClassesHub';
 import ReplaysHub from './pages/ReplaysHub';
