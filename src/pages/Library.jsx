@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { useActivityTracker } from "@/hooks/useActivityTracker";
 import MembershipGate from "@/components/membership/MembershipGate";
-import { PlayCircle, BookOpen, Search, Download, Lock } from "lucide-react";
+import { PlayCircle, BookOpen, Search, Download, Lock, Zap } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import ReplayPlayer from "../components/classes/ReplayPlayer";
 import moment from "moment";
@@ -54,6 +54,16 @@ export default function Library() {
   });
 
   const tutorials = published.filter(c => c.class_type === "prerecorded" || c.class_type === "tutorial");
+
+  const { data: userPoints } = useQuery({
+    queryKey: ["myPoints", user?.email],
+    queryFn: () => base44.entities.UserPoints.filter({ user_email: user.email }),
+    enabled: !!user?.email,
+    select: (data) => data[0] || null,
+  });
+
+  const isPreviewMode = localStorage.getItem("member_preview_mode") === "true";
+  const myXP = isPreviewMode ? 0 : (userPoints?.total_xp || 0);
 
   const hasStarted = enrollments.some(e => (e.completed_lessons?.length ?? 0) > 0 || e.progress_percent > 0);
   const isAdmin = user?.role === "admin";
@@ -143,40 +153,65 @@ export default function Library() {
             {filtered.map(cls => {
               const player = getPlayerInfo(cls.recording_url);
               const isReplay = cls._type === "replay";
+              const isLocked = (cls.xp_unlock || 0) > 0 && myXP < cls.xp_unlock;
               return (
-                <div key={cls.id} className="bg-white border border-[#EEEEEE] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all">
-                  {player ? (
-                    <ReplayPlayer player={player} title={cls.title} />
-                  ) : cls.thumbnail_url ? (
-                    <img src={cls.thumbnail_url} alt={cls.title} className="w-full aspect-video object-cover" />
-                  ) : (
-                    <div className={`aspect-video flex items-center justify-center ${isReplay ? "bg-orange-50" : "bg-violet-50"}`}>
-                      {isReplay
-                        ? <PlayCircle className="w-10 h-10 text-orange-200" />
-                        : <BookOpen className="w-10 h-10 text-violet-200" />
-                      }
-                    </div>
-                  )}
+                <div key={cls.id} className={`bg-white border border-[#EEEEEE] rounded-2xl overflow-hidden shadow-sm transition-all ${!isLocked && "hover:shadow-md"}`}>
+                  <div className="relative">
+                    {isLocked ? (
+                      <div className={`aspect-video flex items-center justify-center bg-gray-100`}>
+                        {cls.thumbnail_url
+                          ? <img src={cls.thumbnail_url} alt={cls.title} className="w-full h-full object-cover grayscale absolute inset-0" />
+                          : null}
+                        <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center gap-2">
+                          <Lock className="w-8 h-8 text-white" />
+                          <div className="flex items-center gap-1.5 bg-[#D4AF37] text-black text-xs font-bold px-3 py-1.5 rounded-full">
+                            <Zap className="w-3.5 h-3.5" /> {cls.xp_unlock} XP to Unlock
+                          </div>
+                        </div>
+                      </div>
+                    ) : player ? (
+                      <ReplayPlayer player={player} title={cls.title} />
+                    ) : cls.thumbnail_url ? (
+                      <img src={cls.thumbnail_url} alt={cls.title} className="w-full aspect-video object-cover" />
+                    ) : (
+                      <div className={`aspect-video flex items-center justify-center ${isReplay ? "bg-orange-50" : "bg-violet-50"}`}>
+                        {isReplay
+                          ? <PlayCircle className="w-10 h-10 text-orange-200" />
+                          : <BookOpen className="w-10 h-10 text-violet-200" />
+                        }
+                      </div>
+                    )}
+                  </div>
                   <div className="p-4 space-y-2">
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${
-                      isReplay ? "bg-orange-100 text-orange-600" : "bg-violet-100 text-violet-600"
-                    }`}>
-                      {isReplay ? "Replay" : "Tutorial"}
-                    </span>
+                    {isLocked ? (
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase bg-amber-100 text-amber-700">
+                        🔒 Locked
+                      </span>
+                    ) : (
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${
+                        isReplay ? "bg-orange-100 text-orange-600" : "bg-violet-100 text-violet-600"
+                      }`}>
+                        {isReplay ? "Replay" : "Tutorial"}
+                      </span>
+                    )}
                     <h3 className="font-bold text-[#111] text-sm leading-snug">{cls.title}</h3>
-                    {cls.description && <p className="text-xs text-[#666] line-clamp-2">{cls.description}</p>}
+                    {cls.description && !isLocked && <p className="text-xs text-[#666] line-clamp-2">{cls.description}</p>}
                     {(cls.scheduled_at || cls.created_date) && (
                       <p className="text-xs text-[#999]">
                         {isReplay ? "Originally" : "Added"} {moment(cls.scheduled_at || cls.created_date).format("MMM D, YYYY")}
                       </p>
                     )}
-                    {cls.pdf_url && (
+                    {isLocked ? (
+                      <div className="flex items-center gap-1.5 text-xs text-amber-700 font-semibold">
+                        <Zap className="w-3.5 h-3.5 text-amber-500" /> Earn {cls.xp_unlock - myXP} more XP to unlock
+                      </div>
+                    ) : cls.pdf_url ? (
                       <a href={cls.pdf_url} target="_blank" rel="noopener noreferrer">
                         <button className="flex items-center gap-1.5 text-xs font-semibold text-[#B8960C] hover:text-[#D4AF37] transition-colors mt-1">
                           <Download className="w-3.5 h-3.5" /> Download Materials
                         </button>
                       </a>
-                    )}
+                    ) : null}
                   </div>
                 </div>
               );
