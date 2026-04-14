@@ -77,7 +77,7 @@ export default function PlacementQuiz({ onComplete }) {
     if (currentQuestion < 10) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
-      completeQuiz(newAnswers);
+      setTimeout(() => completeQuiz(newAnswers), 100);
     }
   };
 
