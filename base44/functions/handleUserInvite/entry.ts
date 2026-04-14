@@ -41,6 +41,15 @@ Deno.serve(async (req) => {
       invited_by: user.email,
     });
 
+    const paidThrough = new Date();
+    paidThrough.setDate(paidThrough.getDate() + 30);
+
+    await base44.asServiceRole.entities.MembershipStatus.create({
+      user_email: email,
+      is_active: true,
+      paid_through: paidThrough.toISOString().split('T')[0],
+    });
+
     return Response.json({ success: true });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
