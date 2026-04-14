@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import MembershipGate from "@/components/membership/MembershipGate";
 import { useActivityTracker } from "@/hooks/useActivityTracker";
-import { ChevronRight, Zap, Star, BookOpen, CheckCircle, Radio, Map, TrendingUp, Flame } from "lucide-react";
+import { ChevronRight, Zap, Star, BookOpen, CheckCircle, Map, TrendingUp, Flame } from "lucide-react";
 
 export default function Dashboard() {
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
@@ -71,7 +71,7 @@ export default function Dashboard() {
           <div className="absolute -top-12 -right-12 w-56 h-56 rounded-full bg-white/5" />
           <div className="absolute -bottom-8 -left-8 w-40 h-40 rounded-full bg-[#D4AF37]/10" />
 
-          <div className="relative p-8 md:p-10 pb-8">
+          <div className="relative p-5 md:p-10 pb-6 md:pb-8">
             <div className="flex items-center justify-between mb-4">
               <p className="text-[#D4AF37] text-[11px] font-bold uppercase tracking-[0.2em]">Oh Sew Sheek Academy</p>
               {streakDays > 0 && (
@@ -82,7 +82,7 @@ export default function Dashboard() {
               )}
             </div>
 
-            <h1 className="text-3xl md:text-4xl font-extrabold leading-tight mb-2 tracking-tight">
+            <h1 className="text-2xl md:text-4xl font-extrabold leading-tight mb-2 tracking-tight">
               {isNewStudent ? `Welcome, ${firstName}! 🎉` : `Keep going, ${firstName}! 💪`}
             </h1>
             <p className="text-white/65 text-sm mb-6 leading-relaxed">
@@ -176,8 +176,7 @@ export default function Dashboard() {
         {/* ── Quick Links ── */}
         <div>
           <p className="text-[11px] font-bold text-[#D4AF37] uppercase tracking-[0.15em] mb-3">Explore</p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <ExploreCard to="LiveClassesHub" icon={<Radio className="w-6 h-6" />} label="Live Classes" desc="Join live sessions" color="from-red-500/10 to-rose-500/5" iconColor="text-red-500" border="border-red-100" />
+          <div className="grid grid-cols-2 gap-3">
             <ExploreCard to="Library" icon={<BookOpen className="w-6 h-6" />} label="Library" desc="Replays & tutorials" color="from-blue-500/10 to-indigo-500/5" iconColor="text-blue-500" border="border-blue-100" />
             <ExploreCard to="MyPath" icon={<Map className="w-6 h-6" />} label="My Path" desc="Your roadmap" color="from-[#6B3FA0]/10 to-purple-500/5" iconColor="text-[#6B3FA0]" border="border-purple-100" />
             <ExploreCard to="MemberProfile" icon={<TrendingUp className="w-6 h-6" />} label="Progress" desc="XP, badges & stats" color="from-[#D4AF37]/10 to-amber-500/5" iconColor="text-[#D4AF37]" border="border-amber-100" />

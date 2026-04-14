@@ -108,12 +108,12 @@ export default function Library() {
   return (
     <MembershipGate user={user}>
       <div className="max-w-5xl mx-auto space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex flex-col gap-3">
           <div>
-            <h1 className="text-2xl md:text-3xl font-extrabold text-[#111] tracking-tight">Library</h1>
+            <h1 className="text-2xl font-extrabold text-[#111] tracking-tight">Library</h1>
             <p className="text-sm text-[#666] mt-0.5">Replays and tutorials — all in one place</p>
           </div>
-          <div className="relative w-full sm:w-64">
+          <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999]" />
             <Input
               placeholder="Search library..."
@@ -158,7 +158,7 @@ export default function Library() {
         </div>
 
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
             {Array(6).fill(0).map((_, i) => <div key={i} className="h-64 bg-white rounded-2xl border border-[#EEEEEE] animate-pulse" />)}
           </div>
         ) : filtered.length === 0 ? (
@@ -167,7 +167,7 @@ export default function Library() {
             <p className="text-[#999] font-medium">{search ? "No results match your search" : "Nothing here yet"}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
             {filtered.map(cls => {
               const player = getPlayerInfo(cls.recording_url);
               const isReplay = cls._type === "replay";

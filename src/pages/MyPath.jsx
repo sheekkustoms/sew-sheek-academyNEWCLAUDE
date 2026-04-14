@@ -70,7 +70,7 @@ export default function MyPath() {
     <MembershipGate user={user}>
       <div className="max-w-2xl mx-auto space-y-6 pb-16">
         <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold text-[#111] tracking-tight">My Learning Path</h1>
+          <h1 className="text-2xl font-extrabold text-[#111] tracking-tight">My Learning Path</h1>
           <p className="text-sm text-[#666] mt-1">Pass the weekly quiz with 90% or higher to unlock the next course</p>
         </div>
 
