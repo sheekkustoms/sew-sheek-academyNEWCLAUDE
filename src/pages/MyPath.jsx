@@ -8,6 +8,7 @@ import MembershipGate from "@/components/membership/MembershipGate";
 import { useActivityTracker } from "@/hooks/useActivityTracker";
 import PlacementQuiz from "@/components/assessment/PlacementQuiz";
 import PlacementResults from "@/components/assessment/PlacementResults";
+import PersonalizedPath from "@/components/assessment/PersonalizedPath";
 
 export default function MyPath() {
   const queryClient = useQueryClient();
@@ -123,6 +124,12 @@ export default function MyPath() {
           queryClient.invalidateQueries({ queryKey: ["placementAssessment", user?.email] });
         }}
       />
+    );
+  }
+
+  if (assessmentState === "path" && assessment) {
+    return (
+      <PersonalizedPath tier={assessment.tier} assessment={assessment} />
     );
   }
 
