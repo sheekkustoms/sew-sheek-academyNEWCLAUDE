@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Trash2, Plus, Video, Edit2, X, Upload, CheckCircle2, Bell, Radio, PlayCircle, Eye, EyeOff, BookOpen } from "lucide-react";
+import { Trash2, Plus, Video, Edit2, X, Upload, CheckCircle2, Bell, Radio, PlayCircle, Eye, EyeOff, BookOpen, Zap } from "lucide-react";
 import moment from "moment";
 
 const EMPTY = {
@@ -18,6 +18,7 @@ const EMPTY = {
   pdf_url: "",
   recording_url: "",
   is_active: true,
+  xp_unlock: 0,
 };
 
 export default function LiveClassManager() {
@@ -97,6 +98,7 @@ export default function LiveClassManager() {
       recording_url: cls.recording_url || "",
       supply_list: cls.supply_list || [],
       is_active: cls.is_active !== false,
+      xp_unlock: cls.xp_unlock || 0,
     });
     setEditingId(cls.id);
   };
@@ -280,6 +282,27 @@ export default function LiveClassManager() {
           />
         </div>
 
+        {/* XP Unlock */}
+        <div>
+          <label className="text-xs text-gray-400 mb-1 block flex items-center gap-1">
+            <Zap className="w-3 h-3 text-[#D4AF37]" /> XP Required to Unlock
+          </label>
+          <div className="flex items-center gap-3">
+            <Input
+              type="number"
+              min={0}
+              step={50}
+              placeholder="0"
+              value={form.xp_unlock || ""}
+              onChange={e => setForm({ ...form, xp_unlock: Number(e.target.value) || 0 })}
+              className="w-36"
+            />
+            <p className="text-xs text-gray-400">
+              {form.xp_unlock > 0 ? `🔒 Members need ${form.xp_unlock} XP to access this class` : "✅ Free for all members (no XP required)"}
+            </p>
+          </div>
+        </div>
+
         {/* Notify toggle — new classes only */}
         {!editingId && form.class_type === "live" && (
           <label className="flex items-center gap-2 cursor-pointer select-none">
@@ -325,6 +348,11 @@ export default function LiveClassManager() {
                 }`}>
                   {cls.status || "published"}
                 </span>
+                {cls.xp_unlock > 0 && (
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 flex items-center gap-0.5">
+                    <Zap className="w-2.5 h-2.5" />{cls.xp_unlock} XP
+                  </span>
+                )}
               </div>
               {cls.scheduled_at && (
                 <p className="text-xs text-gray-400">{moment(cls.scheduled_at).format("MMM D, YYYY [at] h:mm A")}</p>

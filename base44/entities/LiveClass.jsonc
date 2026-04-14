@@ -61,6 +61,11 @@
     "is_active": {
       "type": "boolean",
       "default": true
+    },
+    "xp_unlock": {
+      "type": "number",
+      "default": 0,
+      "description": "XP required to unlock this class (0 = free for all members)"
     }
   },
   "required": [

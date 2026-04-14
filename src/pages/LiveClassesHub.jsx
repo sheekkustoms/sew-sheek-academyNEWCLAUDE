@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { useActivityTracker } from "@/hooks/useActivityTracker";
 import MembershipGate from "@/components/membership/MembershipGate";
 import { useQuery } from "@tanstack/react-query";
-import { Radio, Calendar, ExternalLink, Download, Clock } from "lucide-react";
+import { Radio, Calendar, ExternalLink, Download, Clock, Lock, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ReplayPlayer from "../components/classes/ReplayPlayer";
 import moment from "moment";
@@ -55,6 +55,15 @@ const getPlayerInfo = (raw) => {
 export default function LiveClassesHub() {
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
   useActivityTracker(user, "LiveClassesHub");
+
+  const { data: userPoints } = useQuery({
+    queryKey: ["myPoints", user?.email],
+    queryFn: () => base44.entities.UserPoints.filter({ user_email: user.email }),
+    enabled: !!user?.email,
+    select: (data) => data[0] || null,
+  });
+
+  const myXP = userPoints?.total_xp || 0;
 
   const { data: allClasses = [], isLoading } = useQuery({
 
@@ -118,7 +127,7 @@ export default function LiveClassesHub() {
                 <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse inline-block" /> Happening Now
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {ongoing.map(cls => <LiveCard key={cls.id} cls={cls} isLive />)}
+                {ongoing.map(cls => <LiveCard key={cls.id} cls={cls} isLive myXP={myXP} />)}
               </div>
             </section>
           )}
@@ -128,7 +137,7 @@ export default function LiveClassesHub() {
                 <Calendar className="w-4 h-4 text-[#D4AF37]" /> Upcoming Sessions
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {upcoming.map(cls => <LiveCard key={cls.id} cls={cls} />)}
+                {upcoming.map(cls => <LiveCard key={cls.id} cls={cls} myXP={myXP} />)}
               </div>
             </section>
           )}
@@ -138,7 +147,7 @@ export default function LiveClassesHub() {
                 <Radio className="w-4 h-4 text-[#999]" /> Previous Sessions
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {past.map(cls => <LiveCard key={cls.id} cls={cls} isPast isJoinable={isJoinable(cls)} />)}
+                {past.map(cls => <LiveCard key={cls.id} cls={cls} isPast isJoinable={isJoinable(cls)} myXP={myXP} />)}
               </div>
             </section>
           )}
@@ -149,27 +158,43 @@ export default function LiveClassesHub() {
   );
 }
 
-function LiveCard({ cls, isLive, isPast, isJoinable }) {
+function LiveCard({ cls, isLive, isPast, isJoinable, myXP = 0 }) {
   const zoomUrl = cls.zoom_url ? (cls.zoom_url.startsWith("http") ? cls.zoom_url : `https://${cls.zoom_url}`) : null;
+  const isLocked = (cls.xp_unlock || 0) > 0 && myXP < cls.xp_unlock;
 
   const card = (
-    <div className={`bg-white border rounded-2xl overflow-hidden shadow-sm transition-all ${isLive && zoomUrl ? "border-red-300 hover:shadow-lg hover:border-red-400 cursor-pointer" : "border-[#EEEEEE] hover:shadow-md"}`}>
-      {cls.thumbnail_url ? (
-        <img src={cls.thumbnail_url} alt={cls.title} className="w-full aspect-video object-cover" />
-      ) : (
-        <div className="aspect-video bg-gradient-to-br from-red-50 to-pink-50 flex items-center justify-center">
-          <Radio className="w-10 h-10 text-red-200" />
-        </div>
-      )}
+    <div className={`bg-white border rounded-2xl overflow-hidden shadow-sm transition-all ${isLocked ? "border-[#EEEEEE] opacity-90" : isLive && zoomUrl ? "border-red-300 hover:shadow-lg hover:border-red-400 cursor-pointer" : "border-[#EEEEEE] hover:shadow-md"}`}>
+      <div className="relative">
+        {cls.thumbnail_url ? (
+          <img src={cls.thumbnail_url} alt={cls.title} className={`w-full aspect-video object-cover ${isLocked ? "grayscale" : ""}`} />
+        ) : (
+          <div className="aspect-video bg-gradient-to-br from-red-50 to-pink-50 flex items-center justify-center">
+            <Radio className="w-10 h-10 text-red-200" />
+          </div>
+        )}
+        {isLocked && (
+          <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center gap-2">
+            <Lock className="w-8 h-8 text-white" />
+            <div className="flex items-center gap-1.5 bg-[#D4AF37] text-black text-xs font-bold px-3 py-1.5 rounded-full">
+              <Zap className="w-3.5 h-3.5" /> {cls.xp_unlock} XP to Unlock
+            </div>
+          </div>
+        )}
+      </div>
       <div className="p-4 space-y-2">
-        {isLive && (
+        {isLive && !isLocked && (
           <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-600 uppercase">
             <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" /> Live Now
           </span>
         )}
-        {isPast && (
+        {isPast && !isLocked && (
           <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-600 uppercase">
             🔁 Live Replay
+          </span>
+        )}
+        {isLocked && (
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 uppercase">
+            <Lock className="w-2.5 h-2.5" /> Locked
           </span>
         )}
         <h3 className="font-bold text-[#111] leading-snug">{cls.title}</h3>
@@ -181,23 +206,32 @@ function LiveCard({ cls, isLive, isPast, isJoinable }) {
         {cls.scheduled_at && !isLive && <Countdown targetDate={cls.scheduled_at} />}
         {cls.description && <p className="text-xs text-[#666] line-clamp-2">{cls.description}</p>}
         <div className="flex gap-2 pt-2 border-t border-[#F5F5F5]">
-          {(isLive || !isPast || isJoinable) && (
-            zoomUrl ? (
-              <a href={zoomUrl} target="_blank" rel="noopener noreferrer" className="flex-1">
-                <Button size="sm" className="w-full bg-red-500 hover:bg-red-600 text-white gap-1.5 text-xs font-semibold rounded-xl h-8">
-                  <ExternalLink className="w-3.5 h-3.5" /> Join Class
-                </Button>
-              </a>
-            ) : isLive ? (
-              <p className="text-xs text-[#999] italic">Join link coming soon</p>
-            ) : null
-          )}
-          {cls.pdf_url && (
-            <a href={cls.pdf_url} target="_blank" rel="noopener noreferrer">
-              <Button size="sm" variant="outline" className="gap-1.5 text-xs rounded-xl h-8 border-[#D4AF37]/40 text-[#B8960C] hover:bg-[#D4AF37]/10">
-                <Download className="w-3.5 h-3.5" /> Materials
-              </Button>
-            </a>
+          {isLocked ? (
+            <div className="flex-1 flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
+              <Zap className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+              <p className="text-xs text-amber-700 font-semibold">Earn {cls.xp_unlock - myXP} more XP to unlock</p>
+            </div>
+          ) : (
+            <>
+              {(isLive || !isPast || isJoinable) && (
+                zoomUrl ? (
+                  <a href={zoomUrl} target="_blank" rel="noopener noreferrer" className="flex-1">
+                    <Button size="sm" className="w-full bg-red-500 hover:bg-red-600 text-white gap-1.5 text-xs font-semibold rounded-xl h-8">
+                      <ExternalLink className="w-3.5 h-3.5" /> Join Class
+                    </Button>
+                  </a>
+                ) : isLive ? (
+                  <p className="text-xs text-[#999] italic">Join link coming soon</p>
+                ) : null
+              )}
+              {cls.pdf_url && (
+                <a href={cls.pdf_url} target="_blank" rel="noopener noreferrer">
+                  <Button size="sm" variant="outline" className="gap-1.5 text-xs rounded-xl h-8 border-[#D4AF37]/40 text-[#B8960C] hover:bg-[#D4AF37]/10">
+                    <Download className="w-3.5 h-3.5" /> Materials
+                  </Button>
+                </a>
+              )}
+            </>
           )}
         </div>
         {cls.supply_list?.length > 0 && (
