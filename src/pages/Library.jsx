@@ -9,7 +9,6 @@ import ReplayPlayer from "../components/classes/ReplayPlayer";
 import moment from "moment";
 
 const FILTERS = [
-  { value: "all", label: "All" },
   { value: "replay", label: "Replays" },
   { value: "tutorial", label: "Tutorials" },
   { value: "unlock", label: "🔒 Unlock" },
@@ -27,7 +26,7 @@ const getPlayerInfo = (raw) => {
 
 export default function Library() {
   const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState("all");
+  const [filter, setFilter] = useState("replay");
 
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
   useActivityTracker(user, "Library");
