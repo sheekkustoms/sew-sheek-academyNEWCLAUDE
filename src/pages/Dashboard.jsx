@@ -102,11 +102,11 @@ export default function Dashboard() {
 
             {/* Stats row */}
             {!isNewStudent && (
-              <div className="flex gap-3 mt-6 flex-wrap">
+              <div className="grid grid-cols-4 gap-2 mt-6">
                 <StatPill icon={<Zap className="w-4 h-4 text-[#D4AF37]" />} value={userPoints?.total_xp || 0} label="XP" gold />
                 <StatPill icon={<Star className="w-4 h-4 text-white" />} value={userPoints?.level || 1} label="Level" />
                 <StatPill icon={<BookOpen className="w-4 h-4 text-white" />} value={completedCourses} label="Courses" />
-                {streakDays > 0 && <StatPill icon={<Flame className="w-4 h-4 text-orange-400" />} value={streakDays} label="Streak" />}
+                <StatPill icon={<Flame className="w-4 h-4 text-orange-400" />} value={streakDays || 0} label="Streak" />
               </div>
             )}
           </div>
@@ -190,16 +190,14 @@ export default function Dashboard() {
 
 function StatPill({ icon, value, label, gold }) {
   return (
-    <div className={`flex items-center gap-2 rounded-xl px-4 py-2.5 border ${
+    <div className={`flex flex-col items-center justify-center gap-1 rounded-xl px-2 py-2.5 border ${
       gold
         ? "bg-[#D4AF37]/15 border-[#D4AF37]/40 shadow-sm shadow-[#D4AF37]/10"
         : "bg-white/10 border-white/15"
     }`}>
       {icon}
-      <div>
-        <p className={`text-base font-extrabold leading-none ${gold ? "text-[#D4AF37]" : "text-white"}`}>{value}</p>
-        <p className="text-[10px] text-white/50 uppercase tracking-wide mt-0.5">{label}</p>
-      </div>
+      <p className={`text-sm font-extrabold leading-none ${gold ? "text-[#D4AF37]" : "text-white"}`}>{value}</p>
+      <p className="text-[9px] text-white/50 uppercase tracking-wide">{label}</p>
     </div>
   );
 }
