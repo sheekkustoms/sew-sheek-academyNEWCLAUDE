@@ -63,7 +63,8 @@ export default function LiveClassesHub() {
     select: (data) => data[0] || null,
   });
 
-  const myXP = userPoints?.total_xp || 0;
+  const isPreviewMode = localStorage.getItem("member_preview_mode") === "true";
+  const myXP = isPreviewMode ? 0 : (userPoints?.total_xp || 0);
 
   const { data: allClasses = [], isLoading } = useQuery({
 
