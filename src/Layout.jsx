@@ -247,11 +247,20 @@ export default function Layout({ children, currentPageName }) {
                 );
               })}
               {isAdmin && (
-                <Link to={createPageUrl("AdminDashboard")} onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-[#D4AF37]/70 hover:text-[#D4AF37] hover:bg-white/5 transition-all"
-                >
-                  <Shield className="w-4 h-4 shrink-0" /> Admin Panel
-                </Link>
+                <>
+                  <Link to={createPageUrl("AdminDashboard")} onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-[#D4AF37]/70 hover:text-[#D4AF37] hover:bg-white/5 transition-all"
+                  >
+                    <Shield className="w-4 h-4 shrink-0" /> Admin Panel
+                  </Link>
+                  {!isPreviewMode && (
+                    <button onClick={() => { setMobileOpen(false); enterPreview(); }}
+                      className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-amber-500 hover:text-amber-400 hover:bg-white/5 transition-all w-full text-left"
+                    >
+                      <Eye className="w-4 h-4 shrink-0" /> Preview as Member
+                    </button>
+                  )}
+                </>
               )}
             </nav>
             <div className="p-3 border-t border-white/10">
