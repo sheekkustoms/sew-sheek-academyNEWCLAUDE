@@ -109,8 +109,14 @@ function AssessmentRow({ assessment }) {
         <div className="border-t border-gray-100 px-4 py-4 space-y-3 bg-gray-50">
           {QUESTIONS.map((question, qIndex) => {
             const qNum = qIndex + 1;
-            const ansIdx = assessment.answers[qNum];
-            if (ansIdx === undefined) return null;
+            // answers is an array of {question_id, answer_index} objects
+            const answerObj = Array.isArray(assessment.answers)
+              ? assessment.answers.find(a => a.question_id === qNum)
+              : null;
+            const ansIdx = Array.isArray(assessment.answers)
+              ? answerObj?.answer_index
+              : assessment.answers[qNum];
+            if (ansIdx === undefined || ansIdx === null) return null;
             const answerText = ANSWERS[qIndex]?.[ansIdx];
             return (
               <div key={qNum}>
