@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
@@ -41,11 +41,25 @@ export default function MyPath() {
     enabled: !!user?.email,
   });
 
-  const { data: assessment } = useQuery({
+  const { data: assessment, isLoading: assessmentLoading } = useQuery({
     queryKey: ["placementAssessment", user?.email],
     queryFn: () => base44.entities.PlacementAssessment.filter({ user_email: user.email }).then(r => r[0] || null),
     enabled: !!user?.email,
   });
+
+  useEffect(() => {
+    if (!user || assessmentLoading || assessmentState !== "check") return;
+    if (assessment && assessment.completed) {
+      const daysAgo = (Date.now() - new Date(assessment.created_date).getTime()) / (1000 * 60 * 60 * 24);
+      if (daysAgo < 60) {
+        setAssessmentState("path");
+      } else {
+        setAssessmentState("quiz");
+      }
+    } else if (assessment === null) {
+      setAssessmentState("quiz");
+    }
+  }, [user, assessment, assessmentLoading, assessmentState]);
 
   const saveAssessmentMutation = useMutation({
     mutationFn: async (data) => {
@@ -99,22 +113,13 @@ export default function MyPath() {
     );
   };
 
-  // Check if assessment is needed
-  if (assessmentState === "check" && user && !isLoading) {
-    if (assessment && assessment.completed) {
-      // Already completed — check if 60 days have passed for retake
-      const daysAgo = (Date.now() - new Date(assessment.created_date).getTime()) / (1000 * 60 * 60 * 24);
-      if (daysAgo < 60) {
-        // Within 60 days — show path only
-        setAssessmentState("path");
-      } else {
-        // 60+ days passed — allow retake
-        setAssessmentState("quiz");
-      }
-    } else {
-      // No assessment yet — show quiz
-      setAssessmentState("quiz");
-    }
+  // Show loading spinner while determining assessment state
+  if (assessmentState === "check") {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="w-8 h-8 border-4 border-[#6B3FA0]/20 border-t-[#6B3FA0] rounded-full animate-spin" />
+      </div>
+    );
   }
 
   if (assessmentState === "quiz") {
