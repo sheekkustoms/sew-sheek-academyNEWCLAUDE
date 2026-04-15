@@ -87,24 +87,43 @@ export default function PersonalizedPath({ tier, assessment }) {
       </div>
 
       {/* Your recommended starting point */}
-      {assessment && (
-        <div className="bg-white border-2 border-[#D4AF37] rounded-2xl p-6">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="text-xs font-bold text-[#D4AF37] uppercase tracking-widest mb-2">Your Starting Point</p>
-              <h2 className="text-xl font-extrabold text-[#111]">
-                {assessment.starting_phase} — Module {assessment.starting_module}
-              </h2>
-              <p className="text-sm text-[#666] mt-1">This is where your personalized journey begins</p>
+      {assessment && (() => {
+        // Find the specific starting course based on module number
+        const startIdx = (assessment.starting_module || 1) - 1;
+        const startItem = unlockedCourses[startIdx];
+        const startUrl = startItem?.course
+          ? `${createPageUrl("CourseDetail")}?id=${startItem.course.id}`
+          : null;
+        return (
+          <div className="bg-white border-2 border-[#D4AF37] rounded-2xl p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-bold text-[#D4AF37] uppercase tracking-widest mb-2">Your Starting Point</p>
+                <h2 className="text-xl font-extrabold text-[#111]">
+                  {assessment.starting_phase} — Module {assessment.starting_module}
+                </h2>
+                {startItem && (
+                  <p className="text-sm font-semibold text-[#6B3FA0] mt-0.5">{startItem.title}</p>
+                )}
+                <p className="text-sm text-[#666] mt-1">This is where your personalized journey begins</p>
+              </div>
+              {startUrl ? (
+                <Link to={startUrl} className="shrink-0">
+                  <button className="bg-[#D4AF37] text-black font-bold text-sm px-6 py-3 rounded-xl hover:bg-[#F0D060] transition-colors shadow-md shadow-[#D4AF37]/20 flex items-center gap-2">
+                    Start Here <ChevronRight className="w-4 h-4" />
+                  </button>
+                </Link>
+              ) : (
+                <Link to={createPageUrl("Library")} className="shrink-0">
+                  <button className="bg-[#D4AF37] text-black font-bold text-sm px-6 py-3 rounded-xl hover:bg-[#F0D060] transition-colors shadow-md shadow-[#D4AF37]/20 flex items-center gap-2">
+                    Start Learning <ChevronRight className="w-4 h-4" />
+                  </button>
+                </Link>
+              )}
             </div>
-            <Link to={createPageUrl("Library")} className="shrink-0">
-              <button className="bg-[#D4AF37] text-black font-bold text-sm px-6 py-3 rounded-xl hover:bg-[#F0D060] transition-colors shadow-md shadow-[#D4AF37]/20 flex items-center gap-2">
-                Start Learning <ChevronRight className="w-4 h-4" />
-              </button>
-            </Link>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Learning path roadmap */}
       <div>
@@ -201,12 +220,21 @@ export default function PersonalizedPath({ tier, assessment }) {
       </div>
 
       {/* Action button */}
-      <Link to={createPageUrl("Library")}>
-        <button className="w-full bg-[#D4AF37] text-black font-bold py-4 rounded-xl hover:bg-[#F0D060] transition-colors shadow-lg shadow-[#D4AF37]/20 flex items-center justify-center gap-2">
-          <Zap className="w-5 h-5" />
-          Explore Your Learning Path
-        </button>
-      </Link>
+      {(() => {
+        const startIdx = assessment ? (assessment.starting_module || 1) - 1 : 0;
+        const startItem = unlockedCourses[startIdx];
+        const startUrl = startItem?.course
+          ? `${createPageUrl("CourseDetail")}?id=${startItem.course.id}`
+          : createPageUrl("Library");
+        return (
+          <Link to={startUrl}>
+            <button className="w-full bg-[#D4AF37] text-black font-bold py-4 rounded-xl hover:bg-[#F0D060] transition-colors shadow-lg shadow-[#D4AF37]/20 flex items-center justify-center gap-2">
+              <Zap className="w-5 h-5" />
+              {startItem?.course ? `Go to ${startItem.title}` : "Explore Your Learning Path"}
+            </button>
+          </Link>
+        );
+      })()}
     </div>
   );
 }
