@@ -87,15 +87,6 @@ export default function PlacementResults({ tier, onStart }) {
           <p className="text-sm text-[#666] leading-relaxed max-w-md mx-auto">{config.description}</p>
         </div>
 
-        {/* Section 4: Starter Checklist */}
-        <div className="bg-gradient-to-br from-[#6B3FA0]/10 to-purple-50 rounded-2xl border border-[#6B3FA0]/20 p-6">
-          <h2 className="font-extrabold text-lg text-[#111] mb-4">Your Starter Checklist</h2>
-          <p className="text-sm text-[#666] mb-4">Download your personalized checklist with everything you need to get started.</p>
-          <button className="w-full flex items-center justify-center gap-2 bg-[#6B3FA0] text-white font-bold py-3 rounded-xl hover:bg-[#5A3490] transition-colors">
-            <Download className="w-4 h-4" /> Download {config.checklist}
-          </button>
-        </div>
-
         {/* Coach Note */}
         <div className="bg-white rounded-2xl border-2 border-[#D4AF37]/30 p-6 italic text-[#333] leading-relaxed">
           <p className="text-sm mb-3">
