@@ -28,7 +28,7 @@ const MODULE_LABELS = {
   tier_2: {
     1: "Refresh & Level Up — Shake off the rust, build confidence",
     2: "Pattern Reading — Learn to read and follow patterns",
-    3: "Intermediate Projects — Bags, accessories, and more",
+    3: "Intermediate Projects — Build skills with more complex projects",
     4: "Finishing Techniques — Master professional finishes",
   },
   tier_3: {
