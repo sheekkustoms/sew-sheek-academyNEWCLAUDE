@@ -87,24 +87,6 @@ export default function PlacementResults({ tier, onStart }) {
           <p className="text-sm text-[#666] leading-relaxed max-w-md mx-auto">{config.description}</p>
         </div>
 
-        {/* Section 1: Starting Point */}
-        <div className="bg-white rounded-2xl border border-[#EEEEEE] p-6 space-y-4">
-          <h2 className="font-extrabold text-lg text-[#111]">Your Starting Point</h2>
-          <div className="bg-gradient-to-r from-[#D4AF37]/10 to-amber-50 rounded-xl p-5 border border-[#D4AF37]/20">
-            <p className="text-sm text-[#666] mb-2">You'll start at:</p>
-            <p className="text-2xl font-extrabold text-[#D4AF37]">
-              {config.phase} — Module {config.module}
-            </p>
-          </div>
-          <div className="flex gap-2 text-xs text-[#999]">
-            <span className="px-2 py-1 bg-[#F5F5F5] rounded">Module 1</span>
-            <span className="px-2 py-1 bg-[#F5F5F5] rounded">Module 2</span>
-            <span className="px-2 py-1 bg-[#D4AF37]/15 text-[#B8960C] font-bold rounded">Module {config.module} ← You start here</span>
-            <span className="px-2 py-1 bg-[#F5F5F5] rounded">Module 4</span>
-            <span className="px-2 py-1 bg-[#F5F5F5] rounded">...</span>
-          </div>
-        </div>
-
         {/* Section 4: Starter Checklist */}
         <div className="bg-gradient-to-br from-[#6B3FA0]/10 to-purple-50 rounded-2xl border border-[#6B3FA0]/20 p-6">
           <h2 className="font-extrabold text-lg text-[#111] mb-4">Your Starter Checklist</h2>
