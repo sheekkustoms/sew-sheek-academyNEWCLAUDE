@@ -298,6 +298,9 @@ export default function AdminDashboard() {
           <TabsTrigger value="emailblast" className="flex items-center gap-1">
             <Mail className="w-3.5 h-3.5" /> Email Students
           </TabsTrigger>
+          <TabsTrigger value="setup" className="flex items-center gap-1">
+            ⚙️ Course Setup
+          </TabsTrigger>
         </TabsList>
 
 
@@ -752,6 +755,43 @@ export default function AdminDashboard() {
         {/* Email Blast */}
         <TabsContent value="emailblast" className="mt-4">
           <EmailBlastPanel />
+        </TabsContent>
+
+        {/* Course Setup */}
+        <TabsContent value="setup" className="mt-4">
+          <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm space-y-4">
+            <div className="flex items-center gap-2 text-violet-600 font-semibold mb-4">
+              <Zap className="w-5 h-5" /> Initialize 3-Path Course Structure
+            </div>
+            <p className="text-sm text-gray-600 mb-4">
+              This will create all 3 learning paths (Absolute Beginner, Rusty Creator, Skilled Builder) with their modules and lessons. Each path is auto-assigned to the corresponding tier.
+            </p>
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4">
+              <p className="text-sm text-blue-900">
+                <strong>What gets created:</strong>
+                <ul className="list-disc list-inside mt-2 text-xs space-y-1">
+                  <li>3 Full Courses (one per tier)</li>
+                  <li>12 Modules total</li>
+                  <li>48 Lessons total with placeholder titles</li>
+                </ul>
+              </p>
+            </div>
+            <Button
+              onClick={async () => {
+                if (!window.confirm('Initialize all 3 courses with modules and lessons?')) return;
+                try {
+                  const res = await base44.functions.invoke('initializeCourseStructure', {});
+                  alert(`✓ Success!\n\n${res.data.summary.message}`);
+                  queryClient.invalidateQueries({ queryKey: ["courses"] });
+                } catch (err) {
+                  alert('Error: ' + err.message);
+                }
+              }}
+              className="bg-gradient-to-r from-violet-600 to-violet-700 text-white font-semibold"
+            >
+              <Zap className="w-4 h-4 mr-2" /> Initialize All Courses
+            </Button>
+          </div>
         </TabsContent>
 
       </Tabs>
