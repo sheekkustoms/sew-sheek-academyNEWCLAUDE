@@ -12,6 +12,33 @@ const TIER_LABELS = {
   tier_3: { label: "Skilled Builder", color: "bg-violet-100 text-violet-700" },
 };
 
+const PHASE_INFO = {
+  "Phase 1": { label: "Phase 1 — Foundations", desc: "Beginner basics & machine confidence", color: "bg-blue-50 text-blue-700" },
+  "Phase 2": { label: "Phase 2 — Intermediate", desc: "Pattern reading & skill building", color: "bg-orange-50 text-orange-700" },
+  "Phase 3": { label: "Phase 3 — Advanced", desc: "Advanced techniques & business", color: "bg-purple-50 text-purple-700" },
+};
+
+const MODULE_LABELS = {
+  tier_1: {
+    1: "Your First Stitch — Master the basics, thread your first seam",
+    2: "Hand Sewing Essentials — Foundational hand-sewing skills",
+    3: "Machine Confidence — Get comfortable with the sewing machine",
+    4: "Your First Project — Complete a simple pillow cover",
+  },
+  tier_2: {
+    1: "Refresh & Level Up — Shake off the rust, build confidence",
+    2: "Pattern Reading — Learn to read and follow patterns",
+    3: "Intermediate Projects — Bags, accessories, and more",
+    4: "Finishing Techniques — Master professional finishes",
+  },
+  tier_3: {
+    1: "Advanced Techniques — Master complex sewing methods",
+    2: "Your Specialty — Deep dive into garments, sublimation, etc.",
+    3: "Business & Scaling — Turn your passion into a business",
+    4: "Portfolio Building — Create showcase pieces",
+  },
+};
+
 const GOAL_LABELS = {
   learn_skill: "Learn a new skill",
   personal: "For myself & family",
@@ -81,20 +108,33 @@ function AssessmentRow({ assessment }) {
           <p className="text-xs text-gray-400 mt-0.5">
             Submitted {moment(assessment.created_date).fromNow()} · Score: {assessment.experience_score ?? "—"}
           </p>
-          <div className="flex items-center gap-3 mt-1 flex-wrap">
-            <span className="text-xs font-semibold text-gray-700">
-              📍 Starts: <span className="text-violet-700">{assessment.starting_phase}</span>, Module {assessment.starting_module}
-            </span>
-            {assessment.starting_phase === "Phase 1" && (
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 font-semibold">Phase 1 = Foundations (Beginner)</span>
-            )}
-            {assessment.starting_phase === "Phase 2" && (
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-50 text-orange-600 font-semibold">Phase 2 = Intermediate Skills</span>
-            )}
-            {assessment.starting_phase === "Phase 3" && (
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-50 text-purple-600 font-semibold">Phase 3 = Advanced / Business</span>
-            )}
-          </div>
+          {/* Phase + Module breakdown */}
+          {assessment.starting_phase && (
+            <div className="mt-2 space-y-1">
+              {(() => {
+                const phaseInfo = PHASE_INFO[assessment.starting_phase];
+                const moduleLabel = MODULE_LABELS[assessment.tier]?.[assessment.starting_module];
+                return (
+                  <>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {phaseInfo && (
+                        <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${phaseInfo.color}`}>
+                          📍 {phaseInfo.label} — {phaseInfo.desc}
+                        </span>
+                      )}
+                    </div>
+                    {moduleLabel && (
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-gray-100 text-gray-700">
+                          📚 Module {assessment.starting_module}: {moduleLabel}
+                        </span>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
+            </div>
+          )}
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
