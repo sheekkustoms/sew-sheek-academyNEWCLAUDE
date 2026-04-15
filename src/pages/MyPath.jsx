@@ -52,7 +52,13 @@ export default function MyPath() {
     if (assessment && assessment.completed) {
       const daysAgo = (Date.now() - new Date(assessment.created_date).getTime()) / (1000 * 60 * 60 * 24);
       if (daysAgo < 60) {
-        setAssessmentState("path");
+        // Only show the path if admin has activated it
+        if (assessment.path_activated) {
+          setAssessmentState("path");
+        } else {
+          setAssessmentState("results");
+          setAssignedTier(assessment.tier);
+        }
       } else {
         setAssessmentState("quiz");
       }
@@ -139,8 +145,10 @@ export default function MyPath() {
         tier={assignedTier}
         pathActivated={assessment?.path_activated || false}
         onStart={() => {
-          setAssessmentState("path");
-          queryClient.invalidateQueries({ queryKey: ["placementAssessment", user?.email] });
+          if (assessment?.path_activated) {
+            setAssessmentState("path");
+            queryClient.invalidateQueries({ queryKey: ["placementAssessment", user?.email] });
+          }
         }}
       />
     );
