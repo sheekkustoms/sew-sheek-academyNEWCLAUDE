@@ -107,15 +107,15 @@ function AssessmentRow({ assessment }) {
       {/* Expanded answers */}
       {expanded && assessment.answers && (
         <div className="border-t border-gray-100 px-4 py-4 space-y-3 bg-gray-50">
-          {Object.entries(assessment.answers).map(([qNum, ansIdx]) => {
-            const qIndex = parseInt(qNum) - 1;
-            const question = QUESTIONS[qIndex];
-            const answer = ANSWERS[qIndex]?.[ansIdx];
-            if (!question) return null;
+          {QUESTIONS.map((question, qIndex) => {
+            const qNum = qIndex + 1;
+            const ansIdx = assessment.answers[qNum];
+            if (ansIdx === undefined) return null;
+            const answerText = ANSWERS[qIndex]?.[ansIdx];
             return (
               <div key={qNum}>
                 <p className="text-xs font-semibold text-gray-600">Q{qNum}: {question}</p>
-                <p className="text-sm text-gray-900 mt-0.5">→ {answer ?? `Answer ${ansIdx}`}</p>
+                <p className="text-sm text-gray-900 mt-0.5 font-medium">→ {answerText ?? `(index ${ansIdx})`}</p>
               </div>
             );
           })}
