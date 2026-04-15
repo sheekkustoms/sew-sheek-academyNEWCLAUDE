@@ -6,7 +6,7 @@ import { createPageUrl } from "@/utils";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft, BookOpen, Clock, Zap, CheckCircle2, Lock, Play,
-  ChevronRight, ChevronDown, Star, Users, FileDown, Eye, Paperclip
+  ChevronRight, ChevronDown, Star, Users, FileDown, Eye
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -209,31 +209,52 @@ export default function CourseDetail() {
 
           {/* Lesson info */}
           {activeLesson && (
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-3">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h2 className="text-lg font-bold text-gray-900">{activeLesson.title}</h2>
-                  {activeLesson.description && (
-                    <p className="text-sm text-gray-500 mt-1">{activeLesson.description}</p>
-                  )}
-                </div>
-
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-5">
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">{activeLesson.title}</h2>
+                {activeLesson.description && (
+                  <p className="text-sm text-gray-500 mt-1">{activeLesson.description}</p>
+                )}
               </div>
-              {enrollment && !isLessonCompleted(activeLesson.id) && (
-                <Button
-                  onClick={() => completeLessonMutation.mutate(activeLesson)}
-                  disabled={completeLessonMutation.isPending}
-                  className="bg-gradient-to-r from-pink-500 to-violet-500 text-white"
-                >
-                  <CheckCircle2 className="w-4 h-4 mr-2" />
-                  {completeLessonMutation.isPending ? "Marking..." : "Mark as Complete"}
-                </Button>
-              )}
-              {isLessonCompleted(activeLesson.id) && (
-                <div className="flex items-center gap-2 text-emerald-600 text-sm font-medium">
-                  <CheckCircle2 className="w-4 h-4" /> Completed
+
+              {/* Written instructions */}
+              {activeLesson.instructions && (
+                <div className="border-t border-gray-100 pt-4">
+                  <h3 className="text-sm font-semibold text-gray-700 mb-2">Lesson Instructions</h3>
+                  <div className="text-sm text-gray-600 whitespace-pre-wrap leading-relaxed">
+                    {activeLesson.instructions}
+                  </div>
                 </div>
               )}
+
+              {/* Resource download */}
+              {activeLesson.pdf_url && (
+                <div className="border-t border-gray-100 pt-4">
+                  <a href={activeLesson.pdf_url} target="_blank" rel="noopener noreferrer" download
+                    className="flex items-center gap-2 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 font-semibold text-sm rounded-lg px-4 py-2.5 transition-colors w-full justify-center">
+                    <FileDown className="w-4 h-4" /> Download Resources
+                  </a>
+                </div>
+              )}
+
+              {/* Completion */}
+              <div className="border-t border-gray-100 pt-4">
+                {enrollment && !isLessonCompleted(activeLesson.id) && (
+                  <Button
+                    onClick={() => completeLessonMutation.mutate(activeLesson)}
+                    disabled={completeLessonMutation.isPending}
+                    className="w-full bg-gradient-to-r from-pink-500 to-violet-500 text-white"
+                  >
+                    <CheckCircle2 className="w-4 h-4 mr-2" />
+                    {completeLessonMutation.isPending ? "Marking..." : "Mark as Complete"}
+                  </Button>
+                )}
+                {isLessonCompleted(activeLesson.id) && (
+                  <div className="flex items-center gap-2 text-emerald-600 text-sm font-medium">
+                    <CheckCircle2 className="w-4 h-4" /> Completed
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>

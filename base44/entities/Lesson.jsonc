@@ -24,6 +24,10 @@
       "type": "string",
       "description": "Downloadable PDF or file attachment for this lesson"
     },
+    "instructions": {
+      "type": "string",
+      "description": "Written instructions, supply lists, or lesson content"
+    },
     "duration_minutes": {
       "type": "number",
       "default": 0
