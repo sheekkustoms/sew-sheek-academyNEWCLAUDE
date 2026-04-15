@@ -17,6 +17,7 @@ import AnnouncementPanel from "../components/admin/AnnouncementPanel";
 import MembershipBillingPanel from "../components/admin/MembershipBillingPanel";
 import MemberActivityPanel from "../components/admin/MemberActivityPanel";
 import CourseAssignmentPanel from "../components/admin/CourseAssignmentPanel";
+import AssessmentsPanel from "../components/admin/AssessmentsPanel";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -285,6 +286,9 @@ export default function AdminDashboard() {
           </TabsTrigger>
           <TabsTrigger value="activity" className="flex items-center gap-1">
             <BarChart2 className="w-3.5 h-3.5" /> Activity
+          </TabsTrigger>
+          <TabsTrigger value="assessments" className="flex items-center gap-1">
+            <Brain className="w-3.5 h-3.5" /> Assessments
           </TabsTrigger>
         </TabsList>
 
@@ -726,6 +730,11 @@ export default function AdminDashboard() {
           </div>
         </TabsContent>
 
+
+        {/* Assessments */}
+        <TabsContent value="assessments" className="mt-4">
+          <AssessmentsPanel />
+        </TabsContent>
 
       </Tabs>
     </div>
