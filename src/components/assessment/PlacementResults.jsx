@@ -62,7 +62,7 @@ const TIER_CONFIG = {
       { week: 1, text: "Complete Modules 1 and 2 of Phase 2" },
       { week: 2, text: "Complete Modules 3 and 4 — dive into advanced techniques" },
       { week: 3, text: "Complete your first project and post it to the community" },
-      { week: 4, text: "Take your Phase 2 quiz and unlock Phase 3" },
+      { week: 4, text: "Take your Phase 2 quiz and level up your skills" },
     ],
     coachNote: "You already have the skill. Now let's build the business around it. You're at a level where you can teach this — and that's exactly where we're going.",
     checklist: "Business Setup Checklist",

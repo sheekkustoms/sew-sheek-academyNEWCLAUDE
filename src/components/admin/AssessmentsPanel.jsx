@@ -15,7 +15,6 @@ const TIER_LABELS = {
 const PHASE_INFO = {
   "Phase 1": { label: "Phase 1 — Foundations", desc: "Beginner basics & machine confidence", color: "bg-blue-50 text-blue-700" },
   "Phase 2": { label: "Phase 2 — Intermediate", desc: "Pattern reading & skill building", color: "bg-orange-50 text-orange-700" },
-  "Phase 3": { label: "Phase 3 — Advanced", desc: "Advanced techniques & business", color: "bg-purple-50 text-purple-700" },
 };
 
 const MODULE_LABELS = {

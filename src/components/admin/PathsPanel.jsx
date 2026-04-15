@@ -17,7 +17,7 @@ const TIER_OPTIONS = [
   { value: "tier_3", label: "Skilled Builder (Tier 3 — Advanced)" },
 ];
 
-const PHASE_OPTIONS = ["Phase 1", "Phase 2", "Phase 3"];
+const PHASE_OPTIONS = ["Phase 1", "Phase 2"];
 
 const MODULE_LABELS = {
   tier_1: {
@@ -64,7 +64,6 @@ const MODULE_OUTLINE = {
 const PHASE_DESC = {
   "Phase 1": "Foundations — Beginner basics & machine confidence",
   "Phase 2": "Intermediate — Pattern reading & skill building",
-  "Phase 3": "Advanced — Complex techniques & business",
 };
 
 function PathRow({ assessment }) {
