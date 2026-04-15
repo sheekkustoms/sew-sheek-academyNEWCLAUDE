@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
 import { ChevronRight, Zap, BookMarked, Lock, CheckCircle, Download } from "lucide-react";
+import ProjectGuides from "./ProjectGuides";
 
 const TIER_PDF = {
   tier_1: "https://media.base44.com/files/public/69ad18c269d65fade54e850d/c77754d83_OSS_Checklist_Tier1_FreshStart.pdf",
@@ -153,6 +154,9 @@ export default function PersonalizedPath({ tier, assessment }) {
           })}
         </div>
       </div>
+
+      {/* Projects section */}
+      <ProjectGuides tier={tier} />
 
       {/* Starter checklist PDF download */}
       {TIER_PDF[tier] && (
