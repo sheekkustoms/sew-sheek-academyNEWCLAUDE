@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2, Clock, Zap, Edit2, Save, X } from "lucide-react";
+import { CheckCircle2, Clock, Zap, Edit2, Save, X, ChevronDown, ChevronRight, ListChecks } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import moment from "moment";
 
 const TIER_LABELS = {
@@ -41,6 +40,27 @@ const MODULE_LABELS = {
   },
 };
 
+const MODULE_OUTLINE = {
+  tier_1: {
+    1: ["Introduction to sewing tools & supplies", "How to set up your workspace", "Threading your needle & tying knots", "Your first straight seam", "Practice stitching on fabric"],
+    2: ["Running stitch & backstitch", "Whip stitch & slip stitch", "Hemming by hand", "Sewing on a button", "Basic repairs & mending"],
+    3: ["Parts of the sewing machine", "Threading the machine & bobbin", "Tension, stitch length & width", "Sewing straight & curved lines", "Backstitching & finishing seams"],
+    4: ["Reading a simple pattern", "Cutting fabric accurately", "Pinning & sewing panels together", "Installing a zipper or envelope back", "Final finishing & pressing"],
+  },
+  tier_2: {
+    1: ["Machine refresher — threading, tension & troubleshooting", "Fabric types & how to choose the right one", "Accurate cutting & measuring", "Seam finishes — serging, zigzag & French seams", "Pressing techniques for a professional look"],
+    2: ["Understanding pattern symbols & markings", "Taking body measurements", "Sizing, ease & adjustments", "Cutting & transferring pattern pieces", "Following multi-step pattern instructions"],
+    3: ["Tote bag construction", "Zippered pouch or clutch", "Lined project with interfacing", "Adding pockets & straps", "Finishing & hardware installation"],
+    4: ["Topstitching & edge stitching", "Bias tape application", "Invisible hems & clean finishes", "Lining a garment or bag", "Pressing & final presentation"],
+  },
+  tier_3: {
+    1: ["Tailoring & couture techniques", "Working with specialty fabrics (knits, leather, chiffon)", "Advanced pattern alterations", "Underlining, interfacing & boning", "Complex zipper & closure types"],
+    2: ["Choosing your niche (garments, home decor, sublimation, etc.)", "Advanced project construction", "Fitting & adjusting for your specialty", "Materials & sourcing for your niche", "Signature techniques & finishing details"],
+    3: ["Pricing your work & calculating costs", "Setting up your shop (Etsy, Instagram, website)", "Photography & product presentation", "Customer experience & brand building", "Time management & scaling production"],
+    4: ["Planning your portfolio project lineup", "Construction of a signature piece", "Documentation & process photography", "Presenting your work professionally", "Building your creative identity online"],
+  },
+};
+
 const PHASE_DESC = {
   "Phase 1": "Foundations — Beginner basics & machine confidence",
   "Phase 2": "Intermediate — Pattern reading & skill building",
@@ -50,6 +70,7 @@ const PHASE_DESC = {
 function PathRow({ assessment }) {
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState(false);
+  const [outlineOpen, setOutlineOpen] = useState(false);
   const [form, setForm] = useState({
     tier: assessment.tier || "tier_1",
     starting_phase: assessment.starting_phase || "Phase 1",
@@ -107,13 +128,24 @@ function PathRow({ assessment }) {
 
           {/* Current path info */}
           {!editing && (
-            <div className="mt-2 flex flex-wrap gap-2">
-              <span className="text-xs px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 font-semibold border border-blue-100">
-                📍 {assessment.starting_phase} — {PHASE_DESC[assessment.starting_phase] || ""}
-              </span>
-              <span className="text-xs px-2.5 py-1 rounded-full bg-gray-100 text-gray-700 font-semibold border border-gray-200">
-                📚 Module {assessment.starting_module}{moduleLabel ? `: ${moduleLabel}` : ""}
-              </span>
+            <div className="mt-2 space-y-2">
+              <div className="flex flex-wrap gap-2">
+                <span className="text-xs px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 font-semibold border border-blue-100">
+                  📍 {assessment.starting_phase} — {PHASE_DESC[assessment.starting_phase] || ""}
+                </span>
+                <span className="text-xs px-2.5 py-1 rounded-full bg-gray-100 text-gray-700 font-semibold border border-gray-200">
+                  📚 Module {assessment.starting_module}{moduleLabel ? `: ${moduleLabel}` : ""}
+                </span>
+              </div>
+              {/* Full path outline — all 4 modules */}
+              <button
+                onClick={() => setOutlineOpen(v => !v)}
+                className="flex items-center gap-1 text-[11px] font-semibold text-violet-600 hover:text-violet-800 transition-colors"
+              >
+                <ListChecks className="w-3.5 h-3.5" />
+                View full course outline
+                {outlineOpen ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+              </button>
             </div>
           )}
         </div>
@@ -151,6 +183,40 @@ function PathRow({ assessment }) {
           )}
         </div>
       </div>
+
+      {/* Course outline */}
+      {outlineOpen && !editing && (
+        <div className="border-t border-gray-100 bg-gray-50 p-4">
+          <p className="text-xs font-bold text-gray-700 uppercase tracking-wide mb-3">Full Course Outline — {TIER_LABELS[assessment.tier]?.label}</p>
+          <div className="grid sm:grid-cols-2 gap-3">
+            {[1, 2, 3, 4].map(m => {
+              const modLabel = MODULE_LABELS[assessment.tier]?.[m];
+              const lessons = MODULE_OUTLINE[assessment.tier]?.[m] || [];
+              const isStarting = m === assessment.starting_module;
+              return (
+                <div key={m} className={`rounded-xl border p-3 ${isStarting ? "border-violet-300 bg-violet-50" : "border-gray-200 bg-white"}`}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className={`w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center shrink-0 ${isStarting ? "bg-violet-600 text-white" : "bg-gray-200 text-gray-600"}`}>
+                      {m}
+                    </span>
+                    <span className={`text-xs font-bold ${isStarting ? "text-violet-700" : "text-gray-700"}`}>
+                      {modLabel}
+                      {isStarting && <span className="ml-1.5 text-[9px] font-bold bg-violet-200 text-violet-700 px-1.5 py-0.5 rounded-full uppercase">Starting Point</span>}
+                    </span>
+                  </div>
+                  <ul className="space-y-1">
+                    {lessons.map((l, i) => (
+                      <li key={i} className="text-[11px] text-gray-500 flex items-start gap-1.5">
+                        <span className="text-gray-300 mt-0.5">›</span> {l}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Edit form */}
       {editing && (
