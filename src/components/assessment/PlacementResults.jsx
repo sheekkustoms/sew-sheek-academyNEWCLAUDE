@@ -105,41 +105,6 @@ export default function PlacementResults({ tier, onStart }) {
           </div>
         </div>
 
-        {/* Section 2: First 3 Projects */}
-        <div className="space-y-4">
-          <h2 className="font-extrabold text-lg text-[#111]">Your First 3 Projects</h2>
-          <div className="grid gap-3">
-            {config.projects.map((project, idx) => (
-              <div key={idx} className="bg-white rounded-2xl border border-[#EEEEEE] p-4">
-                <div className="flex items-start justify-between mb-2">
-                  <h3 className="font-bold text-[#111]">{project.name}</h3>
-                  <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-[#F5F5F5] text-[#666]">{project.difficulty}</span>
-                </div>
-                <p className="text-sm text-[#666] mb-2">{project.skill}</p>
-                <p className="text-xs text-[#999]">⏱ {project.time}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Section 3: 30-Day Action Plan */}
-        <div className="space-y-4">
-          <h2 className="font-extrabold text-lg text-[#111]">Your 30-Day Action Plan</h2>
-          <div className="space-y-2">
-            {config.actionPlan.map((item, idx) => (
-              <div key={idx} className="bg-white rounded-2xl border border-[#EEEEEE] p-4 flex gap-4">
-                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[#D4AF37]/15 shrink-0 font-bold text-[#D4AF37]">
-                  {item.week}
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-[#111]">Week {item.week}</p>
-                  <p className="text-xs text-[#666]">{item.text}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* Section 4: Starter Checklist */}
         <div className="bg-gradient-to-br from-[#6B3FA0]/10 to-purple-50 rounded-2xl border border-[#6B3FA0]/20 p-6">
           <h2 className="font-extrabold text-lg text-[#111] mb-4">Your Starter Checklist</h2>
