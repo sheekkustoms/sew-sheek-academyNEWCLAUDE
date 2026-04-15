@@ -178,7 +178,6 @@ export default function Dashboard() {
           <p className="text-[11px] font-bold text-[#D4AF37] uppercase tracking-[0.15em] mb-3">Explore</p>
           <div className="grid grid-cols-2 gap-3">
             <ExploreCard to="Library" icon={<BookOpen className="w-6 h-6" />} label="Library" desc="Replays & tutorials" color="from-blue-500/10 to-indigo-500/5" iconColor="text-blue-500" border="border-blue-100" />
-            <ExploreCard to="MyPath" icon={<Map className="w-6 h-6" />} label="My Path" desc="Your roadmap" color="from-[#6B3FA0]/10 to-purple-500/5" iconColor="text-[#6B3FA0]" border="border-purple-100" />
             <ExploreCard to="MemberProfile" icon={<TrendingUp className="w-6 h-6" />} label="Progress" desc="XP, badges & stats" color="from-[#D4AF37]/10 to-amber-500/5" iconColor="text-[#D4AF37]" border="border-amber-100" />
           </div>
         </div>
