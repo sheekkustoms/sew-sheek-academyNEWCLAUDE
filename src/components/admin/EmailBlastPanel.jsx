@@ -128,13 +128,35 @@ export default function EmailBlastPanel() {
         <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm space-y-4">
           {target === "specific" && (
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-gray-700">Recipient Emails (one per line)</label>
-              <Textarea
-                placeholder={"student1@email.com\nstudent2@email.com"}
-                value={specificEmails}
-                onChange={e => setSpecificEmails(e.target.value)}
-                className="border-gray-200 min-h-[80px] font-mono text-sm"
-              />
+              <label className="text-xs font-semibold text-gray-700">Select Students to Email</label>
+              <div className="border border-gray-200 rounded-xl overflow-hidden max-h-48 overflow-y-auto">
+                {students.map(u => {
+                  const email = u.email;
+                  const checked = specificEmails.split("\n").map(e => e.trim()).includes(email);
+                  return (
+                    <label key={u.id} className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-50 last:border-0">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={e => {
+                          const current = specificEmails.split("\n").map(s => s.trim()).filter(Boolean);
+                          if (e.target.checked) {
+                            setSpecificEmails([...current, email].join("\n"));
+                          } else {
+                            setSpecificEmails(current.filter(s => s !== email).join("\n"));
+                          }
+                        }}
+                        className="w-4 h-4 accent-black"
+                      />
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-gray-800 truncate">{u.full_name || u.email}</p>
+                        <p className="text-xs text-gray-400 truncate">{u.email}</p>
+                      </div>
+                    </label>
+                  );
+                })}
+              </div>
+              <p className="text-xs text-gray-400">{specificEmails.split("\n").filter(e => e.includes("@")).length} selected</p>
             </div>
           )}
 
