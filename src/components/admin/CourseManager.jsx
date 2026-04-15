@@ -7,7 +7,7 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import {
   Plus, Trash2, Edit2, Eye, BookOpen, Upload, Video,
   ChevronDown, ChevronUp, GripVertical, Zap, Clock, X, CheckCircle2,
-  Settings, FolderOpen, Palette, ChevronRight, MoreVertical, ExternalLink
+  Settings, FolderOpen, Palette, ChevronRight, MoreVertical, ExternalLink, FileDown
 } from "lucide-react";
 
 function getEmbedUrl(url) {
@@ -46,6 +46,7 @@ function LessonEditor({ lesson, courseId, onDelete, index }) {
   const [expanded, setExpanded] = useState(false);
   const [form, setForm] = useState({ ...lesson });
   const [saving, setSaving] = useState(false);
+  const [uploadingFile, setUploadingFile] = useState(false);
   const queryClient = useQueryClient();
 
   const save = async () => {
@@ -114,6 +115,35 @@ function LessonEditor({ lesson, courseId, onDelete, index }) {
                 </div>
               )}
             </div>
+          </div>
+
+          {/* PDF / File attachment */}
+          <div>
+            <label className="text-xs text-gray-500 mb-1 block">Lesson File / PDF (optional)</label>
+            {form.pdf_url ? (
+              <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
+                <FileDown className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                <a href={form.pdf_url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-700 flex-1 truncate hover:underline">File attached ✓</a>
+                <button onClick={() => setForm({ ...form, pdf_url: "" })} className="text-gray-400 hover:text-red-500">
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <label className={`flex items-center gap-2 p-3 border-2 border-dashed rounded-xl cursor-pointer transition-colors ${uploadingFile ? "border-blue-300 bg-blue-50" : "border-gray-200 hover:border-blue-300 hover:bg-blue-50"}`}>
+                {uploadingFile
+                  ? <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                  : <Upload className="w-4 h-4 text-gray-400" />}
+                <span className="text-xs text-gray-500">{uploadingFile ? "Uploading..." : "Upload PDF or file"}</span>
+                <input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.zip,.png,.jpg,.jpeg" className="hidden" disabled={uploadingFile} onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  setUploadingFile(true);
+                  const { file_url } = await base44.integrations.Core.UploadFile({ file });
+                  setForm(f => ({ ...f, pdf_url: file_url }));
+                  setUploadingFile(false);
+                }} />
+              </label>
+            )}
           </div>
 
           <Button onClick={save} disabled={saving} className="w-full bg-gradient-to-r from-pink-500 to-violet-500 text-white">

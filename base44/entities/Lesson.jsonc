@@ -1,0 +1,45 @@
+{
+  "name": "Lesson",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "Reference to Course"
+    },
+    "module_id": {
+      "type": "string",
+      "description": "Reference to Module (optional)"
+    },
+    "video_url": {
+      "type": "string",
+      "description": "Video file URL"
+    },
+    "pdf_url": {
+      "type": "string",
+      "description": "Downloadable PDF or file attachment for this lesson"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "default": 0
+    },
+    "order": {
+      "type": "number",
+      "default": 0
+    },
+    "xp_reward": {
+      "type": "number",
+      "default": 20,
+      "description": "XP earned for completing this lesson"
+    }
+  },
+  "required": [
+    "title",
+    "course_id"
+  ]
+}

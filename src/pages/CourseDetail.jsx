@@ -6,7 +6,7 @@ import { createPageUrl } from "@/utils";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft, BookOpen, Clock, Zap, CheckCircle2, Lock, Play,
-  ChevronRight, ChevronDown, Star, Users, FileDown, Eye
+  ChevronRight, ChevronDown, Star, Users, FileDown, Eye, Paperclip
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -31,7 +31,7 @@ function LessonRow({ lesson, index, completed, isActive, enrollment, onClick }) 
         <p className={`text-sm font-medium truncate ${isActive ? "text-violet-700" : "text-gray-700"}`}>{lesson.title}</p>
         <div className="flex items-center gap-2 text-xs text-gray-400 mt-0.5">
           {lesson.duration_minutes > 0 && <span className="flex items-center gap-0.5"><Clock className="w-3 h-3" />{lesson.duration_minutes}m</span>}
-
+          {lesson.pdf_url && <span className="flex items-center gap-0.5 text-blue-400"><Paperclip className="w-3 h-3" /> File</span>}
         </div>
       </div>
       {isActive && <ChevronRight className="w-4 h-4 text-violet-400 shrink-0" />}
@@ -219,6 +219,17 @@ export default function CourseDetail() {
                 </div>
 
               </div>
+              {activeLesson.pdf_url && (
+                <a
+                  href={activeLesson.pdf_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download
+                  className="inline-flex items-center gap-2 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 font-semibold text-sm rounded-lg px-4 py-2.5 transition-colors"
+                >
+                  <Paperclip className="w-4 h-4" /> Download Lesson File
+                </a>
+              )}
               {enrollment && !isLessonCompleted(activeLesson.id) && (
                 <Button
                   onClick={() => completeLessonMutation.mutate(activeLesson)}
