@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
-import { ChevronRight, Zap, BookMarked, Lock, CheckCircle, Download } from "lucide-react";
+import { ChevronRight, ChevronDown, Zap, BookMarked, Lock, CheckCircle, Download, ListChecks } from "lucide-react";
 import ProjectGuides from "./ProjectGuides";
 
 const TIER_PDF = {
@@ -18,10 +18,46 @@ const TIER_CONFIG = {
     description: "Perfect for beginners with little or no sewing experience",
     color: "from-green-500 to-emerald-600",
     courses: [
-      { order: 1, title: "Your First Stitch", description: "Master the basics and thread your first seam" },
-      { order: 2, title: "Hand Sewing Essentials", description: "Build foundational hand-sewing skills" },
-      { order: 3, title: "Machine Confidence", description: "Get comfortable with the sewing machine" },
-      { order: 4, title: "Your First Project", description: "Complete a simple pillow cover" },
+      {
+        order: 1, title: "Your First Stitch", description: "Master the basics and thread your first seam",
+        modules: [
+          "Introduction to sewing tools & supplies",
+          "How to set up your workspace",
+          "Threading your needle & tying knots",
+          "Your first straight seam",
+          "Practice stitching on fabric",
+        ]
+      },
+      {
+        order: 2, title: "Hand Sewing Essentials", description: "Build foundational hand-sewing skills",
+        modules: [
+          "Running stitch & backstitch",
+          "Whip stitch & slip stitch",
+          "Hemming by hand",
+          "Sewing on a button",
+          "Basic repairs & mending",
+        ]
+      },
+      {
+        order: 3, title: "Machine Confidence", description: "Get comfortable with the sewing machine",
+        modules: [
+          "Parts of the sewing machine",
+          "Threading the machine & bobbin",
+          "Tension, stitch length & width",
+          "Sewing straight & curved lines",
+          "Backstitching & finishing seams",
+        ]
+      },
+      {
+        order: 4, title: "Your First Project", description: "Complete a simple pillow cover",
+        modules: [
+          "Reading a simple pattern",
+          "Cutting fabric accurately",
+          "Pinning & sewing panels together",
+          "Installing a zipper or envelope back",
+          "Final finishing & pressing",
+        ]
+      },
     ]
   },
   tier_2: {
@@ -29,10 +65,46 @@ const TIER_CONFIG = {
     description: "You've sewn before but need a refresher and want to build new skills",
     color: "from-amber-500 to-orange-600",
     courses: [
-      { order: 1, title: "Refresh & Level Up", description: "Shake off the rust and build confidence" },
-      { order: 2, title: "Pattern Reading", description: "Learn to read and follow patterns" },
-      { order: 3, title: "Intermediate Projects", description: "Create bags, accessories, and more" },
-      { order: 4, title: "Finishing Techniques", description: "Master professional finishes" },
+      {
+        order: 1, title: "Refresh & Level Up", description: "Shake off the rust and build confidence",
+        modules: [
+          "Machine refresher — threading, tension & troubleshooting",
+          "Fabric types & how to choose the right one",
+          "Accurate cutting & measuring",
+          "Seam finishes — serging, zigzag & French seams",
+          "Pressing techniques for a professional look",
+        ]
+      },
+      {
+        order: 2, title: "Pattern Reading", description: "Learn to read and follow patterns",
+        modules: [
+          "Understanding pattern symbols & markings",
+          "Taking body measurements",
+          "Sizing, ease & adjustments",
+          "Cutting & transferring pattern pieces",
+          "Following multi-step pattern instructions",
+        ]
+      },
+      {
+        order: 3, title: "Intermediate Projects", description: "Build skills with more complex projects",
+        modules: [
+          "Tote bag construction",
+          "Zippered pouch or clutch",
+          "Lined project with interfacing",
+          "Adding pockets & straps",
+          "Finishing & hardware installation",
+        ]
+      },
+      {
+        order: 4, title: "Finishing Techniques", description: "Master professional finishes",
+        modules: [
+          "Topstitching & edge stitching",
+          "Bias tape application",
+          "Invisible hems & clean finishes",
+          "Lining a garment or bag",
+          "Pressing & final presentation",
+        ]
+      },
     ]
   },
   tier_3: {
@@ -40,13 +112,127 @@ const TIER_CONFIG = {
     description: "You're ready to tackle advanced projects and expand your repertoire",
     color: "from-purple-500 to-indigo-600",
     courses: [
-      { order: 1, title: "Advanced Techniques", description: "Master complex sewing methods" },
-      { order: 2, title: "Your Specialty", description: "Deep dive into your chosen focus (garments, sublimation, etc)" },
-      { order: 3, title: "Business & Scaling", description: "Turn your passion into a business" },
-      { order: 4, title: "Portfolio Building", description: "Create showcase pieces" },
+      {
+        order: 1, title: "Advanced Techniques", description: "Master complex sewing methods",
+        modules: [
+          "Tailoring & couture techniques",
+          "Working with specialty fabrics (knits, leather, chiffon)",
+          "Advanced pattern alterations",
+          "Underlining, interfacing & boning",
+          "Complex zipper & closure types",
+        ]
+      },
+      {
+        order: 2, title: "Your Specialty", description: "Deep dive into your chosen focus",
+        modules: [
+          "Choosing your niche (garments, home decor, sublimation, etc.)",
+          "Advanced project construction",
+          "Fitting & adjusting for your specialty",
+          "Materials & sourcing for your niche",
+          "Signature techniques & finishing details",
+        ]
+      },
+      {
+        order: 3, title: "Business & Scaling", description: "Turn your passion into a business",
+        modules: [
+          "Pricing your work & calculating costs",
+          "Setting up your shop (Etsy, Instagram, website)",
+          "Photography & product presentation",
+          "Customer experience & brand building",
+          "Time management & scaling production",
+        ]
+      },
+      {
+        order: 4, title: "Portfolio Building", description: "Create showcase pieces",
+        modules: [
+          "Planning your portfolio project lineup",
+          "Construction of a signature piece",
+          "Documentation & process photography",
+          "Presenting your work professionally",
+          "Building your creative identity online",
+        ]
+      },
     ]
   }
 };
+
+function CoursePathCard({ item, idx, isLocked }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className={`bg-white border rounded-2xl overflow-hidden transition-all ${
+      isLocked ? "border-[#EEEEEE] opacity-60" : "border-[#EEEEEE] hover:shadow-md hover:border-[#6B3FA0]/30"
+    }`}>
+      {/* Main row */}
+      <div className="p-4 flex items-start gap-4">
+        <div className={`w-10 h-10 rounded-full text-white flex items-center justify-center font-bold shrink-0 text-xs ${
+          item.isCompleted ? "bg-[#D4AF37]" : isLocked ? "bg-[#CFCFCF]" : "bg-[#6B3FA0]"
+        }`}>
+          {item.isCompleted ? <CheckCircle className="w-5 h-5" /> : <span>{idx + 1}</span>}
+        </div>
+        <div className="flex-1 min-w-0">
+          <h4 className={`font-bold text-sm ${isLocked ? "text-[#AAAAAA]" : "text-[#111]"}`}>{item.title}</h4>
+          <p className={`text-xs mt-0.5 ${isLocked ? "text-[#BBBBBB]" : "text-[#666]"}`}>{item.description}</p>
+          {/* Module count */}
+          {item.modules?.length > 0 && (
+            <button
+              onClick={() => !isLocked && setOpen(v => !v)}
+              className={`mt-2 flex items-center gap-1 text-[11px] font-semibold transition-colors ${
+                isLocked ? "text-[#BBBBBB] cursor-default" : "text-[#6B3FA0] hover:text-[#5A3490]"
+              }`}
+            >
+              <ListChecks className="w-3.5 h-3.5" />
+              {item.modules.length} lessons
+              {!isLocked && (open ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />)}
+            </button>
+          )}
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          {item.isCompleted && (
+            <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-[#D4AF37]/15 text-[#B8960C] uppercase">
+              ✓ Complete
+            </span>
+          )}
+          {idx === 0 && !item.isCompleted && !isLocked && (
+            <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-[#6B3FA0]/10 text-[#6B3FA0] uppercase">
+              Start Here
+            </span>
+          )}
+          {isLocked && (
+            <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-gray-100 text-gray-400 uppercase flex items-center gap-1">
+              <Lock className="w-3 h-3" /> Locked
+            </span>
+          )}
+          {item.isUnlocked && !isLocked && item.course && (
+            <Link to={`${createPageUrl("CourseDetail")}?id=${item.course.id}`}>
+              <ChevronRight className="w-4 h-4 text-[#6B3FA0]" />
+            </Link>
+          )}
+        </div>
+      </div>
+
+      {/* Expanded module list */}
+      {open && item.modules?.length > 0 && (
+        <div className="border-t border-[#F0F0F0] bg-[#FAFAFA] px-4 py-3 space-y-2">
+          {item.modules.map((mod, i) => (
+            <div key={i} className="flex items-start gap-2.5">
+              <span className="w-5 h-5 rounded-full bg-[#6B3FA0]/10 text-[#6B3FA0] text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                {i + 1}
+              </span>
+              <span className="text-xs text-[#444] leading-snug">{mod}</span>
+            </div>
+          ))}
+          {item.course && (
+            <Link to={`${createPageUrl("CourseDetail")}?id=${item.course.id}`}>
+              <button className="mt-2 w-full bg-[#6B3FA0] text-white text-xs font-bold py-2 rounded-lg hover:bg-[#5A3490] transition-colors">
+                Go to Course →
+              </button>
+            </Link>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function PersonalizedPath({ tier, assessment }) {
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
@@ -132,43 +318,7 @@ export default function PersonalizedPath({ tier, assessment }) {
           {unlockedCourses.map((item, idx) => {
             const isLocked = !item.isUnlocked;
             return (
-              <Link
-                key={idx}
-                to={item.isUnlocked && item.course ? `${createPageUrl("CourseDetail")}?id=${item.course.id}` : "#"}
-                className={!item.isUnlocked ? "cursor-not-allowed" : ""}
-              >
-                <div className={`bg-white border rounded-2xl p-4 flex items-start gap-4 transition-all ${
-                  isLocked ? "border-[#EEEEEE] opacity-60" : "border-[#EEEEEE] hover:shadow-md hover:border-[#6B3FA0]/30"
-                }`}>
-                  <div className={`w-10 h-10 rounded-full text-white flex items-center justify-center font-bold shrink-0 text-xs ${
-                    item.isCompleted ? "bg-[#D4AF37]" : isLocked ? "bg-[#CFCFCF]" : "bg-[#6B3FA0]"
-                  }`}>
-                    {item.isCompleted ? <CheckCircle className="w-5 h-5" /> : <span>{idx + 1}</span>}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className={`font-bold text-sm ${isLocked ? "text-[#AAAAAA]" : "text-[#111]"}`}>{item.title}</h4>
-                    <p className={`text-xs mt-0.5 ${isLocked ? "text-[#BBBBBB]" : "text-[#666]"}`}>{item.description}</p>
-                  </div>
-                  {item.isCompleted && (
-                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-[#D4AF37]/15 text-[#B8960C] uppercase shrink-0">
-                      ✓ Complete
-                    </span>
-                  )}
-                  {idx === 0 && !item.isCompleted && (
-                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-[#6B3FA0]/10 text-[#6B3FA0] uppercase shrink-0">
-                      Start Here
-                    </span>
-                  )}
-                  {isLocked && (
-                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-gray-100 text-gray-400 uppercase shrink-0 flex items-center gap-1">
-                      <Lock className="w-3 h-3" /> Locked
-                    </span>
-                  )}
-                  {item.isUnlocked && !item.isCompleted && (
-                    <ChevronRight className="w-4 h-4 text-[#6B3FA0] shrink-0" />
-                  )}
-                </div>
-              </Link>
+              <CoursePathCard key={idx} item={item} idx={idx} isLocked={isLocked} />
             );
           })}
         </div>
