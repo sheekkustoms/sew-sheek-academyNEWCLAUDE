@@ -1,5 +1,5 @@
 import React from "react";
-import { ChevronRight, Download } from "lucide-react";
+import { ChevronRight, Download, CheckCircle2, BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 
@@ -159,12 +159,30 @@ export default function PlacementResults({ tier, onStart }) {
           <p className="text-xs font-semibold text-[#999]">— Coach Sheek</p>
         </div>
 
+        {/* Confirmation message */}
+        <div className="bg-gradient-to-br from-[#6B3FA0]/8 to-purple-50 border-2 border-[#6B3FA0]/20 rounded-2xl p-6 space-y-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-[#6B3FA0]/15 flex items-center justify-center shrink-0">
+              <CheckCircle2 className="w-5 h-5 text-[#6B3FA0]" />
+            </div>
+            <h3 className="font-bold text-[#111]">Your results have been sent to your coach and team!</h3>
+          </div>
+          <p className="text-sm text-[#555] leading-relaxed">
+            They will review your responses and send you a personalized plan for your path. In the meantime, feel free to browse the Library and watch the replays at your leisure — more videos are being uploaded daily.
+          </p>
+          <Link to={createPageUrl("Library")}>
+            <button className="mt-2 flex items-center gap-2 bg-[#6B3FA0] text-white font-bold text-sm px-5 py-2.5 rounded-xl hover:bg-[#5A3490] transition-colors">
+              <BookOpen className="w-4 h-4" /> Browse the Library
+            </button>
+          </Link>
+        </div>
+
         {/* CTA */}
         <button
           onClick={onStart}
           className="w-full bg-[#D4AF37] text-black font-bold px-6 py-4 rounded-xl hover:bg-[#F0D060] transition-all shadow-lg shadow-[#D4AF37]/20 flex items-center justify-center gap-2"
         >
-          Start My Personalized Path
+          View My Path
           <ChevronRight className="w-5 h-5" />
         </button>
       </div>
