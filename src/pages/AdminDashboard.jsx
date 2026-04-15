@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Shield, Users, FileText, Pin, Trash2, CheckCircle, XCircle, Megaphone, BarChart2, Ban, Gamepad2, BookOpen, UserPlus, Copy, Check, Brain, Video, Zap, Tags, Mail, Bell, UserX, Star, Trophy, GraduationCap } from "lucide-react";
+import { Shield, Users, FileText, Pin, Trash2, CheckCircle, XCircle, Megaphone, BarChart2, Ban, Gamepad2, BookOpen, UserPlus, Copy, Check, Brain, Video, Zap, Tags, Mail, Bell, UserX, Star, Trophy, GraduationCap, Map } from "lucide-react";
 import QuizBuilder from "../components/admin/QuizBuilder";
 import CourseManager from "../components/admin/CourseManager";
 import WeeklyChallengeManager from "../components/admin/WeeklyChallengeManager";
@@ -18,6 +18,7 @@ import MembershipBillingPanel from "../components/admin/MembershipBillingPanel";
 import MemberActivityPanel from "../components/admin/MemberActivityPanel";
 import CourseAssignmentPanel from "../components/admin/CourseAssignmentPanel";
 import AssessmentsPanel from "../components/admin/AssessmentsPanel";
+import PathsPanel from "../components/admin/PathsPanel";
 import EmailBlastPanel from "../components/admin/EmailBlastPanel";
 
 import { Button } from "@/components/ui/button";
@@ -290,6 +291,9 @@ export default function AdminDashboard() {
           </TabsTrigger>
           <TabsTrigger value="assessments" className="flex items-center gap-1">
             <Brain className="w-3.5 h-3.5" /> Assessments
+          </TabsTrigger>
+          <TabsTrigger value="paths" className="flex items-center gap-1">
+            <Map className="w-3.5 h-3.5" /> Paths
           </TabsTrigger>
           <TabsTrigger value="emailblast" className="flex items-center gap-1">
             <Mail className="w-3.5 h-3.5" /> Email Students
@@ -738,6 +742,11 @@ export default function AdminDashboard() {
         {/* Assessments */}
         <TabsContent value="assessments" className="mt-4">
           <AssessmentsPanel />
+        </TabsContent>
+
+        {/* Paths */}
+        <TabsContent value="paths" className="mt-4">
+          <PathsPanel />
         </TabsContent>
 
         {/* Email Blast */}
