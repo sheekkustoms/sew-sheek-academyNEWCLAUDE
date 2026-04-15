@@ -117,8 +117,29 @@ export default function EmailBlastPanel() {
               </div>
             )}
           </div>
+
+          {results.successes.length > 0 && (
+            <div className="text-left bg-green-50 border border-green-100 rounded-xl p-4 space-y-2">
+              <p className="text-xs font-bold text-green-700 uppercase tracking-wide">Successfully Delivered To:</p>
+              <div className="space-y-1 max-h-48 overflow-y-auto">
+                {results.successes.map(email => (
+                  <p key={email} className="text-xs text-green-800 flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3 h-3 text-green-500 shrink-0" /> {email}
+                  </p>
+                ))}
+              </div>
+            </div>
+          )}
+
           {results.failures.length > 0 && (
-            <p className="text-xs text-red-500">Failed: {results.failures.join(", ")}</p>
+            <div className="text-left bg-red-50 border border-red-100 rounded-xl p-4 space-y-2">
+              <p className="text-xs font-bold text-red-700 uppercase tracking-wide">Failed:</p>
+              <div className="space-y-1">
+                {results.failures.map(email => (
+                  <p key={email} className="text-xs text-red-700">{email}</p>
+                ))}
+              </div>
+            </div>
           )}
           <Button onClick={handleReset} variant="outline" className="mt-2">
             Send Another Email
