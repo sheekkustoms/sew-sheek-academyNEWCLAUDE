@@ -79,8 +79,22 @@ function AssessmentRow({ assessment }) {
             )}
           </div>
           <p className="text-xs text-gray-400 mt-0.5">
-            Submitted {moment(assessment.created_date).fromNow()} · Score: {assessment.experience_score ?? "—"} · Starts {assessment.starting_phase}, Module {assessment.starting_module}
+            Submitted {moment(assessment.created_date).fromNow()} · Score: {assessment.experience_score ?? "—"}
           </p>
+          <div className="flex items-center gap-3 mt-1 flex-wrap">
+            <span className="text-xs font-semibold text-gray-700">
+              📍 Starts: <span className="text-violet-700">{assessment.starting_phase}</span>, Module {assessment.starting_module}
+            </span>
+            {assessment.starting_phase === "Phase 1" && (
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 font-semibold">Phase 1 = Foundations (Beginner)</span>
+            )}
+            {assessment.starting_phase === "Phase 2" && (
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-50 text-orange-600 font-semibold">Phase 2 = Intermediate Skills</span>
+            )}
+            {assessment.starting_phase === "Phase 3" && (
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-50 text-purple-600 font-semibold">Phase 3 = Advanced / Business</span>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
