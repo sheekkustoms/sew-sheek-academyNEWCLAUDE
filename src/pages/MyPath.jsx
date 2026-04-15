@@ -137,6 +137,7 @@ export default function MyPath() {
     return (
       <PlacementResults
         tier={assignedTier}
+        pathActivated={assessment?.path_activated || false}
         onStart={() => {
           setAssessmentState("path");
           queryClient.invalidateQueries({ queryKey: ["placementAssessment", user?.email] });

@@ -59,6 +59,11 @@
       "type": "boolean",
       "default": false,
       "description": "Whether assessment has been completed"
+    },
+    "path_activated": {
+      "type": "boolean",
+      "default": false,
+      "description": "Admin activates this to unlock the View My Path button for the student"
     }
   },
   "required": [

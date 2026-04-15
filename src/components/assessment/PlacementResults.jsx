@@ -69,7 +69,7 @@ const TIER_CONFIG = {
   },
 };
 
-export default function PlacementResults({ tier, onStart }) {
+export default function PlacementResults({ tier, onStart, pathActivated }) {
   const config = TIER_CONFIG[tier];
 
   return (
@@ -112,6 +112,9 @@ export default function PlacementResults({ tier, onStart }) {
             Your responses have been submitted to your coach and the Oh Sew Sheek team. We'll review your answers and personally assign you a customized learning plan within <span className="font-bold text-[#111]">24 hours</span>. Keep an eye on your inbox — your journey is about to get very intentional.
           </p>
           <p className="text-sm text-[#555] leading-relaxed">
+            Once your path is ready, the <span className="font-semibold text-[#111]">"View My Path"</span> button below will unlock — so keep an eye out within 24 hours!
+          </p>
+          <p className="text-sm text-[#555] leading-relaxed">
             In the meantime, you have full access to the Library — dive into past class replays, tutorials, and bonus content. New videos are added regularly, so there's always something fresh to explore.
           </p>
           <Link to={createPageUrl("Library")}>
@@ -123,8 +126,13 @@ export default function PlacementResults({ tier, onStart }) {
 
         {/* CTA */}
         <button
-          onClick={onStart}
-          className="w-full bg-[#D4AF37] text-black font-bold px-6 py-4 rounded-xl hover:bg-[#F0D060] transition-all shadow-lg shadow-[#D4AF37]/20 flex items-center justify-center gap-2"
+          onClick={pathActivated ? onStart : undefined}
+          disabled={!pathActivated}
+          className={`w-full font-bold px-6 py-4 rounded-xl transition-all flex items-center justify-center gap-2 ${
+            pathActivated
+              ? "bg-[#D4AF37] text-black hover:bg-[#F0D060] shadow-lg shadow-[#D4AF37]/20 cursor-pointer"
+              : "bg-[#DDDDDD] text-[#AAAAAA] cursor-not-allowed"
+          }`}
         >
           View My Path
           <ChevronRight className="w-5 h-5" />
