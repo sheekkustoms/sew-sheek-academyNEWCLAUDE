@@ -1,9 +1,72 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Trophy, Zap, ChevronRight, Star } from "lucide-react";
+import { Trophy, Zap, ChevronRight, Star, CheckCircle2, XCircle, ChevronDown } from "lucide-react";
 
-export default function LaunchResults({ totalXP, challengesDone, quizCorrect, quizTotal, pathParam }) {
+function AnswerReview({ answerLog }) {
+  const [open, setOpen] = useState(false);
+
+  if (!answerLog || answerLog.length === 0) return null;
+
+  return (
+    <div className="w-full border border-white/10 rounded-2xl overflow-hidden">
+      <button
+        onClick={() => setOpen(v => !v)}
+        className="w-full flex items-center justify-between px-5 py-4 bg-white/5 hover:bg-white/10 transition-colors"
+      >
+        <span className="font-extrabold text-sm text-white/80 uppercase tracking-widest">Review Your Answers</span>
+        <ChevronDown className={`w-4 h-4 text-white/50 transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+
+      {open && (
+        <div className="divide-y divide-white/5 max-h-[500px] overflow-y-auto">
+          {answerLog.map((entry, i) => (
+            <div key={i} className="px-5 py-4 space-y-3">
+              <div className="flex items-start gap-2">
+                {entry.isCorrect
+                  ? <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 shrink-0" />
+                  : <XCircle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
+                }
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] font-bold text-[#E91E8C] uppercase tracking-widest mb-1">{entry.label}</p>
+                  <p className="text-sm font-semibold text-white leading-snug">{entry.question}</p>
+                </div>
+              </div>
+
+              <div className="space-y-1.5 ml-6">
+                {entry.options.map((opt, idx) => {
+                  const isCorrect = idx === entry.correct;
+                  const isChosen = idx === entry.chosen;
+                  let cls = "border-white/10 text-white/30 bg-transparent";
+                  if (isCorrect) cls = "border-green-500 bg-green-500/15 text-green-300";
+                  else if (isChosen && !isCorrect) cls = "border-red-500 bg-red-500/15 text-red-300";
+
+                  return (
+                    <div key={idx} className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-semibold ${cls}`}>
+                      <span className="w-5 h-5 rounded-full border border-current flex items-center justify-center text-[10px] font-bold shrink-0">
+                        {String.fromCharCode(65 + idx)}
+                      </span>
+                      <span className="flex-1">{opt}</span>
+                      {isCorrect && <CheckCircle2 className="w-3.5 h-3.5 text-green-400 shrink-0" />}
+                      {isChosen && !isCorrect && <XCircle className="w-3.5 h-3.5 text-red-400 shrink-0" />}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Feedback tip */}
+              <div className={`ml-6 rounded-lg px-3 py-2 text-xs font-medium ${entry.isCorrect ? "bg-green-500/10 text-green-300" : "bg-red-500/10 text-red-300"}`}>
+                {entry.isCorrect ? entry.correctFeedback : entry.wrongFeedback}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function LaunchResults({ totalXP, challengesDone, quizCorrect, quizTotal, pathParam, answerLog }) {
   const [displayXP, setDisplayXP] = useState(0);
   const isHighScore = totalXP >= 400;
   const accuracy = quizTotal > 0 ? Math.round((quizCorrect / quizTotal) * 100) : 0;
@@ -68,12 +131,12 @@ export default function LaunchResults({ totalXP, challengesDone, quizCorrect, qu
         {/* Stats grid */}
         <div className="grid grid-cols-2 gap-3 w-full">
           <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center">
-            <p className="text-2xl font-extrabold text-white">{challengesDone}/7</p>
-            <p className="text-xs text-white/40 mt-1">Challenges Done</p>
+            <p className="text-2xl font-extrabold text-white">{quizCorrect}/{quizTotal}</p>
+            <p className="text-xs text-white/40 mt-1">Correct Answers</p>
           </div>
           <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center">
             <p className="text-2xl font-extrabold text-white">{accuracy}%</p>
-            <p className="text-xs text-white/40 mt-1">Quiz Accuracy</p>
+            <p className="text-xs text-white/40 mt-1">Accuracy</p>
           </div>
         </div>
 
@@ -97,6 +160,9 @@ export default function LaunchResults({ totalXP, challengesDone, quizCorrect, qu
             <span>500 XP goal</span>
           </div>
         </div>
+
+        {/* Answer Review (collapsible) */}
+        <AnswerReview answerLog={answerLog} />
 
         {/* What's next */}
         <div className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 space-y-2">

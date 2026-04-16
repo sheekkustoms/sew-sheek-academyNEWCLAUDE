@@ -373,6 +373,7 @@ export default function LaunchGame() {
   const [challengeResults, setChallengeResults] = useState([]);
   const [quizCorrect, setQuizCorrect] = useState(0);
   const [quizTotal, setQuizTotal] = useState(0);
+  const [answerLog, setAnswerLog] = useState([]); // {question, options, correct, chosen, isCorrect}
 
   // Redirect if already completed, or if game disabled, or if 3day_replay path
   useEffect(() => {
@@ -427,7 +428,7 @@ export default function LaunchGame() {
     setTimeout(() => setXpFlash(null), 1500);
   };
 
-  const handleChallengeComplete = (xpEarned, isCorrect = null) => {
+  const handleChallengeComplete = (xpEarned, isCorrect = null, chosenIdx = null) => {
     const newTotal = totalXP + xpEarned;
     setTotalXP(newTotal);
     flashXP(xpEarned);
@@ -435,6 +436,18 @@ export default function LaunchGame() {
     if (isCorrect !== null) {
       setQuizTotal(prev => prev + 1);
       if (isCorrect) setQuizCorrect(prev => prev + 1);
+      // Log the answer for end-of-game review
+      const c = CHALLENGES[currentChallenge];
+      setAnswerLog(prev => [...prev, {
+        label: c.label,
+        question: c.question,
+        options: c.options,
+        correct: c.correct,
+        chosen: chosenIdx,
+        isCorrect,
+        correctFeedback: c.correctFeedback,
+        wrongFeedback: c.wrongFeedback,
+      }]);
     }
 
     setTimeout(() => {
@@ -467,6 +480,7 @@ export default function LaunchGame() {
         quizCorrect={quizCorrect}
         quizTotal={quizTotal}
         pathParam={pathParam}
+        answerLog={answerLog}
       />
     );
   }
