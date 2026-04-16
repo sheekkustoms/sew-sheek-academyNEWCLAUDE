@@ -76,7 +76,7 @@ export default function LaunchWelcome({ pathParam, onStart, onAdminSkip, isAdmin
             <p key={i} className={i > 0 ? "mt-3" : ""}>
               {para.split("XP").map((part, j, arr) =>
                 j < arr.length - 1
-                  ? <React.Fragment key={j}>{part}<span className="text-[#F5C518] font-bold">XP</span></React.Fragment>
+                  ? <span key={j}>{part}<span className="text-[#F5C518] font-bold">XP</span></span>
                   : part
               )}
             </p>
