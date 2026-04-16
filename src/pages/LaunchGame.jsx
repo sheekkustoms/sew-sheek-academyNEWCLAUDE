@@ -493,6 +493,7 @@ export default function LaunchGame() {
         answerLog={answerLog}
         perQuestionXP={perQuestionXP}
         userEmail={user?.email}
+        pathActivated={assessment?.path_activated || false}
       />
     );
   }

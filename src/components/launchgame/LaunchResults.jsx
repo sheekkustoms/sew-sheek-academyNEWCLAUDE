@@ -169,7 +169,7 @@ function PerfectScoreCard({ code, copied, onCopy }) {
   );
 }
 
-export default function LaunchResults({ totalXP, challengesDone, quizCorrect, quizTotal, pathParam, answerLog, perQuestionXP, userEmail }) {
+export default function LaunchResults({ totalXP, challengesDone, quizCorrect, quizTotal, pathParam, answerLog, perQuestionXP, userEmail, pathActivated }) {
   const [showTally, setShowTally] = useState(true);
   const [displayXP, setDisplayXP] = useState(0);
   const [copied, setCopied] = useState(false);
@@ -295,17 +295,36 @@ export default function LaunchResults({ totalXP, challengesDone, quizCorrect, qu
         <AnswerReview answerLog={answerLog} />
 
         {/* What's next */}
-        <div className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 space-y-2">
-          <p className="font-extrabold text-sm text-[#E91E8C] uppercase tracking-widest">What's Next</p>
-          <p className="text-white/70 text-sm leading-relaxed">Head back to your dashboard and start Lesson 1. Every lesson = <span className="text-[#F5C518] font-bold">+20 XP</span>. Finish your first module = <span className="text-[#F5C518] font-bold">+50 BONUS XP</span>.</p>
-        </div>
-
-        {/* CTA */}
-        <Link to={firstLessonPath} className="w-full">
-          <button className="w-full bg-gradient-to-r from-[#E91E8C] to-[#7B2FBE] text-white font-extrabold py-4 rounded-2xl text-lg shadow-lg shadow-[#E91E8C]/30 flex items-center justify-center gap-2">
-            GO TO MY PATH <ChevronRight className="w-5 h-5" />
-          </button>
-        </Link>
+        {pathActivated ? (
+          <>
+            <div className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 space-y-2">
+              <p className="font-extrabold text-sm text-[#E91E8C] uppercase tracking-widest">What's Next</p>
+              <p className="text-white/70 text-sm leading-relaxed">Head back to your dashboard and start Lesson 1. Every lesson = <span className="text-[#F5C518] font-bold">+20 XP</span>. Finish your first module = <span className="text-[#F5C518] font-bold">+50 BONUS XP</span>.</p>
+            </div>
+            <Link to={firstLessonPath} className="w-full">
+              <button className="w-full bg-gradient-to-r from-[#E91E8C] to-[#7B2FBE] text-white font-extrabold py-4 rounded-2xl text-lg shadow-lg shadow-[#E91E8C]/30 flex items-center justify-center gap-2">
+                GO TO MY PATH <ChevronRight className="w-5 h-5" />
+              </button>
+            </Link>
+          </>
+        ) : (
+          <>
+            <div className="w-full bg-[#E91E8C]/10 border border-[#E91E8C]/30 rounded-2xl p-5 space-y-2">
+              <p className="font-extrabold text-sm text-[#E91E8C] uppercase tracking-widest">⏳ Your Path Is Being Activated</p>
+              <p className="text-white/70 text-sm leading-relaxed">
+                You earned <span className="text-[#F5C518] font-bold">{totalXP} XP</span> on the Launch Game — amazing start! Your personal learning path is being reviewed and will be activated by Coach Sheek shortly.
+              </p>
+              <p className="text-white/70 text-sm leading-relaxed">
+                In the meantime, head to the <span className="text-[#F5C518] font-bold">Library</span> to watch replays and get a head start!
+              </p>
+            </div>
+            <Link to={createPageUrl("Library")} className="w-full">
+              <button className="w-full bg-gradient-to-r from-[#E91E8C] to-[#7B2FBE] text-white font-extrabold py-4 rounded-2xl text-lg shadow-lg shadow-[#E91E8C]/30 flex items-center justify-center gap-2">
+                GO TO THE LIBRARY <ChevronRight className="w-5 h-5" />
+              </button>
+            </Link>
+          </>
+        )}
       </div>
     </div>
   );
