@@ -51,10 +51,19 @@ export default function MyPath() {
   });
 
   useEffect(() => {
-    if (!user || assessmentLoading || assessmentState !== "check") return;
+    if (!user || assessmentLoading || assessmentState !== "check" || isLoading) return;
     if (assessment && assessment.completed) {
       const daysAgo = (Date.now() - new Date(assessment.created_date).getTime()) / (1000 * 60 * 60 * 24);
       if (daysAgo < 60) {
+        // 3-day replay students: if path activated, send them to the 3-day course
+        if (assessment.path_view === "3day_replay" && assessment.path_activated) {
+          const threeDayCourse = published.find(c => c.title && c.title.includes("3 Day Replay"));
+          if (threeDayCourse) {
+            navigate(`${createPageUrl("CourseDetail")}?id=${threeDayCourse.id}`, { replace: true });
+            return;
+          }
+        }
+        
         // 3-day replay students skip the game entirely
         const is3DayReplay = assessment.path_view === "3day_replay";
         // If launch game not done yet and not 3day_replay, send them there (regardless of path_activated)
@@ -76,7 +85,7 @@ export default function MyPath() {
     } else if (assessment === null) {
       setAssessmentState("quiz");
     }
-  }, [user, assessment, assessmentLoading, assessmentState]);
+  }, [user, assessment, assessmentLoading, assessmentState, published, navigate]);
 
   const saveAssessmentMutation = useMutation({
     mutationFn: async (data) => {
