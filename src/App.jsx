@@ -28,6 +28,7 @@ import UserProgress from './pages/UserProgress';
 import LiveClassDetail from './pages/LiveClassDetail';
 import MyPath from './pages/MyPath';
 import Library from './pages/Library';
+import LaunchGame from './pages/LaunchGame';
 
 const LayoutWrapper = ({ children, currentPageName }) => (
   <Layout currentPageName={currentPageName}>{children}</Layout>
@@ -73,6 +74,7 @@ const AuthenticatedApp = () => {
       <Route path="/LiveClassDetail" element={<LayoutWrapper currentPageName="LiveClassDetail"><LiveClassDetail /></LayoutWrapper>} />
       <Route path="/MyPath" element={<LayoutWrapper currentPageName="MyPath"><MyPath /></LayoutWrapper>} />
       <Route path="/Library" element={<LayoutWrapper currentPageName="Library"><Library /></LayoutWrapper>} />
+      <Route path="/LaunchGame" element={<LaunchGame />} />
 
       <Route path="*" element={<PageNotFound />} />
     </Routes>

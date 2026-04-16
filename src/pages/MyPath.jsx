@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Lock, CheckCircle, ChevronRight, Clock, BookOpen, Zap } from "lucide-react";
 import MembershipGate from "@/components/membership/MembershipGate";
@@ -11,6 +11,7 @@ import PlacementResults from "@/components/assessment/PlacementResults";
 import PersonalizedPath from "@/components/assessment/PersonalizedPath";
 
 export default function MyPath() {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [assessmentState, setAssessmentState] = useState("check");
   const [quizData, setQuizData] = useState(null);
@@ -54,6 +55,12 @@ export default function MyPath() {
       if (daysAgo < 60) {
         // Only show the path if admin has activated it
         if (assessment.path_activated) {
+          // If launch game not done yet, send them there first
+          if (!assessment.launch_game_completed) {
+            const pathMap = { tier_1: "beginner", tier_2: "intermediate", tier_3: "advanced" };
+            navigate(`${createPageUrl("LaunchGame")}?path=${pathMap[assessment.tier] || "beginner"}`, { replace: true });
+            return;
+          }
           setAssessmentState("path");
         } else {
           setAssessmentState("results");

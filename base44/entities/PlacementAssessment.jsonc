@@ -74,6 +74,16 @@
         "path_3"
       ],
       "description": "Which path/view the student sees: 3day_replay, path_1, path_2, or path_3"
+    },
+    "launch_game_completed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the student has completed the Launch Game"
+    },
+    "launch_game_xp": {
+      "type": "number",
+      "default": 0,
+      "description": "XP earned in the Launch Game"
     }
   },
   "required": [
