@@ -6,6 +6,7 @@ import { createPageUrl } from "@/utils";
 import { Lock, CheckCircle, ChevronRight, Clock, BookOpen, Zap } from "lucide-react";
 import MembershipGate from "@/components/membership/MembershipGate";
 import { useActivityTracker } from "@/hooks/useActivityTracker";
+import { usePreviewEmail } from "@/hooks/usePreviewEmail";
 import PlacementQuiz from "@/components/assessment/PlacementQuiz";
 import PlacementResults from "@/components/assessment/PlacementResults";
 import PersonalizedPath from "@/components/assessment/PersonalizedPath";
@@ -18,6 +19,7 @@ export default function MyPath() {
   const [assignedTier, setAssignedTier] = useState(null);
 
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
+  const viewingEmail = usePreviewEmail(user);
   useActivityTracker(user, "MyPath");
 
   const { data: courses = [], isLoading } = useQuery({
@@ -26,9 +28,9 @@ export default function MyPath() {
   });
 
   const { data: enrollments = [] } = useQuery({
-    queryKey: ["myEnrollments", user?.email],
-    queryFn: () => base44.entities.Enrollment.filter({ user_email: user.email }),
-    enabled: !!user?.email,
+    queryKey: ["myEnrollments", viewingEmail],
+    queryFn: () => base44.entities.Enrollment.filter({ user_email: viewingEmail }),
+    enabled: !!viewingEmail,
   });
 
   const { data: lessons = [] } = useQuery({
@@ -37,15 +39,15 @@ export default function MyPath() {
   });
 
   const { data: quizResults = [] } = useQuery({
-    queryKey: ["myQuizResults", user?.email],
-    queryFn: () => base44.entities.DailyChallenge.filter({ user_email: user.email }),
-    enabled: !!user?.email,
+    queryKey: ["myQuizResults", viewingEmail],
+    queryFn: () => base44.entities.DailyChallenge.filter({ user_email: viewingEmail }),
+    enabled: !!viewingEmail,
   });
 
   const { data: assessment, isLoading: assessmentLoading } = useQuery({
-    queryKey: ["placementAssessment", user?.email],
-    queryFn: () => base44.entities.PlacementAssessment.filter({ user_email: user.email }).then(r => r[0] || null),
-    enabled: !!user?.email,
+    queryKey: ["placementAssessment", viewingEmail],
+    queryFn: () => base44.entities.PlacementAssessment.filter({ user_email: viewingEmail }).then(r => r[0] || null),
+    enabled: !!viewingEmail,
   });
 
   useEffect(() => {

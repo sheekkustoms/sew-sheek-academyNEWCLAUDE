@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
+import { usePreviewEmail } from "@/hooks/usePreviewEmail";
 import { createPageUrl } from "@/utils";
 import { ChevronRight, ChevronDown, Zap, BookMarked, Lock, CheckCircle, Download, ListChecks } from "lucide-react";
 import ProjectGuides from "./ProjectGuides";
@@ -244,11 +245,12 @@ function CoursePathCard({ item, idx, isLocked }) {
 
 export default function PersonalizedPath({ tier, assessment }) {
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
+  const viewingEmail = usePreviewEmail(user);
 
   const { data: enrollments = [] } = useQuery({
-    queryKey: ["tierEnrollments", user?.email],
-    queryFn: () => base44.entities.Enrollment.filter({ user_email: user?.email }),
-    enabled: !!user?.email,
+    queryKey: ["tierEnrollments", viewingEmail],
+    queryFn: () => base44.entities.Enrollment.filter({ user_email: viewingEmail }),
+    enabled: !!viewingEmail,
   });
 
   const { data: courses = [] } = useQuery({

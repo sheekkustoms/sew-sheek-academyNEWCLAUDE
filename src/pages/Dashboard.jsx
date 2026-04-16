@@ -5,22 +5,24 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import MembershipGate from "@/components/membership/MembershipGate";
 import { useActivityTracker } from "@/hooks/useActivityTracker";
+import { usePreviewEmail } from "@/hooks/usePreviewEmail";
 import { ChevronRight, Zap, Star, BookOpen, CheckCircle, Map, TrendingUp, Flame } from "lucide-react";
 
 export default function Dashboard() {
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
+  const viewingEmail = usePreviewEmail(user);
   useActivityTracker(user, "Dashboard");
 
   const { data: enrollments = [] } = useQuery({
-    queryKey: ["dashboardEnrollments", user?.email],
-    queryFn: () => base44.entities.Enrollment.filter({ user_email: user.email }),
-    enabled: !!user?.email,
+    queryKey: ["dashboardEnrollments", viewingEmail],
+    queryFn: () => base44.entities.Enrollment.filter({ user_email: viewingEmail }),
+    enabled: !!viewingEmail,
   });
 
   const { data: userPoints } = useQuery({
-    queryKey: ["dashboardPoints", user?.email],
-    queryFn: () => base44.entities.UserPoints.filter({ user_email: user.email }),
-    enabled: !!user?.email,
+    queryKey: ["dashboardPoints", viewingEmail],
+    queryFn: () => base44.entities.UserPoints.filter({ user_email: viewingEmail }),
+    enabled: !!viewingEmail,
     select: (data) => data[0] || null,
   });
 
@@ -41,7 +43,11 @@ export default function Dashboard() {
   const hasCompleted = completedCourses > 0;
   const isNewStudent = !hasStarted;
   const isReturning = hasCompleted;
-  const firstName = user?.full_name?.split(" ")[0] || "there";
+  const previewEmail = localStorage.getItem("member_preview_email");
+  const isPreviewMode = localStorage.getItem("member_preview_mode") === "true";
+  const firstName = (isPreviewMode && previewEmail)
+    ? previewEmail.split("@")[0]
+    : (user?.full_name?.split(" ")[0] || "there");
   const streakDays = userPoints?.streak_days || 0;
 
   const enrollmentMap = {};
