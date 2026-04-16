@@ -50,6 +50,8 @@ export default function MyPath() {
     enabled: !!viewingEmail,
   });
 
+  const published = courses.filter(c => c.is_published).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
   useEffect(() => {
     if (!user || assessmentLoading || assessmentState !== "check" || isLoading) return;
     if (assessment && assessment.completed) {
@@ -122,8 +124,6 @@ export default function MyPath() {
       console.error("[MyPath] Mutation error:", error);
     }
   });
-
-  const published = courses.filter(c => c.is_published).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   const enrollmentMap = {};
   enrollments.forEach(e => { enrollmentMap[e.course_id] = e; });
