@@ -66,6 +66,13 @@ const PHASE_DESC = {
   "Phase 2": "Intermediate — Pattern reading & skill building",
 };
 
+const PATH_VIEW_OPTIONS = [
+  { value: "3day_replay", label: "3 Day Replay — Beginners START HERE", color: "bg-pink-100 text-pink-700 border-pink-200" },
+  { value: "path_1", label: "Path 1 — Fresh Start (Beginner)", color: "bg-green-100 text-green-700 border-green-200" },
+  { value: "path_2", label: "Path 2 — Rusty Creator (Intermediate)", color: "bg-amber-100 text-amber-700 border-amber-200" },
+  { value: "path_3", label: "Path 3 — Skilled Builder (Advanced)", color: "bg-violet-100 text-violet-700 border-violet-200" },
+];
+
 function PathRow({ assessment }) {
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState(false);
@@ -74,6 +81,7 @@ function PathRow({ assessment }) {
     tier: assessment.tier || "tier_1",
     starting_phase: assessment.starting_phase || "Phase 1",
     starting_module: assessment.starting_module || 1,
+    path_view: assessment.path_view || "",
   });
 
   const saveMutation = useMutation({
@@ -81,6 +89,7 @@ function PathRow({ assessment }) {
       tier: form.tier,
       starting_phase: form.starting_phase,
       starting_module: Number(form.starting_module),
+      path_view: form.path_view,
     }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["adminPaths"] });
@@ -100,6 +109,7 @@ function PathRow({ assessment }) {
 
   const tier = TIER_LABELS[assessment.tier];
   const moduleLabel = MODULE_LABELS[assessment.tier]?.[assessment.starting_module];
+  const pathViewOption = PATH_VIEW_OPTIONS.find(p => p.value === assessment.path_view);
 
   return (
     <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
@@ -129,6 +139,15 @@ function PathRow({ assessment }) {
           {!editing && (
             <div className="mt-2 space-y-2">
               <div className="flex flex-wrap gap-2">
+                {pathViewOption ? (
+                  <span className={`text-xs px-2.5 py-1 rounded-full font-bold border ${pathViewOption.color}`}>
+                    🗺️ {pathViewOption.label}
+                  </span>
+                ) : (
+                  <span className="text-xs px-2.5 py-1 rounded-full bg-gray-100 text-gray-400 font-semibold border border-gray-200">
+                    No path assigned
+                  </span>
+                )}
                 <span className="text-xs px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 font-semibold border border-blue-100">
                   📍 {assessment.starting_phase} — {PHASE_DESC[assessment.starting_phase] || ""}
                 </span>
@@ -222,6 +241,29 @@ function PathRow({ assessment }) {
         <div className="border-t border-gray-100 bg-gray-50 p-4 space-y-3">
           <p className="text-xs font-bold text-gray-700 uppercase tracking-wide">Edit Path Assignment</p>
 
+          <div className="space-y-3">
+          {/* Path View — what the student sees */}
+          <div>
+            <label className="text-xs font-semibold text-gray-600 mb-1 block">What path does the student see?</label>
+            <div className="grid grid-cols-2 gap-2">
+              {PATH_VIEW_OPTIONS.map(opt => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setForm({ ...form, path_view: opt.value })}
+                  className={`text-left px-3 py-2 rounded-xl border-2 text-xs font-semibold transition-all ${
+                    form.path_view === opt.value
+                      ? `border-current ${opt.color}`
+                      : "border-gray-200 bg-white text-gray-500 hover:border-gray-300"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {/* Tier */}
             <div>
@@ -283,7 +325,7 @@ function PathRow({ assessment }) {
               variant="outline"
               className="text-xs h-8 gap-1"
               onClick={() => {
-                setForm({ tier: assessment.tier, starting_phase: assessment.starting_phase, starting_module: assessment.starting_module });
+                setForm({ tier: assessment.tier, starting_phase: assessment.starting_phase, starting_module: assessment.starting_module, path_view: assessment.path_view || "" });
                 setEditing(false);
               }}
             >

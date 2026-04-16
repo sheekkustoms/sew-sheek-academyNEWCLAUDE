@@ -256,7 +256,42 @@ export default function PersonalizedPath({ tier, assessment }) {
     queryFn: () => base44.entities.Course.list("-created_date", 100),
   });
 
-  const config = TIER_CONFIG[tier];
+  // Determine which tier config to use based on path_view override
+  const pathViewTierMap = {
+    "path_1": "tier_1",
+    "path_2": "tier_2",
+    "path_3": "tier_3",
+  };
+  const activeTier = assessment?.path_view && pathViewTierMap[assessment.path_view]
+    ? pathViewTierMap[assessment.path_view]
+    : tier;
+
+  // 3 Day Replay only view
+  if (assessment?.path_view === "3day_replay") {
+    return (
+      <div className="max-w-3xl mx-auto space-y-8 pb-16">
+        <div className="bg-gradient-to-r from-pink-500 to-rose-600 rounded-2xl p-8 text-white">
+          <h1 className="text-3xl font-extrabold mb-2">Beginners START HERE</h1>
+          <p className="text-white/90">Watch the 3 Day Replay before starting your full learning path</p>
+        </div>
+        <div className="bg-white border-2 border-[#D4AF37] rounded-2xl p-6 space-y-3">
+          <p className="text-xs font-bold text-[#D4AF37] uppercase tracking-widest">Your Starting Point</p>
+          <h2 className="text-xl font-extrabold text-[#111]">3 Day Replay — Complete Beginner Foundation</h2>
+          <p className="text-sm text-[#666]">Your coach has assigned you to start here. Complete all 3 days before moving on to your personalized path.</p>
+          <Link to={createPageUrl("Library")}>
+            <button className="mt-2 bg-[#D4AF37] text-black font-bold text-sm px-6 py-3 rounded-xl hover:bg-[#F0D060] transition-colors shadow-md shadow-[#D4AF37]/20 flex items-center gap-2">
+              Go to Library to Watch <ChevronRight className="w-4 h-4" />
+            </button>
+          </Link>
+        </div>
+        <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl p-6 border border-pink-100">
+          <p className="text-sm font-semibold text-[#666]">✨ Once you've completed the 3-day replay, your coach will unlock your full personalized path.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const config = TIER_CONFIG[activeTier];
   if (!config) return null;
 
   // Get courses matching this tier's titles
@@ -271,6 +306,9 @@ export default function PersonalizedPath({ tier, assessment }) {
     ...item,
     isUnlocked: idx === 0 || (tierCourses[idx - 1] && tierCourses[idx - 1].isCompleted),
   }));
+
+  // Use activeTier's PDF if path_view overrides tier
+  const activePdf = TIER_PDF[activeTier];
 
   return (
     <div className="max-w-3xl mx-auto space-y-8 pb-16">
@@ -333,12 +371,12 @@ export default function PersonalizedPath({ tier, assessment }) {
       </div>
 
       {/* Projects section */}
-      <ProjectGuides tier={tier} />
+      <ProjectGuides tier={activeTier} />
 
       {/* Starter checklist PDF download */}
-      {TIER_PDF[tier] && (
+      {activePdf && (
         <a
-          href={TIER_PDF[tier]}
+          href={activePdf}
           target="_blank"
           rel="noopener noreferrer"
           download

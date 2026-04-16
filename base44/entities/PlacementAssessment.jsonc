@@ -64,6 +64,16 @@
       "type": "boolean",
       "default": false,
       "description": "Admin activates this to unlock the View My Path button for the student"
+    },
+    "path_view": {
+      "type": "string",
+      "enum": [
+        "3day_replay",
+        "path_1",
+        "path_2",
+        "path_3"
+      ],
+      "description": "Which path/view the student sees: 3day_replay, path_1, path_2, or path_3"
     }
   },
   "required": [
