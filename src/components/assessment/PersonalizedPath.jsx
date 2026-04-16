@@ -19,6 +19,14 @@ const TIER_CONFIG = {
     color: "from-green-500 to-emerald-600",
     courses: [
       {
+        order: 0, title: "Beginners START HERE 3 Day Replay", description: "Watch this first — your complete beginner foundation before starting the path",
+        modules: [
+          "Day 1: Getting to know your machine",
+          "Day 2: Your first seam & basic techniques",
+          "Day 3: Completing your first mini-project",
+        ]
+      },
+      {
         order: 1, title: "Your First Stitch", description: "Master the basics and thread your first seam",
         modules: [
           "Introduction to sewing tools & supplies",
