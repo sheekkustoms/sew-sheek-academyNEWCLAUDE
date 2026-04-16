@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -375,6 +375,21 @@ export default function LaunchGame() {
   const [answerLog, setAnswerLog] = useState([]);
   const [perQuestionXP, setPerQuestionXP] = useState([]);
 
+  const skipInProgress = useRef(false);
+  const markGameSkipped = useCallback(() => {
+    if (skipInProgress.current) return;
+    skipInProgress.current = true;
+    navigate(createPageUrl("MyPath"), { replace: true });
+    if (assessment?.id && !assessment.launch_game_completed) {
+      setTimeout(() => {
+        base44.entities.PlacementAssessment.update(assessment.id, {
+          launch_game_completed: true,
+          launch_game_xp: 0,
+        });
+      }, 300);
+    }
+  }, [assessment, navigate]);
+
   // Redirect if already completed, or if game disabled, or if 3day_replay path
   useEffect(() => {
     if (!user || !assessment || onboardingSettings === undefined) return;
@@ -394,7 +409,7 @@ export default function LaunchGame() {
     if (onboardingSettings && onboardingSettings.launch_game_enabled === false) {
       markGameSkipped();
     }
-  }, [assessment, onboardingSettings, user]);
+  }, [assessment, onboardingSettings, user, markGameSkipped]);
 
   const saveGameMutation = useMutation({
     mutationFn: async ({ xpTotal, skipped }) => {
@@ -415,17 +430,6 @@ export default function LaunchGame() {
       queryClient.invalidateQueries({ queryKey: ["placementAssessment", user?.email] });
     },
   });
-
-  const markGameSkipped = () => {
-    // Fire-and-forget: update in background, navigate immediately to avoid flicker
-    if (assessment?.id && !assessment.launch_game_completed) {
-      base44.entities.PlacementAssessment.update(assessment.id, {
-        launch_game_completed: true,
-        launch_game_xp: 0,
-      });
-    }
-    navigate(createPageUrl("MyPath"), { replace: true });
-  };
 
   const handleChallengeComplete = (xpEarned, isCorrect = null, chosenIdx = null) => {
     const newTotal = totalXP + xpEarned;
