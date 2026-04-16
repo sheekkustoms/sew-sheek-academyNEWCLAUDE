@@ -118,6 +118,15 @@ function PathRow({ assessment }) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["adminPaths"] }),
   });
 
+  const activateGameMutation = useMutation({
+    mutationFn: () => base44.entities.PlacementAssessment.update(assessment.id, {
+      completed: true,
+      launch_game_completed: false,
+      path_activated: false,
+    }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["adminPaths"] }),
+  });
+
   const tier = TIER_LABELS[assessment.tier];
   const moduleLabel = MODULE_LABELS[assessment.tier]?.[assessment.starting_module];
   const pathViewOption = PATH_VIEW_OPTIONS.find(p => p.value === assessment.path_view);
@@ -180,20 +189,33 @@ function PathRow({ assessment }) {
         </div>
 
         <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
-          {/* Launch Game toggle */}
-          <button
-            onClick={() => toggleGameMutation.mutate()}
-            disabled={toggleGameMutation.isPending}
-            title={assessment.launch_game_completed ? "Click to reset Launch Game (student will see it again)" : "Click to mark Launch Game as completed (skip it for this student)"}
-            className={`flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1.5 rounded-full border transition-all ${
-              assessment.launch_game_completed
-                ? "bg-purple-100 text-purple-700 border-purple-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
-                : "bg-gray-100 text-gray-500 border-gray-200 hover:bg-purple-50 hover:text-purple-600 hover:border-purple-200"
-            }`}
-          >
-            <Gamepad2 className="w-3 h-3" />
-            {assessment.launch_game_completed ? "Game ✓ Done" : "Game Pending"}
-          </button>
+          {/* Launch Game controls */}
+          {!assessment.completed ? (
+            <Button
+              size="sm"
+              className="bg-[#E91E8C] hover:bg-[#c0166e] text-white font-bold text-xs h-8 gap-1"
+              onClick={() => activateGameMutation.mutate()}
+              disabled={activateGameMutation.isPending}
+              title="Send this student to the Launch Game"
+            >
+              <Gamepad2 className="w-3.5 h-3.5" />
+              {activateGameMutation.isPending ? "Activating..." : "Activate Game"}
+            </Button>
+          ) : (
+            <button
+              onClick={() => toggleGameMutation.mutate()}
+              disabled={toggleGameMutation.isPending}
+              title={assessment.launch_game_completed ? "Click to reset Launch Game (student will see it again)" : "Click to mark Launch Game as completed (skip it for this student)"}
+              className={`flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1.5 rounded-full border transition-all ${
+                assessment.launch_game_completed
+                  ? "bg-purple-100 text-purple-700 border-purple-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
+                  : "bg-gray-100 text-gray-500 border-gray-200 hover:bg-purple-50 hover:text-purple-600 hover:border-purple-200"
+              }`}
+            >
+              <Gamepad2 className="w-3 h-3" />
+              {assessment.launch_game_completed ? "Game ✓ Done" : "Game Pending"}
+            </button>
+          )}
 
           {!editing && (
             <button
@@ -377,21 +399,23 @@ export default function PathsPanel() {
     queryFn: () => base44.entities.PlacementAssessment.list("-created_date", 200),
   });
 
+  const notStarted = assessments.filter(a => !a.completed);
   const completed = assessments.filter(a => a.completed);
   const pending = completed.filter(a => !a.path_activated);
   const activated = completed.filter(a => a.path_activated);
-  const displayed = filter === "pending" ? pending : filter === "activated" ? activated : completed;
+  const displayed = filter === "pending" ? pending : filter === "activated" ? activated : filter === "not_started" ? notStarted : assessments;
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h3 className="text-lg font-bold text-gray-900">Student Learning Paths</h3>
-          <p className="text-sm text-gray-500">{completed.length} assessments — {pending.length} awaiting path activation</p>
+          <p className="text-sm text-gray-500">{assessments.length} students — {pending.length} awaiting path activation</p>
         </div>
         <div className="flex gap-2 flex-wrap">
           {[
-            { value: "all", label: `All (${completed.length})` },
+            { value: "all", label: `All (${assessments.length})` },
+            { value: "not_started", label: `No Game Yet (${notStarted.length})` },
             { value: "pending", label: `Pending (${pending.length})` },
             { value: "activated", label: `Active (${activated.length})` },
           ].map(f => (
