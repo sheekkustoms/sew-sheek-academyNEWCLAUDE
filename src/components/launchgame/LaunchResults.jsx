@@ -1,7 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Trophy, Zap, ChevronRight, Star, CheckCircle2, XCircle, ChevronDown } from "lucide-react";
+import { Trophy, Zap, ChevronRight, Star, CheckCircle2, XCircle, ChevronDown, Copy, Check } from "lucide-react";
+
+// Generate a unique code per user based on their email — deterministic but non-guessable
+function generatePerfectCode(email) {
+  if (!email) return "OSS-PERFECT-0000";
+  let hash = 0;
+  const str = email.toLowerCase() + "ohsewsheek2026";
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) - hash) + str.charCodeAt(i);
+    hash |= 0;
+  }
+  const code = Math.abs(hash).toString(36).toUpperCase().padStart(6, "0").slice(0, 6);
+  return `OSS-PERFECT-${code}`;
+}
 
 function AnswerReview({ answerLog }) {
   const [open, setOpen] = useState(false);
@@ -54,7 +67,6 @@ function AnswerReview({ answerLog }) {
                 })}
               </div>
 
-              {/* Feedback tip */}
               <div className={`ml-6 rounded-lg px-3 py-2 text-xs font-medium ${entry.isCorrect ? "bg-green-500/10 text-green-300" : "bg-red-500/10 text-red-300"}`}>
                 {entry.isCorrect ? entry.correctFeedback : entry.wrongFeedback}
               </div>
@@ -66,27 +78,135 @@ function AnswerReview({ answerLog }) {
   );
 }
 
-export default function LaunchResults({ totalXP, challengesDone, quizCorrect, quizTotal, pathParam, answerLog }) {
+function XPTally({ perQuestionXP, totalXP, onDone }) {
+  const [revealed, setRevealed] = useState([]);
+  const [displayTotal, setDisplayTotal] = useState(0);
+  const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    if (!perQuestionXP || perQuestionXP.length === 0) { onDone(); return; }
+
+    let idx = 0;
+    let runningTotal = 0;
+
+    const showNext = () => {
+      if (idx >= perQuestionXP.length) {
+        setDone(true);
+        setTimeout(onDone, 800);
+        return;
+      }
+      runningTotal += perQuestionXP[idx];
+      setRevealed(prev => [...prev, { xp: perQuestionXP[idx], running: runningTotal }]);
+      setDisplayTotal(runningTotal);
+      idx++;
+      setTimeout(showNext, 180);
+    };
+
+    const startDelay = setTimeout(showNext, 400);
+    return () => clearTimeout(startDelay);
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-[#1A1A2E] text-white flex flex-col items-center justify-center px-5 space-y-6">
+      <div className="text-center space-y-2">
+        <p className="text-[#E91E8C] font-extrabold uppercase tracking-widest text-sm">Tallying Your XP...</p>
+        <div className="text-7xl font-extrabold text-[#F5C518] tabular-nums">{displayTotal}</div>
+        <p className="text-white/40 text-sm">XP Earned</p>
+      </div>
+
+      <div className="w-full max-w-sm space-y-1.5 max-h-80 overflow-y-auto">
+        {revealed.map((item, i) => (
+          <div key={i} className="flex items-center justify-between px-4 py-2 bg-white/5 rounded-xl animate-pulse-once">
+            <span className="text-white/60 text-xs font-semibold">Question {i + 1}</span>
+            <span className={`font-extrabold text-sm ${item.xp > 0 ? "text-[#F5C518]" : "text-white/30"}`}>
+              {item.xp > 0 ? `+${item.xp} XP` : "No XP"}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {done && (
+        <div className="text-center">
+          <div className="w-10 h-10 border-4 border-[#E91E8C] border-t-transparent rounded-full animate-spin mx-auto" />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PerfectScoreCard({ code, copied, onCopy }) {
+  return (
+    <div className="w-full bg-gradient-to-br from-[#F5C518]/20 to-[#E91E8C]/20 border-2 border-[#F5C518] rounded-2xl p-5 space-y-4">
+      <div className="flex items-center gap-3">
+        <span className="text-3xl">🏆</span>
+        <div>
+          <p className="font-extrabold text-[#F5C518] text-base">PERFECT SCORE! YOU DID THAT.</p>
+          <p className="text-white/70 text-xs mt-0.5">You answered every question correctly. That's elite level.</p>
+        </div>
+      </div>
+
+      <div className="bg-black/40 border border-[#F5C518]/40 rounded-xl p-4 space-y-2">
+        <p className="text-xs text-white/60 font-semibold uppercase tracking-widest">Your Unique Bonus Code</p>
+        <div className="flex items-center gap-3">
+          <span className="font-extrabold text-[#F5C518] text-xl tracking-widest flex-1">{code}</span>
+          <button
+            onClick={onCopy}
+            className="flex items-center gap-1.5 bg-[#F5C518] text-black font-bold text-xs px-3 py-2 rounded-lg hover:bg-[#F0D060] transition-colors shrink-0"
+          >
+            {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? "Copied!" : "Copy"}
+          </button>
+        </div>
+      </div>
+
+      <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white/80 leading-relaxed space-y-2">
+        <p className="font-bold text-white">📧 Email this code to Coach Sheek:</p>
+        <p>Send an email to <span className="text-[#E91E8C] font-bold">coach@sewsheek.com</span> with the subject line:</p>
+        <p className="font-extrabold text-[#F5C518]">"I got a perfect score — {code}"</p>
+        <p className="text-white/60 text-xs">Your code is unique to your account. Coach will verify it and award your bonus XP. Do not share this code — it's tied to your email address.</p>
+      </div>
+    </div>
+  );
+}
+
+export default function LaunchResults({ totalXP, challengesDone, quizCorrect, quizTotal, pathParam, answerLog, perQuestionXP, userEmail }) {
+  const [showTally, setShowTally] = useState(true);
   const [displayXP, setDisplayXP] = useState(0);
+  const [copied, setCopied] = useState(false);
+
+  const isPerfect = quizCorrect === quizTotal && quizTotal === 20;
   const isHighScore = totalXP >= 400;
   const accuracy = quizTotal > 0 ? Math.round((quizCorrect / quizTotal) * 100) : 0;
+  const perfectCode = generatePerfectCode(userEmail);
 
-  // Count-up animation
+  // Count-up after tally screen
   useEffect(() => {
+    if (showTally) return;
     let start = 0;
-    const duration = 1800;
-    const step = totalXP / (duration / 16);
+    const step = totalXP / 60;
     const timer = setInterval(() => {
       start += step;
-      if (start >= totalXP) {
-        setDisplayXP(totalXP);
-        clearInterval(timer);
-      } else {
-        setDisplayXP(Math.floor(start));
-      }
+      if (start >= totalXP) { setDisplayXP(totalXP); clearInterval(timer); }
+      else setDisplayXP(Math.floor(start));
     }, 16);
     return () => clearInterval(timer);
-  }, [totalXP]);
+  }, [showTally, totalXP]);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(perfectCode);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  if (showTally) {
+    return (
+      <XPTally
+        perQuestionXP={perQuestionXP || []}
+        totalXP={totalXP}
+        onDone={() => setShowTally(false)}
+      />
+    );
+  }
 
   const firstLessonPath = pathParam === "advanced"
     ? createPageUrl("Library")
@@ -101,10 +221,11 @@ export default function LaunchResults({ totalXP, challengesDone, quizCorrect, qu
       <div className="flex-1 flex flex-col items-center px-5 py-8 max-w-lg mx-auto w-full space-y-6">
         {/* Trophy icon */}
         <div className={`w-20 h-20 rounded-full flex items-center justify-center shadow-2xl ${
+          isPerfect ? "bg-[#F5C518]/30 shadow-[#F5C518]/50" :
           isHighScore ? "bg-[#F5C518]/20 shadow-[#F5C518]/30" : "bg-[#7B2FBE]/30 shadow-[#7B2FBE]/30"
         }`}>
-          {isHighScore ? (
-            <Trophy className="w-10 h-10 text-[#F5C518]" />
+          {isPerfect || isHighScore ? (
+            <Trophy className={`w-10 h-10 ${isPerfect ? "text-[#F5C518]" : "text-[#F5C518]"}`} />
           ) : (
             <Star className="w-10 h-10 text-[#7B2FBE]" />
           )}
@@ -113,10 +234,14 @@ export default function LaunchResults({ totalXP, challengesDone, quizCorrect, qu
         {/* Headline */}
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-extrabold">
-            {isHighScore ? "YOU WENT OFF. THAT'S SHEEK ENERGY." : "GOOD START. NOW KEEP GOING."}
+            {isPerfect ? "PERFECT. ABSOLUTELY PERFECT." :
+             isHighScore ? "YOU WENT OFF. THAT'S SHEEK ENERGY." :
+             "GOOD START. NOW KEEP GOING."}
           </h1>
           <p className="text-white/60 text-sm leading-relaxed">
-            {isHighScore
+            {isPerfect
+              ? "100% correct. Every single one. You've already got the knowledge — now let's build the skill. Collect your bonus code below."
+              : isHighScore
               ? "You showed up, answered right, and earned your XP. Now go hit Lesson 1 — the real work starts now."
               : "You got your first XP on the board. Every lesson adds more. Keep showing up — that's how you earn the hoodie."}
           </p>
@@ -139,6 +264,11 @@ export default function LaunchResults({ totalXP, challengesDone, quizCorrect, qu
             <p className="text-xs text-white/40 mt-1">Accuracy</p>
           </div>
         </div>
+
+        {/* Perfect score card */}
+        {isPerfect && (
+          <PerfectScoreCard code={perfectCode} copied={copied} onCopy={handleCopy} />
+        )}
 
         {/* Hoodie progress */}
         <div className="w-full bg-[#7B2FBE]/20 border border-[#7B2FBE]/40 rounded-2xl p-5 space-y-3">

@@ -369,11 +369,11 @@ export default function LaunchGame() {
   const [screen, setScreen] = useState("welcome");
   const [currentChallenge, setCurrentChallenge] = useState(0);
   const [totalXP, setTotalXP] = useState(0);
-  const [xpFlash, setXpFlash] = useState(null);
   const [challengeResults, setChallengeResults] = useState([]);
   const [quizCorrect, setQuizCorrect] = useState(0);
   const [quizTotal, setQuizTotal] = useState(0);
-  const [answerLog, setAnswerLog] = useState([]); // {question, options, correct, chosen, isCorrect}
+  const [answerLog, setAnswerLog] = useState([]);
+  const [perQuestionXP, setPerQuestionXP] = useState([]);
 
   // Redirect if already completed, or if game disabled, or if 3day_replay path
   useEffect(() => {
@@ -423,16 +423,11 @@ export default function LaunchGame() {
     navigate(createPageUrl("MyPath"), { replace: true });
   };
 
-  const flashXP = (amount) => {
-    setXpFlash(`+${amount} XP`);
-    setTimeout(() => setXpFlash(null), 1500);
-  };
-
   const handleChallengeComplete = (xpEarned, isCorrect = null, chosenIdx = null) => {
     const newTotal = totalXP + xpEarned;
     setTotalXP(newTotal);
-    flashXP(xpEarned);
     setChallengeResults(prev => [...prev, { xp: xpEarned, correct: isCorrect }]);
+    setPerQuestionXP(prev => [...prev, xpEarned]);
     if (isCorrect !== null) {
       setQuizTotal(prev => prev + 1);
       if (isCorrect) setQuizCorrect(prev => prev + 1);
@@ -481,6 +476,8 @@ export default function LaunchGame() {
         quizTotal={quizTotal}
         pathParam={pathParam}
         answerLog={answerLog}
+        perQuestionXP={perQuestionXP}
+        userEmail={user?.email}
       />
     );
   }
@@ -492,7 +489,7 @@ export default function LaunchGame() {
         <span className="font-extrabold text-sm tracking-widest text-[#E91E8C] uppercase">OSS Academy</span>
         <div className="flex items-center gap-1.5 bg-[#F5C518]/20 px-3 py-1.5 rounded-full">
           <Zap className="w-4 h-4 text-[#F5C518]" />
-          <span className="font-extrabold text-[#F5C518] text-sm">{totalXP} / {maxXP} XP</span>
+          <span className="font-extrabold text-[#F5C518] text-sm">Q {currentChallenge + 1} / {CHALLENGES.length}</span>
         </div>
       </div>
 
@@ -519,15 +516,6 @@ export default function LaunchGame() {
           ))}
         </div>
       </div>
-
-      {/* XP Flash */}
-      {xpFlash && (
-        <div className="fixed top-20 right-6 z-50 animate-bounce">
-          <div className="bg-[#F5C518] text-black font-extrabold text-lg px-4 py-2 rounded-2xl shadow-lg shadow-[#F5C518]/40">
-            {xpFlash}
-          </div>
-        </div>
-      )}
 
       {/* Challenge label */}
       <div className="px-4 pt-4">
