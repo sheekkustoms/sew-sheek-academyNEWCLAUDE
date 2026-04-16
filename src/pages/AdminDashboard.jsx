@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Shield, Users, FileText, Pin, Trash2, CheckCircle, XCircle, Megaphone, BarChart2, Ban, Gamepad2, BookOpen, UserPlus, Copy, Check, Brain, Video, Zap, Tags, Mail, Bell, UserX, Star, Trophy, GraduationCap, Map } from "lucide-react";
+import { Shield, Users, FileText, Pin, Trash2, CheckCircle, XCircle, Megaphone, BarChart2, Ban, Gamepad2, BookOpen, UserPlus, Copy, Check, Brain, Video, Zap, Tags, Mail, Bell, UserX, Star, Trophy, GraduationCap, Map, Eye } from "lucide-react";
 import QuizBuilder from "../components/admin/QuizBuilder";
 import CourseManager from "../components/admin/CourseManager";
 import WeeklyChallengeManager from "../components/admin/WeeklyChallengeManager";
@@ -360,8 +360,20 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <div className="flex items-center gap-2 flex-wrap justify-end">
-                 {u.is_banned && <Badge className="bg-red-100 text-red-600 text-[10px]">Banned</Badge>}
-                 {u.email !== user?.email && !ADMIN_EMAILS.includes(u.email) && (
+               {u.is_banned && <Badge className="bg-red-100 text-red-600 text-[10px]">Banned</Badge>}
+               <Button
+                 size="sm"
+                 variant="outline"
+                 className="h-8 text-xs gap-1 text-amber-600 hover:bg-amber-50 border-amber-200"
+                 onClick={() => {
+                   localStorage.setItem("member_preview_mode", "true");
+                   localStorage.setItem("member_preview_email", u.email);
+                   window.location.href = "/Dashboard";
+                 }}
+               >
+                 <Eye className="w-3 h-3" /> Preview
+               </Button>
+               {u.email !== user?.email && !ADMIN_EMAILS.includes(u.email) && (
                    <>
                      {/* Make/Remove Moderator (all admins can do this) */}
                      <Button size="sm" variant="outline" className={`h-8 text-xs gap-1 ${u.role === "admin" ? "text-violet-600 hover:bg-violet-50 border-violet-200" : "text-gray-500 hover:bg-gray-50"}`} onClick={() => toggleAdminMutation.mutate({ id: u.id, currentRole: u.role })}>

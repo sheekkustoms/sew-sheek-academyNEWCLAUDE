@@ -68,6 +68,7 @@ export default function Layout({ children, currentPageName }) {
   const isAdmin = user?.role === "admin";
   const unreadCount = notifications.length;
   const [isPreviewMode, setIsPreviewMode] = useState(() => localStorage.getItem("member_preview_mode") === "true");
+  const previewEmail = localStorage.getItem("member_preview_email") || null;
 
   const enterPreview = () => {
     localStorage.setItem("member_preview_mode", "true");
@@ -77,6 +78,7 @@ export default function Layout({ children, currentPageName }) {
 
   const exitPreview = () => {
     localStorage.removeItem("member_preview_mode");
+    localStorage.removeItem("member_preview_email");
     setIsPreviewMode(false);
     window.location.reload();
   };
@@ -90,7 +92,11 @@ export default function Layout({ children, currentPageName }) {
         <div className="fixed top-0 left-0 right-0 z-[200] bg-amber-400 text-black flex items-center justify-between px-4 py-2 shadow-lg">
           <div className="flex items-center gap-2 text-sm font-semibold">
             <Eye className="w-4 h-4" />
-            <span>Member Preview Mode — you're seeing the app exactly as a member would</span>
+            <span>
+              {previewEmail
+                ? `Previewing as: ${previewEmail}`
+                : "Member Preview Mode — you're seeing the app exactly as a member would"}
+            </span>
           </div>
           <button
             onClick={exitPreview}
