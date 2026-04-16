@@ -98,7 +98,11 @@ function PathRow({ assessment }) {
   });
 
   const activateMutation = useMutation({
-    mutationFn: () => base44.entities.PlacementAssessment.update(assessment.id, { path_activated: true }),
+    mutationFn: () => base44.entities.PlacementAssessment.update(assessment.id, {
+      path_activated: true,
+      // If game not done yet (and not 3day_replay), also mark it completed so student goes straight to path
+      ...((!assessment.launch_game_completed && assessment.path_view !== "3day_replay") ? { launch_game_completed: true } : {}),
+    }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["adminPaths"] }),
   });
 
@@ -211,15 +215,20 @@ function PathRow({ assessment }) {
               {deactivateMutation.isPending ? "..." : "Deactivate"}
             </Button>
           ) : (
-            <Button
-              size="sm"
-              className="bg-[#D4AF37] hover:bg-[#F0D060] text-black font-bold text-xs h-8 gap-1"
-              onClick={() => activateMutation.mutate()}
-              disabled={activateMutation.isPending}
-            >
-              <Zap className="w-3.5 h-3.5" />
-              {activateMutation.isPending ? "Activating..." : "Activate Path"}
-            </Button>
+            <div className="flex flex-col items-end gap-1">
+              {!assessment.launch_game_completed && assessment.path_view !== "3day_replay" && (
+                <p className="text-[10px] text-amber-600 font-semibold">⚠️ Mark game done first</p>
+              )}
+              <Button
+                size="sm"
+                className="bg-[#D4AF37] hover:bg-[#F0D060] text-black font-bold text-xs h-8 gap-1"
+                onClick={() => activateMutation.mutate()}
+                disabled={activateMutation.isPending}
+              >
+                <Zap className="w-3.5 h-3.5" />
+                {activateMutation.isPending ? "Activating..." : "Activate Path"}
+              </Button>
+            </div>
           )}
         </div>
       </div>
