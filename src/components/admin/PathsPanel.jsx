@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2, Clock, Zap, Edit2, Save, X, ChevronDown, ChevronRight, ListChecks } from "lucide-react";
+import { CheckCircle2, Clock, Zap, Edit2, Save, X, ChevronDown, ChevronRight, ListChecks, Gamepad2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import moment from "moment";
 
@@ -107,6 +107,13 @@ function PathRow({ assessment }) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["adminPaths"] }),
   });
 
+  const toggleGameMutation = useMutation({
+    mutationFn: () => base44.entities.PlacementAssessment.update(assessment.id, {
+      launch_game_completed: !assessment.launch_game_completed,
+    }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["adminPaths"] }),
+  });
+
   const tier = TIER_LABELS[assessment.tier];
   const moduleLabel = MODULE_LABELS[assessment.tier]?.[assessment.starting_module];
   const pathViewOption = PATH_VIEW_OPTIONS.find(p => p.value === assessment.path_view);
@@ -168,7 +175,22 @@ function PathRow({ assessment }) {
           )}
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
+          {/* Launch Game toggle */}
+          <button
+            onClick={() => toggleGameMutation.mutate()}
+            disabled={toggleGameMutation.isPending}
+            title={assessment.launch_game_completed ? "Click to reset Launch Game (student will see it again)" : "Click to mark Launch Game as completed (skip it for this student)"}
+            className={`flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1.5 rounded-full border transition-all ${
+              assessment.launch_game_completed
+                ? "bg-purple-100 text-purple-700 border-purple-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
+                : "bg-gray-100 text-gray-500 border-gray-200 hover:bg-purple-50 hover:text-purple-600 hover:border-purple-200"
+            }`}
+          >
+            <Gamepad2 className="w-3 h-3" />
+            {assessment.launch_game_completed ? "Game ✓ Done" : "Game Pending"}
+          </button>
+
           {!editing && (
             <button
               onClick={() => setEditing(true)}

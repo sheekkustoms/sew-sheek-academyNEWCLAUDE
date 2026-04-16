@@ -417,8 +417,12 @@ export default function LaunchGame() {
   });
 
   const markGameSkipped = () => {
+    // Fire-and-forget: update in background, navigate immediately to avoid flicker
     if (assessment?.id && !assessment.launch_game_completed) {
-      saveGameMutation.mutate({ xpTotal: 0, skipped: true });
+      base44.entities.PlacementAssessment.update(assessment.id, {
+        launch_game_completed: true,
+        launch_game_xp: 0,
+      });
     }
     navigate(createPageUrl("MyPath"), { replace: true });
   };
