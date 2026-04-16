@@ -69,7 +69,7 @@ const TIER_CONFIG = {
   },
 };
 
-export default function PlacementResults({ tier, onStart, pathActivated }) {
+export default function PlacementResults({ tier, onStart, pathActivated, gameCompleted }) {
   const config = TIER_CONFIG[tier];
 
   return (
@@ -97,28 +97,59 @@ export default function PlacementResults({ tier, onStart, pathActivated }) {
           <p className="text-xs font-semibold text-[#999]">— Coach Sheek</p>
         </div>
 
-        {/* Confirmation message */}
-        <div className="bg-gradient-to-br from-[#D4AF37]/10 to-amber-50 border-2 border-[#D4AF37]/30 rounded-2xl p-6 space-y-4">
+        {/* Status checklist */}
+        <div className="bg-white rounded-2xl border border-[#EEEEEE] p-5 space-y-3">
+          <h3 className="font-extrabold text-[#111] text-sm uppercase tracking-widest mb-1">Your Progress</h3>
+
+          {/* Assessment */}
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-full bg-[#D4AF37]/20 flex items-center justify-center shrink-0">
-              <CheckCircle2 className="w-6 h-6 text-[#B8960C]" />
-            </div>
+            <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
             <div>
-              <h3 className="font-extrabold text-[#111] text-base">Thank you — you're all set! 🎉</h3>
-              <p className="text-xs text-[#888] mt-0.5">Assessment submitted successfully</p>
+              <p className="text-sm font-bold text-[#111]">Assessment Completed ✓</p>
+              <p className="text-xs text-[#888]">Your placement quiz has been submitted</p>
             </div>
           </div>
-          <p className="text-sm text-[#444] leading-relaxed">
-            Your responses have been submitted to your coach and the Oh Sew Sheek team. We'll review your answers and personally assign you a customized learning plan within <span className="font-bold text-[#111]">24 hours</span>. Keep an eye on your inbox — your journey is about to get very intentional.
-          </p>
+
+          {/* Launch Game */}
+          <div className="flex items-center gap-3">
+            {gameCompleted
+              ? <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
+              : <div className="w-5 h-5 rounded-full border-2 border-[#DDDDDD] shrink-0" />
+            }
+            <div>
+              <p className={`text-sm font-bold ${gameCompleted ? "text-[#111]" : "text-[#AAAAAA]"}`}>
+                Launch Game {gameCompleted ? "Completed ✓" : "Pending"}
+              </p>
+              <p className="text-xs text-[#888]">
+                {gameCompleted ? "You earned XP in the Launch Game" : "Complete the Launch Game to earn your starting XP"}
+              </p>
+            </div>
+          </div>
+
+          {/* Path activation */}
+          <div className="flex items-center gap-3">
+            {pathActivated
+              ? <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
+              : <div className="w-5 h-5 rounded-full border-2 border-[#DDDDDD] shrink-0" />
+            }
+            <div>
+              <p className={`text-sm font-bold ${pathActivated ? "text-[#111]" : "text-[#AAAAAA]"}`}>
+                Path {pathActivated ? "Activated ✓" : "Awaiting Activation"}
+              </p>
+              <p className="text-xs text-[#888]">
+                {pathActivated ? "Your learning path is ready!" : "Coach Sheek will activate your path within 24 hours"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Library CTA */}
+        <div className="bg-gradient-to-br from-[#D4AF37]/10 to-amber-50 border-2 border-[#D4AF37]/30 rounded-2xl p-5 space-y-3">
           <p className="text-sm text-[#555] leading-relaxed">
-            Once your path is ready, the <span className="font-semibold text-[#111]">"View My Path"</span> button below will unlock — so keep an eye out within 24 hours!
-          </p>
-          <p className="text-sm text-[#555] leading-relaxed">
-            In the meantime, you have full access to the Library — dive into past class replays, tutorials, and bonus content. New videos are added regularly, so there's always something fresh to explore.
+            In the meantime, you have full access to the Library — dive into past class replays, tutorials, and bonus content.
           </p>
           <Link to={createPageUrl("Library")}>
-            <button className="mt-1 w-full flex items-center justify-center gap-2 bg-[#D4AF37] text-black font-bold text-sm px-5 py-3 rounded-xl hover:bg-[#F0D060] transition-colors shadow-md shadow-[#D4AF37]/20">
+            <button className="w-full flex items-center justify-center gap-2 bg-[#D4AF37] text-black font-bold text-sm px-5 py-3 rounded-xl hover:bg-[#F0D060] transition-colors shadow-md shadow-[#D4AF37]/20">
               <BookOpen className="w-4 h-4" /> Browse the Library While You Wait
             </button>
           </Link>

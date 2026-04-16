@@ -155,6 +155,7 @@ export default function MyPath() {
       <PlacementResults
         tier={assignedTier}
         pathActivated={assessment?.path_activated || false}
+        gameCompleted={assessment?.launch_game_completed || false}
         onStart={() => {
           if (assessment?.path_activated) {
             setAssessmentState("path");
