@@ -463,7 +463,14 @@ export default function LaunchGame() {
   const maxXP = CHALLENGES.reduce((sum, c) => sum + c.xpFull, 0);
 
   if (screen === "welcome") {
-    return <LaunchWelcome pathParam={pathParam} onStart={() => setScreen("game")} />;
+    return (
+      <LaunchWelcome
+        pathParam={pathParam}
+        onStart={() => setScreen("game")}
+        isAdmin={user?.role === "admin"}
+        onAdminSkip={markGameSkipped}
+      />
+    );
   }
 
   if (screen === "results") {

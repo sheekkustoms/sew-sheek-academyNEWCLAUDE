@@ -46,7 +46,7 @@ Let's build something extraordinary."`,
   },
 };
 
-export default function LaunchWelcome({ pathParam, onStart }) {
+export default function LaunchWelcome({ pathParam, onStart, onAdminSkip, isAdmin }) {
   const path = PATH_CONFIG[pathParam] || PATH_CONFIG.beginner;
 
   return (
@@ -110,6 +110,16 @@ export default function LaunchWelcome({ pathParam, onStart }) {
         >
           START THE LAUNCH GAME →
         </button>
+
+        {/* Admin skip */}
+        {isAdmin && (
+          <button
+            onClick={onAdminSkip}
+            className="text-xs text-white/30 hover:text-white/60 underline transition-colors"
+          >
+            Admin: Skip game & go to path
+          </button>
+        )}
       </div>
     </div>
   );
