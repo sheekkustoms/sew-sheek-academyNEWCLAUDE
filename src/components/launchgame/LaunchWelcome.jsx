@@ -2,9 +2,48 @@ import React from "react";
 import { Zap, Target, Clock } from "lucide-react";
 
 const PATH_CONFIG = {
-  beginner: { label: "BEGINNER PATH", color: "bg-green-500" },
-  intermediate: { label: "INTERMEDIATE PATH", color: "bg-amber-500" },
-  advanced: { label: "ADVANCED PATH", color: "bg-violet-500" },
+  beginner: {
+    label: "FRESH START PATH",
+    color: "bg-green-500",
+    tierName: "Fresh Start",
+    coachMessage: `"Hey. You made it. You've been placed on the Fresh Start path — and that means we're building your foundation right.
+
+No shortcuts. No guessing. We start at the beginning and do it properly.
+
+Every lesson you complete earns you XP. Use those XP points to unlock bonus classes, replays, and premium content inside the Library. The more you show up, the more you unlock.
+
+But first — play the Launch Game. It's 20 questions that show me and YOU exactly where you're starting from.
+
+Let's build something real."`,
+  },
+  intermediate: {
+    label: "RUSTY CREATOR PATH",
+    color: "bg-amber-500",
+    tierName: "Rusty Creator",
+    coachMessage: `"Hey. You've been placed on the Rusty Creator path — you've got skills, they just need some dusting off.
+
+We're not starting from zero. We're picking up where you left off and sharpening everything that matters.
+
+Every lesson you complete earns you XP. Use those XP points to unlock bonus classes, replays, and premium content inside the Library. Stay consistent and keep stacking.
+
+But first — play the Launch Game. It's 20 questions that show me and YOU exactly where your skills are right now.
+
+Let's get back in the groove."`,
+  },
+  advanced: {
+    label: "SKILLED BUILDER PATH",
+    color: "bg-violet-500",
+    tierName: "Skilled Builder",
+    coachMessage: `"Hey. You've been placed on the Skilled Builder path — you already know what you're doing. Now we level up.
+
+This path is for people who are ready to go deep — advanced techniques, specialty work, and building toward something bigger.
+
+Every lesson you complete earns you XP. Use those XP points to unlock bonus classes, replays, and premium content inside the Library. The more you invest, the more you access.
+
+But first — play the Launch Game. It's 20 questions that show me and YOU where your advanced knowledge really stands.
+
+Let's build something extraordinary."`,
+  },
 };
 
 export default function LaunchWelcome({ pathParam, onStart }) {
@@ -27,33 +66,41 @@ export default function LaunchWelcome({ pathParam, onStart }) {
         <div className="text-center space-y-3">
           <h1 className="text-3xl font-extrabold leading-tight">
             Your Path Is Chosen.<br />
-            <span className="text-[#E91E8C]">Now the Real Work Begins.</span>
+            <span className="text-[#E91E8C]">The {path.tierName} Journey Starts Now.</span>
           </h1>
         </div>
 
         {/* Coach message */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-5 text-sm text-white/80 leading-relaxed space-y-2">
-          <p>"Hey. You made it. You chose your path — and that alone says something.</p>
-          <p>This isn't a YouTube playlist. This is a structured academy built to take you from where you are to where you're trying to go.</p>
-          <p>Every lesson earns XP. Every challenge levels you up. Hit <span className="text-[#F5C518] font-bold">500 XP</span> and you unlock your <span className="font-bold text-white">OSS Academy Hoodie</span>.</p>
-          <p>But first — play the Launch Game. It tells me and YOU where you're starting from.</p>
-          <p>Read the guide. Play the game. Then go hit Lesson 1. Let's build something real."</p>
-          <p className="text-[#E91E8C] font-bold mt-2">— Coach Sheek</p>
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-5 text-sm text-white/80 leading-relaxed">
+          {path.coachMessage.split("\n\n").map((para, i) => (
+            <p key={i} className={i > 0 ? "mt-3" : ""}>
+              {para.split("XP").map((part, j, arr) =>
+                j < arr.length - 1
+                  ? <React.Fragment key={j}>{part}<span className="text-[#F5C518] font-bold">XP</span></React.Fragment>
+                  : part
+              )}
+            </p>
+          ))}
+          <p className="text-[#E91E8C] font-bold mt-4">— Coach Sheek</p>
         </div>
 
         {/* Stats grid */}
         <div className="grid grid-cols-3 gap-3 w-full">
-          {[
-            { Icon: Target, value: "7", label: "Challenges" },
-            { Icon: Zap, value: "500", label: "XP Total" },
-            { Icon: Clock, value: "~12", label: "Minutes" },
-          ].map(({ Icon, value, label }) => (
-            <div key={label} className="bg-white/5 border border-white/10 rounded-xl p-3 text-center">
-              <Icon className="w-5 h-5 text-[#E91E8C] mx-auto mb-1" />
-              <p className="text-xl font-extrabold text-[#F5C518]">{value}</p>
-              <p className="text-[10px] text-white/50 uppercase tracking-wide">{label}</p>
-            </div>
-          ))}
+          <div className="bg-white/5 border border-white/10 rounded-xl p-3 text-center">
+            <Target className="w-5 h-5 text-[#E91E8C] mx-auto mb-1" />
+            <p className="text-xl font-extrabold text-[#F5C518]">20</p>
+            <p className="text-[10px] text-white/50 uppercase tracking-wide">Questions</p>
+          </div>
+          <div className="bg-white/5 border border-white/10 rounded-xl p-3 text-center">
+            <Zap className="w-5 h-5 text-[#E91E8C] mx-auto mb-1" />
+            <p className="text-xl font-extrabold text-[#F5C518]">500</p>
+            <p className="text-[10px] text-white/50 uppercase tracking-wide">XP Total</p>
+          </div>
+          <div className="bg-white/5 border border-white/10 rounded-xl p-3 text-center">
+            <Clock className="w-5 h-5 text-[#E91E8C] mx-auto mb-1" />
+            <p className="text-xl font-extrabold text-[#F5C518]">~15</p>
+            <p className="text-[10px] text-white/50 uppercase tracking-wide">Minutes</p>
+          </div>
         </div>
 
         {/* CTA */}
