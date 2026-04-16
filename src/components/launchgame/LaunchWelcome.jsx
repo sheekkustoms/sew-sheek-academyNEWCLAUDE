@@ -98,7 +98,7 @@ export default function LaunchWelcome({ pathParam, onStart }) {
           </div>
           <div className="bg-white/5 border border-white/10 rounded-xl p-3 text-center">
             <Clock className="w-5 h-5 text-[#E91E8C] mx-auto mb-1" />
-            <p className="text-xl font-extrabold text-[#F5C518]">~15</p>
+            <p className="text-xl font-extrabold text-[#F5C518]">~2</p>
             <p className="text-[10px] text-white/50 uppercase tracking-wide">Minutes</p>
           </div>
         </div>
