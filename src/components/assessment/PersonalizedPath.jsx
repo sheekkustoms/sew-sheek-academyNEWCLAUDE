@@ -270,6 +270,10 @@ export default function PersonalizedPath({ tier, assessment }) {
 
   // 3 Day Replay only view
   if (assessment?.path_view === "3day_replay") {
+    // Find the 3-day replay course
+    const threeDayCourse = courses.find(c => c.title?.includes("3 Day Replay"));
+    const threeDayUrl = threeDayCourse ? `${createPageUrl("CourseDetail")}?id=${threeDayCourse.id}` : createPageUrl("Library");
+    
     return (
       <div className="max-w-3xl mx-auto space-y-8 pb-16">
         <div className="bg-gradient-to-r from-pink-500 to-rose-600 rounded-2xl p-8 text-white">
@@ -280,9 +284,9 @@ export default function PersonalizedPath({ tier, assessment }) {
           <p className="text-xs font-bold text-[#D4AF37] uppercase tracking-widest">Your Starting Point</p>
           <h2 className="text-xl font-extrabold text-[#111]">3 Day Replay — Complete Beginner Foundation</h2>
           <p className="text-sm text-[#666]">Your coach has assigned you to start here. Complete all 3 days before moving on to your personalized path.</p>
-          <Link to={createPageUrl("Library")}>
+          <Link to={threeDayUrl}>
             <button className="mt-2 bg-[#D4AF37] text-black font-bold text-sm px-6 py-3 rounded-xl hover:bg-[#F0D060] transition-colors shadow-md shadow-[#D4AF37]/20 flex items-center gap-2">
-              Go to Library to Watch <ChevronRight className="w-4 h-4" />
+              Click Here to Continue <ChevronRight className="w-4 h-4" />
             </button>
           </Link>
         </div>
