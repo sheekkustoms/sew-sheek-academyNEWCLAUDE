@@ -155,9 +155,26 @@ function PathRow({ assessment }) {
           </div>
           <p className="text-xs text-gray-400 mt-0.5">Submitted {moment(assessment.created_date).fromNow()} · Score: {assessment.experience_score ?? "—"}</p>
 
+          {/* Status checklist */}
+          {!editing && (
+            <div className="mt-3 flex flex-wrap gap-2 mb-3 text-xs">
+              <span className="flex items-center gap-1 px-2 py-1 rounded-full bg-green-100 text-green-700 font-semibold">
+                <CheckCircle2 className="w-3.5 h-3.5" /> Assessment
+              </span>
+              <span className={`flex items-center gap-1 px-2 py-1 rounded-full font-semibold ${assessment.launch_game_completed ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
+                {assessment.launch_game_completed ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Clock className="w-3.5 h-3.5" />}
+                Launch Game
+              </span>
+              <span className={`flex items-center gap-1 px-2 py-1 rounded-full font-semibold ${assessment.path_activated ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}>
+                {assessment.path_activated ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Clock className="w-3.5 h-3.5" />}
+                Path Activation
+              </span>
+            </div>
+          )}
+
           {/* Current path info */}
           {!editing && (
-            <div className="mt-2 space-y-2">
+            <div className="mt-1 space-y-2">
               <div className="flex flex-wrap gap-2">
                 {pathViewOption ? (
                   <span className={`text-xs px-2.5 py-1 rounded-full font-bold border ${pathViewOption.color}`}>
