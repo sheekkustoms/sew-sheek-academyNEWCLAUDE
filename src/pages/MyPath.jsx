@@ -55,16 +55,16 @@ export default function MyPath() {
     if (assessment && assessment.completed) {
       const daysAgo = (Date.now() - new Date(assessment.created_date).getTime()) / (1000 * 60 * 60 * 24);
       if (daysAgo < 60) {
-        // Only show the path if admin has activated it
+        // 3-day replay students skip the game entirely
+        const is3DayReplay = assessment.path_view === "3day_replay";
+        // If launch game not done yet and not 3day_replay, send them there (regardless of path_activated)
+        if (!assessment.launch_game_completed && !is3DayReplay) {
+          const pathMap = { tier_1: "beginner", tier_2: "intermediate", tier_3: "advanced" };
+          navigate(`${createPageUrl("LaunchGame")}?path=${pathMap[assessment.tier] || "beginner"}`, { replace: true });
+          return;
+        }
+        // After game is done, only show the path if admin has activated it
         if (assessment.path_activated) {
-          // 3-day replay students skip the game entirely
-          const is3DayReplay = assessment.path_view === "3day_replay";
-          // If launch game not done yet and not 3day_replay, send them there
-          if (!assessment.launch_game_completed && !is3DayReplay) {
-            const pathMap = { tier_1: "beginner", tier_2: "intermediate", tier_3: "advanced" };
-            navigate(`${createPageUrl("LaunchGame")}?path=${pathMap[assessment.tier] || "beginner"}`, { replace: true });
-            return;
-          }
           setAssessmentState("path");
         } else {
           setAssessmentState("results");
