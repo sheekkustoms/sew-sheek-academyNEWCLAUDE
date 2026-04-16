@@ -20,6 +20,7 @@ import CourseAssignmentPanel from "../components/admin/CourseAssignmentPanel";
 import AssessmentsPanel from "../components/admin/AssessmentsPanel";
 import PathsPanel from "../components/admin/PathsPanel";
 import EmailBlastPanel from "../components/admin/EmailBlastPanel";
+import LaunchGameResultsPanel from "../components/admin/LaunchGameResultsPanel";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -294,6 +295,9 @@ export default function AdminDashboard() {
           </TabsTrigger>
           <TabsTrigger value="paths" className="flex items-center gap-1">
             <Map className="w-3.5 h-3.5" /> Paths
+          </TabsTrigger>
+          <TabsTrigger value="launchgame" className="flex items-center gap-1">
+            <Gamepad2 className="w-3.5 h-3.5" /> Launch Game
           </TabsTrigger>
           <TabsTrigger value="emailblast" className="flex items-center gap-1">
             <Mail className="w-3.5 h-3.5" /> Email Students
@@ -762,6 +766,16 @@ export default function AdminDashboard() {
         {/* Paths */}
         <TabsContent value="paths" className="mt-4">
           <PathsPanel />
+        </TabsContent>
+
+        {/* Launch Game Results */}
+        <TabsContent value="launchgame" className="mt-4">
+          <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
+            <div className="flex items-center gap-2 text-pink-600 font-semibold mb-5">
+              <Gamepad2 className="w-5 h-5" /> Launch Game Results
+            </div>
+            <LaunchGameResultsPanel />
+          </div>
         </TabsContent>
 
         {/* Email Blast */}
