@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Save, Video, CheckCircle, Upload } from "lucide-react";
+import { Save, Video, CheckCircle, Upload, Gamepad2, ToggleLeft, ToggleRight } from "lucide-react";
 
 export default function OnboardingSettingsManager() {
   const queryClient = useQueryClient();
@@ -25,6 +25,20 @@ export default function OnboardingSettingsManager() {
       setVideoTitle(existing.welcome_video_title || "");
     }
   }, [existing?.id]);
+
+  const gameEnabled = existing?.launch_game_enabled !== false; // default true
+
+  const toggleGameMutation = useMutation({
+    mutationFn: async () => {
+      const newVal = !gameEnabled;
+      if (existing) {
+        await base44.entities.OnboardingSettings.update(existing.id, { launch_game_enabled: newVal });
+      } else {
+        await base44.entities.OnboardingSettings.create({ label: "default", launch_game_enabled: newVal });
+      }
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["onboardingSettings"] }),
+  });
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -64,6 +78,41 @@ export default function OnboardingSettingsManager() {
   const isDirectVideo = videoUrl && !videoUrl.includes("youtube") && !videoUrl.includes("youtu.be") && !videoUrl.includes("vimeo");
 
   return (
+    <div className="space-y-5">
+      {/* Launch Game Toggle */}
+      <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm space-y-4">
+        <div className="flex items-center gap-2 text-pink-600 font-semibold">
+          <Gamepad2 className="w-5 h-5" /> Launch Game Settings
+        </div>
+        <div className="bg-pink-50 border border-pink-200 rounded-xl p-4 flex items-start justify-between gap-4">
+          <div className="flex-1">
+            <p className="text-sm font-bold text-gray-900">Launch Game (20-Question Quiz)</p>
+            <p className="text-xs text-gray-500 mt-1 leading-relaxed">
+              When <strong>ON</strong>, students on Path 1, 2, or 3 will play the 20-question sewing quiz before accessing their path.<br />
+              <span className="text-amber-700 font-semibold">3-Day Replay students are always skipped — they never see the game.</span>
+            </p>
+          </div>
+          <button
+            onClick={() => toggleGameMutation.mutate()}
+            disabled={toggleGameMutation.isPending}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all shrink-0 ${
+              gameEnabled
+                ? "bg-green-100 text-green-700 border border-green-300 hover:bg-green-200"
+                : "bg-gray-100 text-gray-500 border border-gray-300 hover:bg-gray-200"
+            }`}
+          >
+            {gameEnabled
+              ? <><ToggleRight className="w-5 h-5 text-green-600" /> Game ON</>
+              : <><ToggleLeft className="w-5 h-5 text-gray-400" /> Game OFF</>
+            }
+          </button>
+        </div>
+        <p className="text-xs text-gray-400">
+          💡 Tip: Turn the game <strong>OFF</strong> if you want all students to go straight to their learning path without any quiz.
+        </p>
+      </div>
+
+      {/* Welcome Video */}
     <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm space-y-5">
       <div className="flex items-center gap-2 text-violet-600 font-semibold">
         <Video className="w-5 h-5" /> Onboarding Welcome Video
@@ -142,6 +191,7 @@ export default function OnboardingSettingsManager() {
         {saved ? <CheckCircle className="w-4 h-4" /> : <Save className="w-4 h-4" />}
         {saved ? "Saved!" : saveMutation.isPending ? "Saving..." : "Save Welcome Video"}
       </Button>
+    </div>
     </div>
   );
 }

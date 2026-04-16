@@ -1,0 +1,25 @@
+{
+  "name": "OnboardingSettings",
+  "type": "object",
+  "properties": {
+    "label": {
+      "type": "string",
+      "default": "default",
+      "description": "Identifier (only one record needed)"
+    },
+    "welcome_video_url": {
+      "type": "string",
+      "description": "URL of the welcome video shown in onboarding"
+    },
+    "welcome_video_title": {
+      "type": "string",
+      "description": "Title shown above the welcome video"
+    },
+    "launch_game_enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "If true, eligible students are shown the Launch Game before accessing their path. 3-day replay path is never shown the game."
+    }
+  },
+  "required": []
+}
