@@ -537,7 +537,7 @@ export default function LaunchGame() {
       {/* Challenge content */}
       <div className="flex-1 px-4 py-4 overflow-auto">
         {challenge.type === "quiz" && (
-          <ChallengeQuiz challenge={challenge} onComplete={handleChallengeComplete} />
+          <ChallengeQuiz key={currentChallenge} challenge={challenge} onComplete={handleChallengeComplete} />
         )}
         {challenge.type === "spin" && (
           <ChallengeSpinWheel challenge={challenge} onComplete={handleChallengeComplete} />
