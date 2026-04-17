@@ -137,7 +137,7 @@ export default function PlacementResults({ tier, onStart, pathActivated, gameCom
                 Path {pathActivated ? "Activated ✓" : "Awaiting Activation"}
               </p>
               <p className="text-xs text-[#888]">
-                {pathActivated ? "Your learning path is ready!" : "Coach Sheek will activate your path within 24 hours"}
+                {pathActivated ? "Your learning path is ready!" : "Your personalized path will be available May 1st 🗓️"}
               </p>
             </div>
           </div>
@@ -146,7 +146,7 @@ export default function PlacementResults({ tier, onStart, pathActivated, gameCom
         {/* Library CTA */}
         <div className="bg-gradient-to-br from-[#D4AF37]/10 to-amber-50 border-2 border-[#D4AF37]/30 rounded-2xl p-5 space-y-3">
           <p className="text-sm text-[#555] leading-relaxed">
-            In the meantime, you have full access to the Library — dive into past class replays, tutorials, and bonus content.
+            Your full path launches <strong>May 1st</strong>! In the meantime, you have full access to the Library — dive into past class replays, tutorials, and bonus content.
           </p>
           <Link to={createPageUrl("Library")}>
             <button className="w-full flex items-center justify-center gap-2 bg-[#D4AF37] text-black font-bold text-sm px-5 py-3 rounded-xl hover:bg-[#F0D060] transition-colors shadow-md shadow-[#D4AF37]/20">
