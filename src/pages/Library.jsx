@@ -68,25 +68,7 @@ export default function Library() {
   const hasStarted = enrollments.some(e => (e.completed_lessons?.length ?? 0) > 0 || e.progress_percent > 0);
   const isAdmin = user?.role === "admin";
 
-  // Library locked until student has started at least 1 lesson
-  if (!isAdmin && !hasStarted && user) {
-    return (
-      <MembershipGate user={user}>
-        <div className="max-w-2xl mx-auto flex flex-col items-center justify-center py-24 text-center space-y-5">
-          <div className="w-20 h-20 rounded-full bg-[#6B3FA0]/10 flex items-center justify-center">
-            <Lock className="w-10 h-10 text-[#6B3FA0]" />
-          </div>
-          <h2 className="text-xl font-bold text-[#111]">Library Unlocks After Your First Lesson</h2>
-          <p className="text-sm text-[#666] max-w-md leading-relaxed">
-            Complete at least one lesson in your first course to unlock the Library — replays, tutorials, and bonus resources.
-          </p>
-          <a href="/MyPath" className="inline-flex items-center gap-2 bg-[#6B3FA0] text-white font-bold text-sm px-6 py-3 rounded-xl hover:bg-[#5A3490] transition-colors">
-            Go to My Path →
-          </a>
-        </div>
-      </MembershipGate>
-    );
-  }
+
 
   const allItems = [
     ...replays.map(c => ({ ...c, _type: "replay" })),
