@@ -6,7 +6,8 @@ import { createPageUrl } from "@/utils";
 import MembershipGate from "@/components/membership/MembershipGate";
 import { useActivityTracker } from "@/hooks/useActivityTracker";
 import { usePreviewEmail } from "@/hooks/usePreviewEmail";
-import { ChevronRight, Zap, Star, BookOpen, CheckCircle, Map, TrendingUp, Flame } from "lucide-react";
+import { ChevronRight, Zap, Star, BookOpen, CheckCircle, Map, TrendingUp, Flame, Video, Calendar } from "lucide-react";
+import moment from "moment";
 
 export default function Dashboard() {
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
@@ -49,6 +50,17 @@ export default function Dashboard() {
     ? previewEmail.split("@")[0]
     : (user?.full_name?.split(" ")[0] || "there");
   const streakDays = userPoints?.streak_days || 0;
+
+  // Fetch upcoming live classes
+  const { data: upcomingClasses = [] } = useQuery({
+    queryKey: ["dashboardUpcomingClasses"],
+    queryFn: () => base44.entities.LiveClass.filter({ class_type: "live", status: "published" }, "-scheduled_at", 10),
+    select: (data) => data
+      .filter(c => c.scheduled_at && new Date(c.scheduled_at) > new Date())
+      .sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at)),
+  });
+
+  const nextClass = upcomingClasses[0] || null;
 
   const enrollmentMap = {};
   enrollments.forEach(e => { enrollmentMap[e.course_id] = e; });
@@ -117,6 +129,44 @@ export default function Dashboard() {
             )}
           </div>
         </div>
+
+        {/* ── Upcoming Live Class ── */}
+        {nextClass && (
+          <div>
+            <p className="text-[11px] font-bold text-[#D4AF37] uppercase tracking-[0.15em] mb-3">📡 Live Class</p>
+            <div className="bg-gradient-to-r from-[#C0392B] to-[#E74C3C] rounded-2xl p-5 text-white shadow-lg shadow-red-500/20 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 rounded-full bg-white/5 -translate-y-8 translate-x-8" />
+              <div className="flex items-start gap-4 relative">
+                <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                  <Video className="w-6 h-6 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <span className="inline-flex items-center gap-1 bg-white/20 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide mb-2">
+                    🔴 Upcoming Live
+                  </span>
+                  <h3 className="font-extrabold text-base leading-tight">{nextClass.title}</h3>
+                  {nextClass.description && (
+                    <p className="text-white/75 text-xs mt-1 line-clamp-2">{nextClass.description}</p>
+                  )}
+                  <div className="flex items-center gap-1.5 mt-2 text-white/80 text-xs font-semibold">
+                    <Calendar className="w-3.5 h-3.5" />
+                    {moment(nextClass.scheduled_at).format("dddd, MMMM D [at] h:mm A")}
+                  </div>
+                </div>
+              </div>
+              {nextClass.zoom_url && (
+                <a
+                  href={nextClass.zoom_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 w-full flex items-center justify-center gap-2 bg-white text-[#C0392B] font-bold py-3 rounded-xl hover:bg-white/90 transition-colors text-sm shadow"
+                >
+                  🎥 Join the Live Class
+                </a>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* ── Beginner Course Preview ── */}
         {firstCourse && (
