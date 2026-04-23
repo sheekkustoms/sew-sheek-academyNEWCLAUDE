@@ -37,6 +37,11 @@
       "default": false,
       "description": "If true, admin has manually set the active status (overrides Stripe sync)"
     },
+    "live_class_access": {
+      "type": "boolean",
+      "default": false,
+      "description": "If true, this member can see and join live classes on their dashboard"
+    },
     "notes": {
       "type": "string",
       "description": "Admin notes about this membership"

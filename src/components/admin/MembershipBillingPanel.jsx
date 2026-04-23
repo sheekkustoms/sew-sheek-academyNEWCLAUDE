@@ -96,6 +96,18 @@ export default function MembershipBillingPanel() {
     return Math.max(1, months);
   };
 
+  const toggleLiveAccess = async (user) => {
+    const existing = getMembership(user.email);
+    const newVal = !existing?.live_class_access;
+    if (existing) {
+      await base44.entities.MembershipStatus.update(existing.id, { live_class_access: newVal });
+    } else {
+      await base44.entities.MembershipStatus.create({ user_email: user.email, user_name: user.full_name || user.email, live_class_access: newVal });
+    }
+    queryClient.invalidateQueries({ queryKey: ["allMemberships"] });
+    toast.success(`Live class access ${newVal ? "enabled" : "disabled"} for ${user.full_name || user.email}`);
+  };
+
   const toggleForceDisable = async (user) => {
     const existing = getMembership(user.email);
     if (existing) {
@@ -189,6 +201,7 @@ export default function MembershipBillingPanel() {
                 membership={getMembership(user.email)}
                 onApplyMonths={setPaidThroughMonths}
                 onToggleForceDisable={toggleForceDisable}
+                onToggleLiveAccess={toggleLiveAccess}
                 getEffectiveStatus={getEffectiveStatus}
               />
             ))}

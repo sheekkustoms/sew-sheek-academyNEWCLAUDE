@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import moment from "moment";
 
-export default function MemberBillingRow({ user, membership, onApplyMonths, onToggleForceDisable, getEffectiveStatus }) {
+export default function MemberBillingRow({ user, membership, onApplyMonths, onToggleForceDisable, onToggleLiveAccess, getEffectiveStatus }) {
   const [selectedMonths, setSelectedMonths] = useState(1);
 
   const paidThrough = membership?.paid_through || "";
@@ -55,18 +55,30 @@ export default function MemberBillingRow({ user, membership, onApplyMonths, onTo
       </div>
 
       {/* Status badge + force disable toggle */}
-      <div className="flex items-center gap-2 shrink-0">
-        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${getEffectiveStatus(membership) ? "bg-green-100 text-green-700" : membership?.admin_override ? "bg-orange-100 text-orange-700" : "bg-red-100 text-red-600"}`}>
-          {membership?.admin_override ? "Disabled" : getEffectiveStatus(membership) ? "Active" : "Expired"}
-        </span>
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => onToggleForceDisable(user)}
-          className={`h-7 gap-1 text-[10px] ${membership?.admin_override ? "text-green-600 hover:bg-green-50" : "text-orange-600 hover:bg-orange-50"}`}
-        >
-          {membership?.admin_override ? "Re-enable" : "Force Disable"}
-        </Button>
+      <div className="flex flex-col items-end gap-2 shrink-0">
+        <div className="flex items-center gap-2">
+          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${getEffectiveStatus(membership) ? "bg-green-100 text-green-700" : membership?.admin_override ? "bg-orange-100 text-orange-700" : "bg-red-100 text-red-600"}`}>
+            {membership?.admin_override ? "Disabled" : getEffectiveStatus(membership) ? "Active" : "Expired"}
+          </span>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => onToggleForceDisable(user)}
+            className={`h-7 gap-1 text-[10px] ${membership?.admin_override ? "text-green-600 hover:bg-green-50" : "text-orange-600 hover:bg-orange-50"}`}
+          >
+            {membership?.admin_override ? "Re-enable" : "Force Disable"}
+          </Button>
+        </div>
+        {/* Live Class Access toggle */}
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] text-gray-500 font-semibold">📡 Live Access</span>
+          <button
+            onClick={() => onToggleLiveAccess(user)}
+            className={`relative w-9 h-5 rounded-full transition-colors ${membership?.live_class_access ? "bg-red-500" : "bg-gray-300"}`}
+          >
+            <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${membership?.live_class_access ? "translate-x-4" : ""}`} />
+          </button>
+        </div>
       </div>
     </div>
   );

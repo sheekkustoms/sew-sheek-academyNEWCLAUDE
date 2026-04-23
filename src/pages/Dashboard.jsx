@@ -27,6 +27,15 @@ export default function Dashboard() {
     select: (data) => data[0] || null,
   });
 
+  const { data: myMembership } = useQuery({
+    queryKey: ["myMembership", viewingEmail],
+    queryFn: () => base44.entities.MembershipStatus.filter({ user_email: viewingEmail }),
+    enabled: !!viewingEmail,
+    select: (data) => data[0] || null,
+  });
+
+  const hasLiveAccess = user?.role === "admin" || myMembership?.live_class_access === true;
+
   const { data: courses = [] } = useQuery({
     queryKey: ["dashboardCourses"],
     queryFn: () => base44.entities.Course.list("order", 20),
@@ -64,7 +73,7 @@ export default function Dashboard() {
     },
   });
 
-  const nextClass = upcomingClasses[0] || null;
+  const nextClass = hasLiveAccess ? (upcomingClasses[0] || null) : null;
 
   const enrollmentMap = {};
   enrollments.forEach(e => { enrollmentMap[e.course_id] = e; });
