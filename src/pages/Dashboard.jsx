@@ -51,13 +51,17 @@ export default function Dashboard() {
     : (user?.full_name?.split(" ")[0] || "there");
   const streakDays = userPoints?.streak_days || 0;
 
-  // Fetch upcoming live classes
+  // Fetch upcoming live classes — show until 1 hour after start time
   const { data: upcomingClasses = [] } = useQuery({
     queryKey: ["dashboardUpcomingClasses"],
-    queryFn: () => base44.entities.LiveClass.filter({ class_type: "live", status: "published" }, "-scheduled_at", 10),
-    select: (data) => data
-      .filter(c => c.scheduled_at && new Date(c.scheduled_at) > new Date())
-      .sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at)),
+    queryFn: () => base44.entities.LiveClass.list("-scheduled_at", 20),
+    select: (data) => {
+      const now = Date.now();
+      return data
+        .filter(c => c.status === "published" && c.class_type === "live" && c.scheduled_at)
+        .filter(c => new Date(c.scheduled_at).getTime() + 60 * 60 * 1000 > now)
+        .sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at));
+    },
   });
 
   const nextClass = upcomingClasses[0] || null;
